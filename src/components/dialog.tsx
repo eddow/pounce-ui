@@ -1,4 +1,3 @@
-import '@picocss/pico/css/pico.min.css'
 import { reactive } from 'mutts/src'
 import { bindApp, defaulted, isElement } from 'pounce-ts'
 import { Icon } from '../icon'
@@ -17,6 +16,8 @@ export interface DialogButton {
 export interface DialogOptions<Buttons extends Record<string, UIContent | DialogButton>> {
 	title?: UIContent
 	message?: UIContent
+	// Optional left-side visual stamp (e.g., large icon)
+	stamp?: UIContent
 	// Map of return value -> label/content/spec
 	buttons?: Buttons
 	default?: keyof Buttons
@@ -29,6 +30,7 @@ export interface DialogOptions<Buttons extends Record<string, UIContent | Dialog
 
 type PendingDialog = {
 	options: DialogOptions<any>
+	defaultButton: HTMLElement | undefined
 	resolve: (value: PropertyKey | null) => void
 }
 
@@ -66,14 +68,29 @@ const Host = () => {
 	const onDialogKeyDown = (ev: KeyboardEvent) => {
 		if (ev.key === 'Escape') {
 			ev.stopPropagation()
-			ev.preventDefault()
-			if (state.pending?.options.closeOnEscape !== false) closeCurrent(null)
+			if (state.pending?.options.closeOnEscape !== false) {
+				ev.preventDefault()
+				closeCurrent(null)
+			}
 		} else if (ev.key === 'Enter') {
-			// Trigger first action for convenience
+			// Trigger default action, or fallback to first enabled button
 			ev.stopPropagation()
-			ev.preventDefault()
-			if (state.pending?.options.default) {
-				closeCurrent(state.pending.options.default)
+			const opts = state.pending?.options
+			if (!opts) return
+			let chosenKey: PropertyKey | undefined
+			if (opts.default) {
+				const defaultBtn = state.pending?.defaultButton as HTMLButtonElement | undefined
+				if (!defaultBtn || defaultBtn.disabled !== true) {
+					chosenKey = opts.default
+				}
+			}
+			if (chosenKey === undefined) {
+				const first = firstEnabledButtonKey(opts)
+				if (first !== undefined) chosenKey = first
+			}
+			if (chosenKey !== undefined) {
+				ev.preventDefault()
+				closeCurrent(chosenKey)
 			}
 		}
 	}
@@ -88,6 +105,9 @@ const Host = () => {
 	const sizeClass =
 		opts?.size === 'sm' ? 'pp-size-sm' : opts?.size === 'lg' ? 'pp-size-lg' : 'pp-size-md'
 
+	const hasTitle = Boolean(opts?.title)
+	const titleId = 'pp-dialog-title'
+
 	return state.pending ? (
 		<dialog
 			this={dialogElement}
@@ -95,10 +115,12 @@ const Host = () => {
 			onClick={onBackdropClick}
 			onKeydown={onDialogKeyDown}
 			class={[sizeClass, opts?.className]}
-			aria-label={opts?.ariaLabel}
+			aria-modal={true}
+			aria-labelledby={hasTitle ? titleId : undefined}
+			aria-label={!hasTitle ? opts?.ariaLabel : undefined}
 			tabIndex={-1}
 		>
-			<article>
+			<article class="pp-dialog-article">
 				{opts?.title ? (
 					<header>
 						<button
@@ -109,17 +131,24 @@ const Host = () => {
 						>
 							<Icon name="mdi:close" />
 						</button>
-						<p>
-							<strong>{opts.title}</strong>
-						</p>
+						<h3 id={titleId}>{opts.title}</h3>
 					</header>
 				) : undefined}
-				{typeof opts?.message === 'string' ? <p>{opts.message}</p> : opts?.message}
+				<main class="pp-body">
+					{opts?.stamp ? (
+						<aside class="pp-stamp" aria-hidden="true">
+							{typeof opts.stamp === 'string' ? <Icon name={opts.stamp} size="48px" /> : opts.stamp}
+						</aside>
+					) : undefined}
+					<div class="pp-content">
+						{typeof opts?.message === 'string' ? <p>{opts.message}</p> : opts?.message}
+					</div>
+				</main>
 				<footer>
 					<div role="group" class="pp-actions">
 						{renderButtons(opts)}
-					</div>
-				</footer>
+						</div>
+					</footer>
 			</article>
 		</dialog>
 	) : null
@@ -144,13 +173,13 @@ export function dialog<
 				closeOnBackdrop: true,
 				closeOnEscape: true,
 			} as any) as DialogOptions<any>,
+			defaultButton: undefined,
 			resolve,
 		}
 		queueMicrotask(() => {
 			state.open = true
 			document.documentElement.classList.add('modal-is-open')
 			document.documentElement.classList.add('modal-is-opening')
-			//const target = host.querySelector('[autofocus], [data-initial-focus], input, button, [tabindex]:not([tabindex="-1"])')
 			dialogElement?.focus({ preventScroll: true })
 			setTimeout(() => {
 				document.documentElement.classList.remove('modal-is-opening')
@@ -172,7 +201,7 @@ function renderButtons<Buttons extends Record<string, UIContent | DialogButton>>
 		let button = isElement(spec) ? (
 			spec
 		) : (
-			<button type="button" class={variantClass(spec.variant ?? 'primary')}>
+			<button type="button" class={variantClass(spec.variant ?? 'primary')} disabled={spec.disabled}>
 				{spec.text}
 			</button>
 		)
@@ -183,7 +212,10 @@ function renderButtons<Buttons extends Record<string, UIContent | DialogButton>>
 					let rendered = originalRender()
 					if (!Array.isArray(rendered)) rendered = [rendered]
 					for (const child of rendered) {
-						child.addEventListener('click', () => closeCurrent(key))
+						if (child instanceof HTMLButtonElement) {
+							child.addEventListener('click', () => closeCurrent(key))
+							if (key === opts?.default && state.pending) state.pending.defaultButton = child
+						}
 					}
 					return rendered
 				},
@@ -191,6 +223,40 @@ function renderButtons<Buttons extends Record<string, UIContent | DialogButton>>
 		}) satisfies JSX.Element
 		return button as JSX.Element
 	})
+}
+
+// Determine the first enabled button key for Enter fallback
+function firstEnabledButtonKey<Buttons extends Record<string, UIContent | DialogButton>>(
+	opts: DialogOptions<Buttons>,
+): PropertyKey | undefined {
+	const entries = opts.buttons
+		? Object.entries(opts.buttons)
+		: ([['ok', okButton]] satisfies [string, DialogButton][])
+	for (let [key, spec] of entries) {
+		if (typeof spec === 'string') return key
+		if (isElement(spec)) return key
+		if (!spec.disabled) return key
+	}
+	return undefined
+}
+
+export async function confirm(params: {
+	title?: UIContent
+	message?: UIContent
+	okText?: string
+	cancelText?: string
+	okVariant?: DialogVariant
+}): Promise<boolean> {
+	const res = await dialog({
+		title: params.title,
+		message: params.message,
+		buttons: {
+			cancel: params.cancelText ?? 'Cancel',
+			ok: { text: params.okText ?? 'Ok', variant: params.okVariant ?? 'primary' },
+		},
+		default: 'ok',
+	})
+	return res === 'ok'
 }
 
 // Optional width helpers (Pico handles spacing/looks)

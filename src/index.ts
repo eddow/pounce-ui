@@ -10,7 +10,7 @@ export type {
 	DialogVariant,
 	UIContent,
 } from './components/dialog'
-export { dialog } from './components/dialog'
+export { confirm, dialog } from './components/dialog'
 export type { Variant } from './components/variants'
 export { variantClass } from './components/variants'
 export type { IconProps } from './icon'

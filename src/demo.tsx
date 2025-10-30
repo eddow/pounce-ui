@@ -33,6 +33,7 @@ const App = () => (
 							title: 'Confirm action',
 							message: 'Are you sure you want to proceed? This action cannot be undone.',
 							default: 'proceed',
+							stamp: 'mdi:alert',
 							buttons: {
 								cancel: 'Cancel',
 								proceed: { text: 'Yes, proceed', variant: 'danger' },

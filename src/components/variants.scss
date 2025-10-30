@@ -77,3 +77,25 @@ footer > .pp-actions[role='group'] > * {
 }
 
 
+// Dialog body layout with optional left-side stamp
+.pp-dialog-article .pp-body {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 1rem;
+	align-items: start;
+}
+.pp-dialog-article .pp-body .pp-stamp {
+	width: 4rem;
+	height: 4rem;
+	border-radius: .5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--pico-muted-border-color, #e5e7eb);
+}
+.pp-dialog-article .pp-body .pp-stamp .iconify {
+	width: 2.25rem;
+	height: 2.25rem;
+}
+.pp-dialog-article .pp-body { min-width: 0; }
+
