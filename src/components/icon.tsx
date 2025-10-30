@@ -1,6 +1,8 @@
 import '@picocss/pico/css/pico.min.css'
+import './icon.scss'
 import Iconify from '@iconify/iconify'
 import { addBatchCleanup } from 'mutts/src'
+import { defaulted } from 'pounce-ts'
 
 export type IconProps = {
 	/** Icon name in the form "prefix:name", e.g. "mdi:home" */
@@ -23,23 +25,21 @@ function iconifyScan() {
  * Simple Icon component using Iconify vanilla runtime.
  * Loads any icon by name at runtime without pre-registering or listing them.
  */
-export const Icon = ({ name, size = '1em', inline = true, title, className, style }: IconProps) => {
+export const Icon = (props: IconProps) => {
 	// Iconify vanilla scans elements with class "iconify"; we provide data attributes.
 	// Use a unique key to encourage re-scan when name changes.
 	// Add a batch cleanup to add the microtask once at the end of the batch even if several icons are rendered.
 	addBatchCleanup(iconifyScan)
 
-	const dataInline = inline ? 'true' : 'false'
-	const styleAttr = style ? `${style};` : ''
-	const finalStyle = `width:${size};height:${size};${styleAttr}`
+	const p = defaulted(props, { size: '1em', inline: true })
 
 	return (
 		<span
-			class={`iconify${className ? ` ${className}` : ''}`}
-			data-icon={name}
-			data-inline={dataInline}
-			title={title}
-			style={finalStyle}
+			class={`iconify${p.className ? ` ${p.className}` : ''}`}
+			data-icon={p.name}
+			data-inline={String(Boolean(p.inline))}
+			title={p.title}
+			style={[{width: p.size, height: p.size}, p.style]}
 		/>
 	)
 }

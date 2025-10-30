@@ -2,7 +2,8 @@ import '@picocss/pico/css/pico.min.css'
 import { bindApp } from 'pounce-ts'
 import './components/variants.scss'
 import { dialog } from './components/dialog'
-import { Icon } from './icon'
+import { Icon } from './components/icon'
+import { toast, toastDanger, toastInfo, toastSuccess, toastWarning } from './components/toast'
 
 const App = () => (
 	<>
@@ -48,6 +49,25 @@ const App = () => (
 					}}
 				>
 					Confirm
+				</button>
+			</div>
+		</section>
+
+		<section>
+			<h2>Toasts</h2>
+			<div role="group">
+				<button onClick={() => toast('Saved!')}>Toast</button>
+				<button class="success" onClick={() => toastSuccess('Profile updated')}>
+					Success
+				</button>
+				<button class="warning" onClick={() => toastWarning('Network is slow')}>
+					Warning
+				</button>
+				<button class="danger" onClick={() => toastDanger('Failed to save')}>
+					Danger
+				</button>
+				<button class="contrast" onClick={() => toastInfo('Heads up: maintenance at 2am')}>
+					Info
 				</button>
 			</div>
 		</section>

@@ -1,11 +1,4 @@
-export type Variant =
-	| 'neutral'
-	| 'primary'
-	| 'secondary'
-	| 'contrast'
-	| 'danger'
-	| 'success'
-	| 'warning'
+export type Variant = 'primary' | 'secondary' | 'contrast' | 'danger' | 'success' | 'warning'
 
 // Note: returning an empty string for 'primary' relies on Pico's default button styles.
 export function variantClass(variant: Variant | undefined): string {

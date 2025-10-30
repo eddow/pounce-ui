@@ -89,4 +89,4 @@ Override styles via `src/components/variants.scss`.
 - `closeOnBackdrop?: boolean` (default: true)
 - `closeOnEscape?: boolean` (default: true)
 - `ariaLabel?: string` (used when no title)
-- `className?: string`
+- `class?: string`

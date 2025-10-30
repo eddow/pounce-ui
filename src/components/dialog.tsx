@@ -1,6 +1,7 @@
 import { reactive } from 'mutts/src'
 import { bindApp, defaulted, isElement } from 'pounce-ts'
-import { Icon } from '../icon'
+import { Icon } from './icon'
+import './dialog.scss'
 import { Variant, variantClass } from './variants'
 
 export type UIContent = string | JSX.Element
@@ -25,7 +26,7 @@ export interface DialogOptions<Buttons extends Record<string, UIContent | Dialog
 	closeOnBackdrop?: boolean
 	closeOnEscape?: boolean
 	ariaLabel?: string
-	className?: string
+	class?: string
 }
 
 type PendingDialog = {
@@ -114,7 +115,7 @@ const Host = () => {
 			open={state.open}
 			onClick={onBackdropClick}
 			onKeydown={onDialogKeyDown}
-			class={[sizeClass, opts?.className]}
+			class={[sizeClass, opts?.class]}
 			aria-modal={true}
 			aria-labelledby={hasTitle ? titleId : undefined}
 			aria-label={!hasTitle ? opts?.ariaLabel : undefined}
@@ -259,11 +260,4 @@ export async function confirm(params: {
 	return res === 'ok'
 }
 
-// Optional width helpers (Pico handles spacing/looks)
-const style = document.createElement('style')
-style.textContent = `
-.pp-size-sm { width: 22rem; }
-.pp-size-md { width: 32rem; }
-.pp-size-lg { width: 48rem; }
-`
-document.head.appendChild(style)
+// Width helpers are defined in dialog.scss

@@ -29,4 +29,4 @@ Notes:
 - Unsupported values map to `'secondary'`.
 
 Available variants:
-- `neutral`, `primary`, `secondary`, `contrast`, `danger`, `success`, `warning`
+- `primary`, `secondary`, `contrast`, `danger`, `success`, `warning`

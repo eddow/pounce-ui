@@ -1,0 +1,36 @@
+// Dialog sizes
+.pp-size-sm { width: 22rem; }
+.pp-size-md { width: 32rem; }
+.pp-size-lg { width: 48rem; }
+
+// Dialog actions: align to the right, keep grouping look without full-width stretch
+footer > .pp-actions[role='group'] {
+	display: flex;
+	justify-content: flex-end;
+	width: 100%;
+}
+footer > .pp-actions[role='group'] > * {
+	flex: 0 0 auto; // prevent full-width stretch for buttons in group
+}
+
+// Dialog body layout with optional left-side stamp
+.pp-dialog-article .pp-body {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 1rem;
+	align-items: start;
+}
+.pp-dialog-article .pp-body .pp-stamp {
+	width: 4rem;
+	height: 4rem;
+	border-radius: .5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--pico-muted-border-color, #e5e7eb);
+}
+.pp-dialog-article .pp-body .pp-stamp .iconify {
+	width: 2.25rem;
+	height: 2.25rem;
+}
+.pp-dialog-article .pp-body { min-width: 0; }
