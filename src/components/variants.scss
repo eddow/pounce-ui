@@ -1,0 +1,79 @@
+// App-wide variant tokens
+:root {
+	--pp-success: #22c55e; // green-500
+	--pp-success-contrast: #052e13;
+	--pp-warning: #f59e0b; // amber-500
+	--pp-warning-contrast: #3a2500;
+	--pp-danger: #ef4444; // red-500
+	--pp-danger-contrast: #3a0c0c;
+}
+
+// Buttons and submits
+button.success,
+input[type='submit'].success,
+.success.button,
+.success[role='button'] {
+	background-color: var(--pp-success);
+	border-color: var(--pp-success);
+	color: white;
+}
+
+button.warning,
+input[type='submit'].warning,
+.warning.button,
+.warning[role='button'] {
+	background-color: var(--pp-warning);
+	border-color: var(--pp-warning);
+	color: black;
+}
+
+button.danger,
+input[type='submit'].danger,
+.danger.button,
+.danger[role='button'] {
+	background-color: var(--pp-danger);
+	border-color: var(--pp-danger);
+	color: white;
+}
+
+// Hover/active states to align with Pico feel
+button.success:hover,
+input[type='submit'].success:hover {
+	filter: brightness(0.95);
+}
+button.warning:hover,
+input[type='submit'].warning:hover {
+	filter: brightness(0.95);
+}
+button.danger:hover,
+input[type='submit'].danger:hover {
+	filter: brightness(0.95);
+}
+
+// Dialog actions: align to the right, keep grouping look without full-width stretch
+footer > .pp-actions[role='group'] {
+	display: flex;
+	justify-content: flex-end;
+	width: 100%;
+}
+footer > .pp-actions[role='group'] > * {
+	flex: 0 0 auto; // prevent full-width stretching for buttons in group
+}
+
+// Small icon-only button (e.g., close in header)
+.pp-icon-btn {
+	--pp-icon-btn-size: 2rem;
+	min-width: 0;
+	width: var(--pp-icon-btn-size);
+	height: var(--pp-icon-btn-size);
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+.pp-icon-btn .iconify {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+
+
