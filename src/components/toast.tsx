@@ -1,5 +1,5 @@
 import { computed, reactive } from 'mutts/src'
-import { bindApp, defaulted, isElement } from 'pounce-ts'
+import { array, bindApp, defaulted, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import './toast.scss'
 import type { Variant } from './variants'
@@ -16,15 +16,50 @@ export interface ToastOptions {
 }
 
 type ToastItem = {
-	id: number
 	options: Required<Omit<ToastOptions, 'class'>> & { class?: string }
 	closing: boolean
+	close(): void
 }
 
 export type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
-export const toastConfig: { defaultDurationMs: number; position: ToastPosition } = {
+export const toastConfig: {
+	defaultDurationMs: number
+	position: ToastPosition
+	template: (item: ToastItem) => JSX.Element
+	variantIcon: Record<Variant, string>
+} = {
 	defaultDurationMs: 3500,
 	position: 'bottom-right',
+	template: (item: ToastItem) => (
+		<>
+			<aside class="pp-toast-icon" aria-hidden="true">
+				<Icon name={toastConfig.variantIcon[item.options.variant]} size="20px" />
+			</aside>
+			<div class="pp-toast-content">
+				{typeof item.options.content === 'string' ? (
+					<p>{item.options.content}</p>
+				) : (
+					item.options.content
+				)}
+			</div>
+			<button
+				if={item.options.dismissible}
+				class="pp-icon-btn secondary"
+				aria-label="Dismiss"
+				onClick={() => closeToast(item)}
+			>
+				<Icon name="mdi:close" />
+			</button>
+		</>
+	),
+	variantIcon: {
+		primary: 'mdi:information',
+		secondary: 'mdi:information',
+		contrast: 'mdi:information',
+		success: 'mdi:check-circle',
+		warning: 'mdi:alert',
+		danger: 'mdi:alert-octagon',
+	},
 }
 
 const state = reactive({
@@ -32,7 +67,6 @@ const state = reactive({
 })
 
 let hostMounted = false
-let idSeq = 0
 
 function ensureHostMounted() {
 	if (hostMounted) return
@@ -42,18 +76,12 @@ function ensureHostMounted() {
 	bindApp(<Host />, host)
 }
 
-function removeToast(id: number) {
-	state.items = state.items.filter((t) => t.id !== id)
-}
-
-function closeToast(id: number) {
-	const t = state.items.find((x) => x.id === id)
-	if (!t || t.closing) return
-	t.closing = true
+function closeToast(item: ToastItem) {
+	if (item.closing) return
+	item.closing = true
 	// allow CSS closing animation
-	setTimeout(() => removeToast(id), 160)
+	setTimeout(() => array.remove(state.items, item), 160)
 }
-
 
 const Host = () => (
 	<div class={[`pp-toasts`, toastConfig.position]} aria-live="polite" aria-atomic="false">
@@ -63,15 +91,6 @@ const Host = () => (
 	</div>
 )
 
-const variantIcon: Record<Variant, string> = {
-    primary: 'mdi:information',
-    secondary: 'mdi:information',
-    contrast: 'mdi:information',
-    success: 'mdi:check-circle',
-    warning: 'mdi:alert',
-    danger: 'mdi:alert-octagon',
-}
-
 const ToastItemView = ({ item }: { item: ToastItem }) => {
 	let remaining = item.options.durationMs
 	let timer: number | undefined
@@ -80,7 +99,7 @@ const ToastItemView = ({ item }: { item: ToastItem }) => {
 	const startTimer = () => {
 		if (remaining <= 0 || item.options.durationMs <= 0) return
 		lastStart = performance.now()
-		timer = window.setTimeout(() => closeToast(item.id), remaining)
+		timer = window.setTimeout(() => closeToast(item), remaining)
 	}
 	const pauseTimer = () => {
 		if (timer !== undefined) {
@@ -92,17 +111,17 @@ const ToastItemView = ({ item }: { item: ToastItem }) => {
 
 	queueMicrotask(() => startTimer())
 
-	const role = item.options.ariaRole ?? (item.options.variant === 'danger' ? 'alert' : 'status')
-	const iconName = variantIcon[item.options.variant]
+	const role = () =>
+		item.options.ariaRole ?? (item.options.variant === 'danger' ? 'alert' : 'status')
 
 	return (
 		<div
-			role={role}
+			role={role()}
 			class={[
 				'pp-toast',
 				item.options.class,
 				item.closing ? 'pp-toast-closing' : undefined,
-				item.options.variant && item.options.variant !== 'primary' ? item.options.variant : undefined,
+				item.options.variant,
 			]}
 			onMouseenter={() => {
 				pauseTimer()
@@ -111,47 +130,39 @@ const ToastItemView = ({ item }: { item: ToastItem }) => {
 				startTimer()
 			}}
 		>
-			<aside class="pp-toast-icon" aria-hidden="true">
-				<Icon name={iconName} size="20px" />
-			</aside>
-			<div class="pp-toast-content">
-				{typeof item.options.content === 'string' ? <p>{item.options.content}</p> : item.options.content}
-			</div>
-			{item.options.dismissible ? (
-				<button class="pp-icon-btn secondary" aria-label="Dismiss" onClick={() => closeToast(item.id)}>
-					<Icon name="mdi:close" />
-				</button>
-			) : undefined}
+			{toastConfig.template(item)}
 		</div>
 	)
 }
 
-export function toast(contentOrOptions: ToastContent | ToastOptions): number {
-	ensureHostMounted()
-	const options: ToastOptions = isElement(contentOrOptions) || typeof contentOrOptions === 'string'
-		? { content: contentOrOptions }
-		: contentOrOptions
-	const item: ToastItem = {
-		id: ++idSeq,
-		options: defaulted(options, {
-			variant: 'primary',
-			durationMs: toastConfig.defaultDurationMs,
-			dismissible: true,
-			ariaRole: 'status',
-		}),
-		closing: false,
+export const toast = Object.assign(
+	(contentOrOptions: ToastContent | ToastOptions): ToastItem => {
+		ensureHostMounted()
+		const options: ToastOptions =
+			isElement(contentOrOptions) || typeof contentOrOptions === 'string'
+				? { content: contentOrOptions }
+				: contentOrOptions
+		const item: ToastItem = {
+			options: defaulted(options, {
+				variant: 'secondary',
+				durationMs: toastConfig.defaultDurationMs,
+				dismissible: true,
+				ariaRole: 'status',
+			}),
+			closing: false,
+			close: () => closeToast(item),
+		}
+		state.items.push(item)
+		return item
+	},
+	{
+		success: (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
+			toast({ content, variant: 'success', ...opts }),
+		warning: (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
+			toast({ content, variant: 'warning', ...opts }),
+		danger: (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
+			toast({ content, variant: 'danger', ...opts }),
+		info: (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
+			toast({ content, variant: 'primary', ...opts }),
 	}
-	state.items = [...state.items, item]
-	return item.id
-}
-
-export const toastSuccess = (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
-	toast({ content, variant: 'success', ...opts })
-export const toastWarning = (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
-	toast({ content, variant: 'warning', ...opts })
-export const toastDanger = (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
-	toast({ content, variant: 'danger', ...opts })
-export const toastInfo = (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
-	toast({ content, variant: 'primary', ...opts })
-
-export const dismissToast = (id: number) => closeToast(id)
+)

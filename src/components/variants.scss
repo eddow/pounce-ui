@@ -1,10 +1,19 @@
 // App-wide variant tokens
 :root {
 	--pp-success: #22c55e; // green-500
+	--pp-success-background: var(--pp-success);
+	--pp-success-border: var(--pp-success-background);
+	--pp-success-inverse: #ffffff;
 	--pp-success-contrast: #052e13;
 	--pp-warning: #f59e0b; // amber-500
+	--pp-warning-background: var(--pp-warning);
+	--pp-warning-border: var(--pp-warning-background);
+	--pp-warning-inverse: #000000;
 	--pp-warning-contrast: #3a2500;
 	--pp-danger: #ef4444; // red-500
+	--pp-danger-background: var(--pp-danger);
+	--pp-danger-border: var(--pp-danger-background);
+	--pp-danger-inverse: #ffffff;
 	--pp-danger-contrast: #3a0c0c;
 }
 
@@ -13,27 +22,27 @@ button.success,
 input[type='submit'].success,
 .success.button,
 .success[role='button'] {
-	background-color: var(--pp-success);
-	border-color: var(--pp-success);
-	color: white;
+	background-color: var(--pp-success-background);
+	border-color: var(--pp-success-border);
+	color: var(--pp-success-inverse);
 }
 
 button.warning,
 input[type='submit'].warning,
 .warning.button,
 .warning[role='button'] {
-	background-color: var(--pp-warning);
-	border-color: var(--pp-warning);
-	color: black;
+	background-color: var(--pp-warning-background);
+	border-color: var(--pp-warning-border);
+	color: var(--pp-warning-inverse);
 }
 
 button.danger,
 input[type='submit'].danger,
 .danger.button,
 .danger[role='button'] {
-	background-color: var(--pp-danger);
-	border-color: var(--pp-danger);
-	color: white;
+	background-color: var(--pp-danger-background);
+	border-color: var(--pp-danger-border);
+	color: var(--pp-danger-inverse);
 }
 
 // Hover/active states to align with Pico feel

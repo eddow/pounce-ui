@@ -25,7 +25,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"../pounce/src/types/**/*.d.ts"
+		"../pounce/src/types/**/*.d.ts",
+		"../mutts/src/**/*.ts"
 	],
 	"references": [{ "path": "./tsconfig.node.json" }]
 }

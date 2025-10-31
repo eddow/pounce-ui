@@ -1,17 +1,15 @@
 import '@picocss/pico/css/pico.min.css'
-import { effect, reactive } from 'mutts/src'
+import { effect } from 'mutts/src'
 import { bindApp } from 'pounce-ts'
+import { stored } from './lib/storage'
 
 const MenuBar = () => {
-	const saved = localStorage.getItem('pp-theme')
-	const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false
-	const state = reactive({
-		mode: saved || (prefersDark ? 'dark' : 'light'),
+	const state = stored({
+		mode: window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
 	})
 
-	effect(({ init }) => {
+	effect(() => {
 		document.documentElement.dataset.theme = state.mode
-		if (!init) localStorage.setItem('pp-theme', state.mode)
 	})
 
 	return (

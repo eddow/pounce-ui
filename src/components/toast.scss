@@ -40,9 +40,16 @@
 }
 
 // Variant backgrounds (plain style)
-.pp-toast.success { background-color: var(--pp-success); border-color: var(--pp-success); color: white; }
-.pp-toast.warning { background-color: var(--pp-warning); border-color: var(--pp-warning); color: black; }
-.pp-toast.danger { background-color: var(--pp-danger); border-color: var(--pp-danger); color: white; }
+.pp-toast.success { background-color: var(--pp-success-background); border-color: var(--pp-success-border); color: var(--pp-success-inverse); }
+.pp-toast.warning { background-color: var(--pp-warning-background); border-color: var(--pp-warning-border); color: var(--pp-warning-inverse); }
+.pp-toast.danger { background-color: var(--pp-danger-background); border-color: var(--pp-danger-border); color: var(--pp-danger-inverse); }
+.pp-toast.primary {
+	background-color: var(--pico-primary-background);
+	border-color: var(--pico-primary-border);
+	color: var(--pico-primary-inverse);
+}
+.pp-toast.primary .pp-toast-icon { color: var(--pico-primary-inverse); }
+.pp-toast.primary .pp-icon-btn { filter: brightness(0.95); }
 .pp-toast.success .pp-icon-btn,
 .pp-toast.warning .pp-icon-btn,
 .pp-toast.danger .pp-icon-btn { filter: brightness(0.95); }

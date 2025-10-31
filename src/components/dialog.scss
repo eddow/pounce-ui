@@ -12,6 +12,18 @@ footer > .pp-actions[role='group'] {
 footer > .pp-actions[role='group'] > * {
 	flex: 0 0 auto; // prevent full-width stretch for buttons in group
 }
+footer > .pp-actions[role='group'] button {
+	display: inline-flex;
+	align-items: center;
+	gap: .5rem;
+}
+footer > .pp-actions[role='group'] button .pp-button-icon {
+	display: inline-flex;
+	align-items: center;
+}
+footer > .pp-actions[role='group'] button .pp-button-label {
+	display: inline-flex;
+}
 
 // Dialog body layout with optional left-side stamp
 .pp-dialog-article .pp-body {

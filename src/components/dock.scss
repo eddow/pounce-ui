@@ -1,0 +1,117 @@
+.pounce-dock-layout {
+	position: relative;
+	display: grid;
+	grid-template-areas:
+		"top top top"
+		"left content right"
+		"bottom bottom bottom";
+	grid-template-columns: auto 1fr auto;
+	grid-template-rows: auto 1fr auto;
+	min-height: 400px;
+}
+
+.pounce-dock-zone {
+	display: flex;
+	gap: 0.25rem;
+	padding: 0.25rem;
+	background: var(--pounce-dock-bg, transparent);
+	position: relative;
+}
+
+.pounce-dock-zone-hovered {
+	background: rgba(96,165,250,0.08);
+	outline: 1px dashed rgba(96,165,250,0.4);
+	outline-offset: -2px;
+}
+.pounce-insert-marker {
+	width: 2px;
+	height: auto;
+	align-self: stretch;
+	background: var(--pounce-insert, #60a5fa);
+	opacity: 0.9;
+}
+
+.pounce-vertical .pounce-insert-marker {
+	width: auto;
+	height: 2px;
+}
+
+.pounce-dock-zone-top { grid-area: top; flex-direction: row; align-items: stretch; }
+.pounce-dock-zone-right { grid-area: right; flex-direction: column; align-items: stretch; }
+.pounce-dock-zone-bottom { grid-area: bottom; flex-direction: row; align-items: stretch; }
+.pounce-dock-zone-left { grid-area: left; flex-direction: column; align-items: stretch; }
+
+.pounce-dock-content { grid-area: content; min-height: 200px; }
+
+.pounce-toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	border: 1px solid var(--pounce-border, rgba(0,0,0,0.1));
+	border-radius: 6px;
+	background: var(--pounce-surface, #111827);
+	box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+	min-width: 220px;
+	min-height: 36px;
+	padding: 0.25rem 0.5rem;
+	contain: layout;
+}
+
+/* Ensure single-row layout: children don't expand full width */
+.pounce-toolbar > * { flex: 0 0 auto; }
+
+.pounce-toolbar.pounce-vertical { min-width: 48px; }
+
+.pounce-toolbar-header { display: none; }
+
+.pounce-toolbar-title { font-size: 0.85rem; opacity: 0.9; }
+
+.pounce-toolbar-collapse { margin-left: auto; }
+
+.pounce-toolbar-grip {
+	font-size: 14px;
+	line-height: 1;
+	user-select: none;
+	cursor: grab;
+	opacity: 0.6;
+}
+
+
+
+.pounce-toolbar-items {
+	display: flex;
+	flex: 1 1 auto;
+	flex-wrap: nowrap;
+	gap: 0.25rem;
+}
+
+.pounce-horizontal .pounce-toolbar-items { flex-direction: row; }
+.pounce-vertical .pounce-toolbar-items { flex-direction: column; }
+
+.pounce-toolbar-item {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	padding: 0.25rem 0.5rem;
+	border-radius: 6px;
+	border: 1px solid rgba(255,255,255,0.08);
+	background: transparent;
+	color: inherit;
+	box-shadow: none;
+}
+
+.pounce-toolbar-item:hover {
+	background: rgba(255,255,255,0.06);
+	border-color: rgba(255,255,255,0.15);
+}
+
+/* Hover expand animation (optional subtle) */
+[data-collapsed="true"] .pounce-toolbar-items { opacity: 0; transition: opacity 120ms ease; }
+[data-collapsed="true"]:hover .pounce-toolbar-items { opacity: 1; }
+
+/* Prevent Pico role=group from stretching buttons inside toolbars */
+.pounce-toolbar-items [role="group"] > * { flex: 0 0 auto; }
+.pounce-toolbar-items button { flex: 0 0 auto; }
+
+

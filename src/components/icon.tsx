@@ -39,7 +39,7 @@ export const Icon = (props: IconProps) => {
 			data-icon={p.name}
 			data-inline={String(Boolean(p.inline))}
 			title={p.title}
-			style={[{width: p.size, height: p.size}, p.style]}
+			style={[{ width: p.size, height: p.size }, p.style]}
 		/>
 	)
 }

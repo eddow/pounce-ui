@@ -11,7 +11,9 @@
 		"build": "tsc && node --loader ts-node/esm ./node_modules/vite/bin/vite.js build",
 		"preview": "node --loader ts-node/esm ./node_modules/vite/bin/vite.js preview",
 		"type-check": "tsc --noEmit",
-		"lint": "biome check ."
+		"lint": "biome check .",
+		"test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
+		"test:e2e": "playwright test"
 	},
 	"license": "MIT",
 	"devDependencies": {
@@ -23,9 +25,13 @@
 		"@babel/preset-react": "^7.27.1",
 		"@babel/preset-typescript": "^7.27.1",
 		"@biomejs/biome": "^2.2.7",
+		"@playwright/test": "^1.56.1",
 		"@types/babel__core": "^7.20.5",
+		"@types/jest": "^30.0.0",
 		"@vitejs/plugin-legacy": "^7.2.1",
+		"jest": "^30.2.0",
 		"sass": "^1.93.2",
+		"ts-jest": "^29.4.5",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.9.3",
 		"vite": "^7.1.11",

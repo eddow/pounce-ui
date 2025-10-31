@@ -5,13 +5,13 @@ import './dialog.scss'
 import { Variant, variantClass } from './variants'
 
 export type UIContent = string | JSX.Element
-export type DialogVariant = Variant
 export type DialogSize = 'sm' | 'md' | 'lg'
 
 export interface DialogButton {
 	text: string
-	variant?: DialogVariant
+	variant?: Variant
 	disabled?: boolean
+	icon?: string | JSX.Element
 }
 
 export interface DialogOptions<Buttons extends Record<string, UIContent | DialogButton>> {
@@ -148,8 +148,8 @@ const Host = () => {
 				<footer>
 					<div role="group" class="pp-actions">
 						{renderButtons(opts)}
-						</div>
-					</footer>
+					</div>
+				</footer>
 			</article>
 		</dialog>
 	) : null
@@ -199,13 +199,26 @@ function renderButtons<Buttons extends Record<string, UIContent | DialogButton>>
 		: ([['ok', okButton]] satisfies [string, DialogButton][])
 	return entries.map(([key, spec]) => {
 		if (typeof spec === 'string') spec = { text: spec } satisfies DialogButton
-		let button = isElement(spec) ? (
-			spec
-		) : (
-			<button type="button" class={variantClass(spec.variant ?? 'primary')} disabled={spec.disabled}>
-				{spec.text}
-			</button>
-		)
+		let button: JSX.Element
+		if (isElement(spec)) {
+			button = spec
+		} else {
+			const icon = spec.icon ? (
+				<span class="pp-button-icon" aria-hidden={typeof spec.icon === 'string' ? true : undefined}>
+					{typeof spec.icon === 'string' ? <Icon name={spec.icon} /> : spec.icon}
+				</span>
+			) : undefined
+			button = (
+				<button
+					type="button"
+					class={variantClass(spec.variant ?? 'primary')}
+					disabled={spec.disabled}
+				>
+					{icon}
+					<span class="pp-button-label">{spec.text}</span>
+				</button>
+			)
+		}
 		const originalRender = button.render
 		button = Object.create(button, {
 			render: {
@@ -228,12 +241,12 @@ function renderButtons<Buttons extends Record<string, UIContent | DialogButton>>
 
 // Determine the first enabled button key for Enter fallback
 function firstEnabledButtonKey<Buttons extends Record<string, UIContent | DialogButton>>(
-	opts: DialogOptions<Buttons>,
+	opts: DialogOptions<Buttons>
 ): PropertyKey | undefined {
 	const entries = opts.buttons
 		? Object.entries(opts.buttons)
 		: ([['ok', okButton]] satisfies [string, DialogButton][])
-	for (let [key, spec] of entries) {
+	for (const [key, spec] of entries) {
 		if (typeof spec === 'string') return key
 		if (isElement(spec)) return key
 		if (!spec.disabled) return key
@@ -246,7 +259,7 @@ export async function confirm(params: {
 	message?: UIContent
 	okText?: string
 	cancelText?: string
-	okVariant?: DialogVariant
+	okVariant?: Variant
 }): Promise<boolean> {
 	const res = await dialog({
 		title: params.title,
