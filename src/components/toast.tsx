@@ -1,4 +1,4 @@
-import { computed, reactive } from 'mutts/src'
+import { reactive } from 'mutts/src'
 import { array, bindApp, defaulted, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import './toast.scss'
@@ -85,9 +85,7 @@ function closeToast(item: ToastItem) {
 
 const Host = () => (
 	<div class={[`pp-toasts`, toastConfig.position]} aria-live="polite" aria-atomic="false">
-		{computed.memo(state.items, (t) => (
-			<ToastItemView item={t} />
-		))}
+		<For each={state.items}>{(t) => <ToastItemView item={t} />}</For>
 	</div>
 )
 
@@ -147,7 +145,6 @@ export const toast = Object.assign(
 				variant: 'secondary',
 				durationMs: toastConfig.defaultDurationMs,
 				dismissible: true,
-				ariaRole: 'status',
 			}),
 			closing: false,
 			close: () => closeToast(item),

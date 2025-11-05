@@ -1,41 +1,18 @@
 import '@picocss/pico/css/pico.min.css'
 import { bindApp } from 'pounce-ts'
 import './components/variants.scss'
+import { effect } from 'mutts/src'
 import { dialog } from './components/dialog'
-import { DockLayout, Toolbar, ToolbarItem } from './components/dock'
 import { Icon } from './components/icon'
-import { toast } from './components/toast'
-import { A, Router, type RouteWildcard } from './lib/router'
+import { toast, toastConfig } from './components/toast'
 import { browser } from './lib/browser'
+import { A, Router, type RouteWildcard } from './lib/router'
 
-const DockableToolbarsSection = () => (
-	<section>
-		<h2>Dockable toolbars</h2>
-		<DockLayout
-			initialLayout={[
-				{ id: 'tb-main', zone: 'top', index: 0 },
-				{ id: 'tb-side', zone: 'left', index: 0 },
-			]}
-		>
-			<Toolbar id="tb-main" title="Main">
-				<ToolbarItem title="New" onSelect={() => toast('New')}>
-					New
-				</ToolbarItem>
-				<ToolbarItem title="Open" onSelect={() => toast('Open')}>
-					Open
-				</ToolbarItem>
-				<ToolbarItem title="Save" onSelect={() => toast('Save')}>
-					Save
-				</ToolbarItem>
-			</Toolbar>
-			<Toolbar id="tb-side" title="Tools">
-				<ToolbarItem title="Select">Select</ToolbarItem>
-				<ToolbarItem title="Move">Move</ToolbarItem>
-				<ToolbarItem title="Draw">Draw</ToolbarItem>
-			</Toolbar>
-		</DockLayout>
-	</section>
-)
+const defaultToastDuration = toastConfig.defaultDurationMs
+
+effect(() => {
+	toastConfig.defaultDurationMs = browser.url.hash === '#playwright' ? 50 : defaultToastDuration
+})
 
 const IconsSection = () => (
 	<section>
@@ -138,7 +115,6 @@ type DemoSection = {
 
 const sections: DemoSection[] = [
 	{ path: '/', label: 'Overview', view: OverviewSection },
-	{ path: '/dock', label: 'Dockable toolbars', view: DockableToolbarsSection },
 	{ path: '/icons', label: 'Icons', view: IconsSection },
 	{ path: '/dialog', label: 'Dialogs', view: DialogSection },
 	{ path: '/toasts', label: 'Toasts', view: ToastsSection },
@@ -160,7 +136,7 @@ const DemoMenu = () => (
 			<For each={sections}>
 				{(section) => (
 					<li>
-						<A href={section.path}>{section.label}</A>
+						<A href={`${section.path}${browser.url.hash ?? ''}`}>{section.label}</A>
 					</li>
 				)}
 			</For>
@@ -175,7 +151,6 @@ const App = () => (
 			<DemoMenu />
 		</header>
 		<main>
-			{browser.url.pathname}
 			<Router routes={sections} notFound={renderNotFound} />
 		</main>
 	</div>

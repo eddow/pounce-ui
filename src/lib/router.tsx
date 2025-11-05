@@ -1,4 +1,4 @@
-import { effect, reactive, unreactive } from 'mutts/src'
+import { cleanedBy, effect, reactive, unreactive } from 'mutts/src'
 import { copyObject, defaulted } from 'pounce-ts'
 import { browser } from './browser'
 
@@ -494,7 +494,7 @@ export const Router = <
 		}
 	}
 
-	effect(() => {
+	const cleanup = effect(() => {
 		const match = matcher(p.url)
 		if (match) {
 			if (oldMatch?.definition !== match.definition) {
@@ -508,7 +508,7 @@ export const Router = <
 		}
 	})
 
-	return <>{result}</>
+	return <>{cleanedBy(result, cleanup)}</>
 }
 
 export function A(props: JSX.IntrinsicElements['a']) {

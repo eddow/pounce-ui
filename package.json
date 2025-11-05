@@ -1,7 +1,7 @@
 {
 	"name": "pounce-ui",
 	"version": "0.1.0",
-	"description": "Custom elements built with pounce, pico.css, dockview and iconify",
+	"description": "Custom elements built with pounce, pico.css and iconify",
 	"type": "module",
 	"main": "dist/index.js",
 	"module": "dist/index.js",

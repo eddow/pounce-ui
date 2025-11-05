@@ -12,11 +12,12 @@ export default {
 			},
 		],
 	},
+	transformIgnorePatterns: ['/node_modules/(?!mutts/)'],
 	extensionsToTreatAsEsm: ['.ts', '.tsx'],
 	moduleNameMapper: {
 		'^(\.{1,2}/.*)\.js$': '$1',
-		'^mutts/src$': '<rootDir>/../mutts/dist/index.esm.js',
-		'^mutts/src/(.*)$': '<rootDir>/../mutts/dist/$1.esm.js',
+		'^mutts/src$': '<rootDir>/node_modules/mutts/src/index.ts',
+		'^mutts/src/(.*)$': '<rootDir>/node_modules/mutts/src/$1.ts',
 	},
 	collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
 }
