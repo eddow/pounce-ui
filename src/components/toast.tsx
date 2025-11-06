@@ -1,5 +1,5 @@
 import { reactive } from 'mutts/src'
-import { array, bindApp, defaulted, isElement } from 'pounce-ts'
+import { array, bindApp, extended, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import './toast.scss'
 import type { Variant } from './variants'
@@ -16,7 +16,10 @@ export interface ToastOptions {
 }
 
 type ToastItem = {
-	options: Required<Omit<ToastOptions, 'class'>> & { class?: string }
+	options: Required<Omit<ToastOptions, 'class' | 'ariaRole'>> & {
+		class?: string
+		ariaRole?: 'status' | 'alert'
+	}
 	closing: boolean
 	close(): void
 }
@@ -141,7 +144,7 @@ export const toast = Object.assign(
 				? { content: contentOrOptions }
 				: contentOrOptions
 		const item: ToastItem = {
-			options: defaulted(options, {
+			options: extended(options, {
 				variant: 'secondary',
 				durationMs: toastConfig.defaultDurationMs,
 				dismissible: true,

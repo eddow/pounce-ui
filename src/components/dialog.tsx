@@ -1,5 +1,5 @@
 import { reactive } from 'mutts/src'
-import { bindApp, defaulted, isElement } from 'pounce-ts'
+import { bindApp, extended, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import './dialog.scss'
 import { Variant, variantClass } from './variants'
@@ -44,7 +44,7 @@ const state = reactive({
 })
 
 let hostMounted = false
-let dialogElement: HTMLElement | undefined
+let dialogElement: HTMLDialogElement | undefined
 function ensureHostMounted() {
 	if (hostMounted) return
 	hostMounted = true
@@ -111,7 +111,7 @@ const Host = () => {
 
 	return state.pending ? (
 		<dialog
-			this={dialogElement}
+			this={dialogElement as HTMLDialogElement}
 			open={state.open}
 			onClick={onBackdropClick}
 			onKeydown={onDialogKeyDown}
@@ -170,7 +170,7 @@ export function dialog<
 			: (options as DialogOptions<Buttons>)
 
 		state.pending = {
-			options: defaulted(normalized, {
+			options: extended(normalized, {
 				closeOnBackdrop: true,
 				closeOnEscape: true,
 			} as any) as DialogOptions<any>,

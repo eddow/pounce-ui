@@ -1,5 +1,5 @@
 import { cleanedBy, effect, reactive, unreactive } from 'mutts/src'
-import { copyObject, defaulted } from 'pounce-ts'
+import { copyObject, extended } from 'pounce-ts'
 import { browser } from './browser'
 
 export type RouteWildcard = string //`/${string}`
@@ -475,7 +475,7 @@ export const Router = <
 	props: RouterProps<Definition>,
 	scope: Record<PropertyKey, any>
 ) => {
-	const p = defaulted(props, {
+	const p = extended(props, {
 		get url() {
 			return browser.url.pathname
 		},
