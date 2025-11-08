@@ -8,7 +8,7 @@ import {
 	IContentRenderer,
 } from 'dockview-core'
 import { effect, reactive, ScopedCallback, unreactive, watch } from 'mutts/src'
-import { bindApp, decompose, extended } from 'pounce-ts'
+import { bindApp, compose, extend } from 'pounce-ts'
 
 // Scope passed to widgets always has api defined (set before widget is called)
 type DockviewScope = Record<string, any> & { api: DockviewApi }
@@ -64,18 +64,18 @@ export const Dockview = (
 		api?: DockviewApi
 		widgets: Record<string, DvWidget<any>>
 		tabs?: Record<string, DvWidget<any>>
-	} & JSX.BaseHTMLAttributes,
+	} & Omit<JSX.BaseHTMLAttributes, 'children'>,
 	scope: Record<string, any>
 ) => {
 	const links = new Map<string, { props?: any; scope: DockviewScope }>()
-	const htmlAttrs = decompose(props, ({ api, widgets, ...rest }) => rest)
+	const state = compose(props, ({ api, widgets, ...htmlAttrs }) => ({ htmlAttrs }))
 	const initDockview = (element: HTMLElement) => {
-		props.api = scope.api = unreactive(
+		state.api = scope.api = unreactive(
 			createDockview(element, {
 				createComponent(options: CreateComponentOptions) {
-					const panelLink = { scope: extended({}, scope as DockviewScope) }
+					const panelLink = { scope: extend({}, scope as DockviewScope) }
 					links.set(options.id, panelLink)
-					const widget = props.widgets[options.name]
+					const widget = state.widgets[options.name]
 					if (!widget) throw new Error(`Widget ${options.name} not found`)
 					return contentRenderer(widget, panelLink)
 				},
@@ -94,7 +94,7 @@ export const Dockview = (
 					const element = document.createElement('div')
 					element.style.height = '100%'
 					element.style.width = '100%'
-					const widget = props.tabs?.[options.name]
+					const widget = state.tabs?.[options.name]
 					if (!widget) return
 					const panelLink = links.get(options.id)!
 					let cleanup: ScopedCallback | undefined
@@ -116,5 +116,5 @@ export const Dockview = (
 			})
 		)
 	}
-	return <div {...htmlAttrs} use={initDockview}></div>
+	return <div {...state.htmlAttrs} use={initDockview}></div>
 }

@@ -2,7 +2,7 @@ import '@picocss/pico/css/pico.min.css'
 import './icon.scss'
 import Iconify from '@iconify/iconify'
 import { addBatchCleanup } from 'mutts/src'
-import { extended } from 'pounce-ts'
+import { compose } from 'pounce-ts'
 
 export type IconProps = {
 	/** Icon name in the form "prefix:name", e.g. "mdi:home" */
@@ -14,7 +14,7 @@ export type IconProps = {
 	/** Optional title for accessibility */
 	title?: string
 	/** Additional CSS classes */
-	className?: string
+	class?: string
 	/** Inline styles */
 	style?: string
 }
@@ -31,15 +31,15 @@ export const Icon = (props: IconProps) => {
 	// Add a batch cleanup to add the microtask once at the end of the batch even if several icons are rendered.
 	addBatchCleanup(iconifyScan)
 
-	const p = extended(props, { size: '1em', inline: true })
+	const state = compose({ size: '1em', inline: true }, props)
 
 	return (
 		<span
-			class={`iconify${p.className ? ` ${p.className}` : ''}`}
-			data-icon={p.name}
-			data-inline={String(Boolean(p.inline))}
-			title={p.title}
-			style={[{ width: p.size, height: p.size }, p.style]}
+			class={['iconify', state.class]}
+			data-icon={props.name}
+			data-inline={String(Boolean(props.inline))}
+			title={props.title}
+			style={[{ width: props.size, height: props.size }, props.style]}
 		/>
 	)
 }

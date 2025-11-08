@@ -1,37 +1,159 @@
+import { Alert } from '../components/alert'
+import { Button } from '../components/button'
 import { Icon } from '../components/icon'
+import { Container, Grid, Inline, Stack } from '../components/layout'
+import { Badge, Chip, Pill } from '../components/status'
+
+const surfaceStyle =
+	'background: var(--pico-muted-border-color, rgba(0,0,0,.08)); padding: 0.75rem; border-radius: var(--pico-border-radius);'
 
 export default () => (
-	<section>
-		<h2>Display</h2>
-		<h3>Icons</h3>
-		<div role="group" style="margin-bottom: 1rem;">
-			<Icon name="mdi:home" />
-			<Icon name="mdi:account" size="24px" />
-			<Icon name="mdi:github" size="24px" />
-		</div>
-		<h3>Buttons</h3>
-		<div role="group" style="margin-bottom: 1rem;">
-			<button aria-current="true">Active</button>
-			<button>Primary</button>
-			<button class="secondary">Secondary</button>
-			<button class="contrast">Contrast</button>
-			<button class="success">Success</button>
-			<button class="warning">Warning</button>
-			<button class="danger">Danger</button>
-		</div>
-		<h3>Iconed Buttons</h3>
-		<div role="group">
-			<button>
-				<Icon name="mdi:home" size="18px" /> Home
-			</button>
-			<button class="secondary">
-				<Icon name="mdi:account" size="18px" /> Account
-			</button>
-			<button class="contrast">
-				<Icon name="mdi:github" size="18px" /> GitHub
-			</button>
-		</div>
-	</section>
+	<Container tag="section">
+		<Stack gap="lg">
+			<header>
+				<h2>Display</h2>
+			</header>
+			<div>
+				<h3>Icons</h3>
+				<Inline gap="md">
+					<Icon name="mdi:home" />
+					<Icon name="mdi:account" size="24px" />
+					<Icon name="mdi:github" size="24px" />
+				</Inline>
+			</div>
+			<div>
+				<h3>Buttons</h3>
+				<Inline role="group">
+					<Button aria-current="true">Active</Button>
+					<Button>Primary</Button>
+					<Button variant="secondary">Secondary</Button>
+					<Button variant="contrast">Contrast</Button>
+					<Button variant="success">Success</Button>
+					<Button variant="warning">Warning</Button>
+					<Button variant="danger">Danger</Button>
+				</Inline>
+			</div>
+			<div>
+				<h3>Iconed Buttons</h3>
+				<Inline role="group">
+					<Button icon="mdi:home">Home</Button>
+					<Button variant="secondary" icon="mdi:account">
+						Account
+					</Button>
+					<Button variant="contrast" iconPosition="end" icon="mdi:github">
+						GitHub
+					</Button>
+				</Inline>
+			</div>
+			<div>
+				<h3>Badges</h3>
+				<Inline wrap gap="sm">
+					<Badge variant="primary">Primary</Badge>
+					<Badge variant="secondary" icon="mdi:information-outline">
+						Info
+					</Badge>
+					<Badge variant="success">Live</Badge>
+					<Badge variant="warning">Beta</Badge>
+					<Badge variant="danger">Error</Badge>
+					<Badge variant="contrast">Dark</Badge>
+				</Inline>
+			</div>
+			<div>
+				<h3>Chips</h3>
+				<Inline wrap gap="sm">
+					<Chip icon="mdi:tag" variant="secondary">
+						Label
+					</Chip>
+					<Chip icon="mdi:account" variant="success">
+						Assigned
+					</Chip>
+					<Chip icon="mdi:lightning-bolt" variant="warning" dismissible>
+						Fast track
+					</Chip>
+					<Chip variant="danger" dismissible>
+						Blocking
+					</Chip>
+				</Inline>
+			</div>
+			<div>
+				<h3>Pills</h3>
+				<Inline wrap gap="sm">
+					<Pill icon="mdi:calendar">Upcoming</Pill>
+					<Pill variant="success" icon="mdi:check">
+						Confirmed
+					</Pill>
+					<Pill variant="contrast" trailingIcon="mdi:chevron-right">
+						Navigate
+					</Pill>
+				</Inline>
+			</div>
+			<div>
+				<h3>Layout primitives</h3>
+				<Stack gap="xl">
+					<Stack style={surfaceStyle}>
+						<strong>Stack</strong>
+						<span>Vertical spacing with precise control.</span>
+						<span>Gap defaults to 1.5× Pico spacing.</span>
+					</Stack>
+					<Inline wrap gap="sm" style={surfaceStyle}>
+						<Button icon="mdi:alpha-a-circle">Alpha</Button>
+						<Button icon="mdi:alpha-b-circle">Bravo</Button>
+						<Button icon="mdi:alpha-c-circle">Charlie</Button>
+						<Button icon="mdi:alpha-d-circle">Delta</Button>
+						<Button icon="mdi:alpha-e-circle">Echo</Button>
+					</Inline>
+					<Grid minItemWidth="12rem" gap="sm">
+						<article style={surfaceStyle}>
+							<strong>Responsive cards</strong>
+							<p>Auto-fit to minimum width of 12rem.</p>
+						</article>
+						<article style={surfaceStyle}>
+							<strong>Custom columns</strong>
+							<p>Grid integrates Pico spacing tokens.</p>
+						</article>
+						<article style={surfaceStyle}>
+							<strong>Fluid layout</strong>
+							<p>Combine with Container to center content.</p>
+						</article>
+					</Grid>
+				</Stack>
+			</div>
+			<div>
+				<h3>Fluid container</h3>
+				<Container style={surfaceStyle}>
+					<Inline wrap gap="sm">
+						<span>Container without fluid width for media or dashboards.</span>
+						<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
+							Expand
+						</Button>
+					</Inline>
+				</Container>
+				<Container fluid style={surfaceStyle}>
+					<Inline wrap gap="sm">
+						<span>Container with fluid width for media or dashboards.</span>
+						<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
+							Expand
+						</Button>
+					</Inline>
+				</Container>
+			</div>
+			<div>
+				<h3>Alerts</h3>
+				<Stack gap="sm">
+					<Alert title="Heads up" variant="primary">
+						You can use alerts for inline messaging and inline callouts.
+					</Alert>
+					<Alert title="Deployment ready" variant="success" icon="mdi:rocket-launch">
+						All checks passed. Prepare to deploy when ready.
+					</Alert>
+					<Alert title="Action required" variant="warning" dismissible>
+						Update the configuration before continuing.
+					</Alert>
+					<Alert title="Critical issue" variant="danger" dismissible>
+						Service interruptions detected. Investigate immediately.
+					</Alert>
+				</Stack>
+			</div>
+		</Stack>
+	</Container>
 )
-
-

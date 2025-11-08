@@ -1,0 +1,120 @@
+.pp-badge,
+.pp-chip,
+.pp-pill {
+	--pp-token-bg: var(--pico-muted-border-color, rgba(0, 0, 0, 0.08));
+	--pp-token-color: var(--pico-color, inherit);
+	--pp-token-border: transparent;
+	display: inline-flex;
+	align-items: center;
+	gap: .35rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	text-decoration: none;
+}
+
+.pp-token-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.pp-token-label {
+	display: inline-flex;
+	align-items: center;
+}
+
+.pp-badge {
+	font-size: .7rem;
+	text-transform: uppercase;
+	letter-spacing: .05em;
+	padding: .25rem .6rem;
+	border-radius: 999px;
+	background-color: var(--pp-token-bg);
+	color: var(--pp-token-color);
+}
+
+.pp-pill {
+	font-size: .85rem;
+	padding: .35rem .75rem;
+	border-radius: 999px;
+	background-color: var(--pp-token-bg);
+	color: var(--pp-token-color);
+}
+
+.pp-chip {
+	font-size: .85rem;
+	padding: .35rem .65rem;
+	border-radius: 999px;
+	background-color: var(--pp-token-bg);
+	color: var(--pp-token-color);
+	border: 1px solid var(--pp-token-border);
+	cursor: pointer;
+	transition: filter .15s ease;
+	box-shadow: none;
+	appearance: none;
+}
+
+.pp-chip:hover {
+	filter: brightness(.95);
+}
+
+.pp-chip:active {
+	filter: brightness(.9);
+}
+
+.pp-chip:focus-visible {
+	outline: var(--pico-outline-width) solid var(--pico-primary-focus, currentColor);
+	outline-offset: 2px;
+}
+
+.pp-chip-dismiss {
+	margin-left: .25rem;
+	padding: 0;
+	border: none;
+	background: transparent;
+	display: inline-flex;
+	align-items: center;
+	color: inherit;
+	cursor: pointer;
+}
+
+.pp-chip-dismiss:hover {
+	opacity: .7;
+}
+
+.pp-variant-primary {
+	--pp-token-bg: var(--pico-primary-background);
+	--pp-token-color: var(--pico-primary-inverse);
+	--pp-token-border: var(--pico-primary-border);
+}
+
+.pp-variant-secondary {
+	--pp-token-bg: var(--pico-secondary-background, var(--pico-muted-border-color, rgba(0, 0, 0, 0.08)));
+	--pp-token-color: var(--pico-secondary-inverse, inherit);
+	--pp-token-border: var(--pico-secondary-border, transparent);
+}
+
+.pp-variant-contrast {
+	--pp-token-bg: var(--pico-contrast-background);
+	--pp-token-color: var(--pico-contrast-inverse);
+	--pp-token-border: var(--pico-contrast-border);
+}
+
+.pp-variant-success {
+	--pp-token-bg: var(--pp-success-background);
+	--pp-token-color: var(--pp-success-inverse);
+	--pp-token-border: var(--pp-success-border);
+}
+
+.pp-variant-warning {
+	--pp-token-bg: var(--pp-warning-background);
+	--pp-token-color: var(--pp-warning-inverse);
+	--pp-token-border: var(--pp-warning-border);
+}
+
+.pp-variant-danger {
+	--pp-token-bg: var(--pp-danger-background);
+	--pp-token-color: var(--pp-danger-inverse);
+	--pp-token-border: var(--pp-danger-border);
+}
+

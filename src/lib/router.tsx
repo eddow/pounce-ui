@@ -1,5 +1,5 @@
 import { cleanedBy, effect, reactive, unreactive } from 'mutts/src'
-import { copyObject, extended } from 'pounce-ts'
+import { compose, copyObject } from 'pounce-ts'
 import { browser } from './browser'
 
 export type RouteWildcard = string //`/${string}`
@@ -475,15 +475,17 @@ export const Router = <
 	props: RouterProps<Definition>,
 	scope: Record<PropertyKey, any>
 ) => {
-	const p = extended(props, {
-		get url() {
-			return browser.url.pathname
+	const state = compose(
+		{
+			get url() {
+				return browser.url.pathname
+			},
 		},
-	})
-	const matcher = routeMatcher(p.routes)
+		props
+	)
+	const matcher = routeMatcher(state.routes)
 	const result: JSX.Element[] = reactive([])
 	let oldMatch: RouteSpecification<Definition> | null = null
-	const notFound = { routes: p.routes, url: p.url }
 
 	function setResult(els: RouteRenderResult) {
 		result.length = 0
@@ -495,15 +497,14 @@ export const Router = <
 	}
 
 	const cleanup = effect(() => {
-		const match = matcher(p.url)
+		const match = matcher(state.url)
 		if (match) {
 			if (oldMatch?.definition !== match.definition) {
 				setResult(match.definition.view(match, scope))
 				oldMatch = match
 			} else copyObject(oldMatch, match)
 		} else {
-			notFound.url = p.url
-			if (oldMatch) setResult(props.notFound(notFound, scope))
+			setResult(state.notFound({ routes: state.routes, url: state.url }, scope))
 			oldMatch = null
 		}
 	})

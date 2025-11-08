@@ -1,0 +1,17 @@
+.pp-button {
+	display: inline-flex;
+	align-items: center;
+	gap: .5rem;
+}
+
+.pp-button .pp-button-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.pp-button .pp-button-label {
+	display: inline-flex;
+	align-items: center;
+	gap: .25rem;
+}
+

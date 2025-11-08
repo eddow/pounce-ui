@@ -1,4 +1,3 @@
-import { For } from 'pounce-ts'
 import { A } from '../lib/router'
 
 export interface MenuProps {
@@ -26,9 +25,9 @@ const MenuComponent = (props: MenuProps) => {
 			<summary>{props.summary}</summary>
 			<ul>
 				{Array.isArray(props.children) ? (
-					<For if={Array.isArray(props.children)} each={props.children}>
+					<for if={Array.isArray(props.children)} each={props.children}>
 						{(child) => <li>{child}</li>}
-					</For>
+					</for>
 				) : (
 					<li>{props.children}</li>
 				)}

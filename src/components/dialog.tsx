@@ -1,5 +1,5 @@
 import { reactive } from 'mutts/src'
-import { bindApp, extended, isElement } from 'pounce-ts'
+import { bindApp, compose, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import './dialog.scss'
 import { Variant, variantClass } from './variants'
@@ -170,10 +170,13 @@ export function dialog<
 			: (options as DialogOptions<Buttons>)
 
 		state.pending = {
-			options: extended(normalized, {
-				closeOnBackdrop: true,
-				closeOnEscape: true,
-			} as any) as DialogOptions<any>,
+			options: compose(
+				{
+					closeOnBackdrop: true,
+					closeOnEscape: true,
+				},
+				normalized
+			) as DialogOptions<any>,
 			defaultButton: undefined,
 			resolve,
 		}

@@ -1,6 +1,6 @@
 import '@picocss/pico/css/pico.min.css'
 import { effect } from 'mutts/src'
-import { bindApp, For } from 'pounce-ts'
+import { bindApp } from 'pounce-ts'
 import { stored } from './lib/storage'
 import './components/variants.scss'
 import { Menu } from './components/menu'
@@ -27,13 +27,13 @@ const MenuBar = () => {
 				</li>
 				<li>
 					<Menu summary="Menu">
-						<For each={sections}>
+						<for each={sections}>
 							{(section) => (
 								<Menu.Item href={`${section.path}${browser.url.hash ?? ''}`}>
 									{section.label}
 								</Menu.Item>
 							)}
-						</For>
+						</for>
 					</Menu>
 				</li>
 			</ul>
