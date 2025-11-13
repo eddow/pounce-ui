@@ -14,6 +14,14 @@ export type {
 	UIContent,
 } from './components/dialog'
 export { confirm, dialog } from './components/dialog'
+export type {
+	CheckboxProps,
+	ComboboxProps,
+	RadioProps,
+	SelectProps,
+	SwitchProps,
+} from './components/forms'
+export { Checkbox, Combobox, Radio, Select, Switch } from './components/forms'
 export type { IconProps } from './components/icon'
 export { Icon } from './components/icon'
 export type { ContainerProps, GridProps, InlineProps, StackProps } from './components/layout'
@@ -25,5 +33,7 @@ export {
 	toast,
 	toastConfig,
 } from './components/toast'
+export type { HeadingProps, LinkProps, TextProps } from './components/typography'
+export { Heading, Link, Text } from './components/typography'
 export type { Variant } from './components/variants'
 export { variantClass } from './components/variants'

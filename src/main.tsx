@@ -8,6 +8,7 @@ import { browser } from './lib/browser'
 import { Router, type RouteWildcard } from './lib/router'
 import DisplayRoute from './routes/display'
 import DockviewRoute from './routes/dockview'
+import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
 
 const MenuBar = () => {
@@ -27,7 +28,7 @@ const MenuBar = () => {
 				</li>
 				<li>
 					<Menu summary="Menu">
-						<for each={sections}>
+						<for each={sections.filter(({ path }) => path !== '/')}>
 							{(section) => (
 								<Menu.Item href={`${section.path}${browser.url.hash ?? ''}`}>
 									{section.label}
@@ -71,6 +72,7 @@ type DemoSection = {
 const sections: DemoSection[] = [
 	{ path: '/', label: 'Overview', view: OverviewSection },
 	{ path: '/display', label: 'Display', view: DisplayRoute },
+	{ path: '/forms', label: 'Forms', view: FormsRoute },
 	{ path: '/interaction', label: 'Interaction', view: InteractionRoute },
 	{ path: '/dockview', label: 'Dockview', view: DockviewRoute },
 ]

@@ -36,23 +36,15 @@ const justifyMap = {
 } as const
 
 export type ContainerProps = JSX.IntrinsicElements['div'] & {
-	tag?: keyof JSX.IntrinsicElements
+	tag?: JSX.HTMLElementTag
 	fluid?: boolean
 }
 
 export const Container = (props: ContainerProps) => {
-	const state = compose(
-		{ tag: 'div' },
-		props,
-		({ tag, fluid, class: className, ...htmlAttrs }) => ({ htmlAttrs })
-	)
+	const state = compose({ tag: 'div' }, props)
 
 	return (
-		<dynamic
-			tag={state.tag}
-			class={[state.fluid ? 'container-fluid' : 'container', state.class]}
-			{...state.htmlAttrs}
-		>
+		<dynamic class={[state.fluid ? 'container-fluid' : 'container', state.class]} {...state}>
 			{state.children}
 		</dynamic>
 	)
@@ -65,14 +57,11 @@ export type StackProps = JSX.IntrinsicElements['div'] & {
 }
 
 export const Stack = (props: StackProps) => {
-	const state = compose(
-		{ gap: 'md' },
-		props,
-		({ gap, align, justify, class: className, style, ...htmlAttrs }) => ({ htmlAttrs })
-	)
+	const state = compose({ gap: 'md' }, props)
 
 	return (
 		<div
+			{...state}
 			class={['pp-stack', state.class]}
 			style={[
 				state.style,
@@ -80,7 +69,6 @@ export const Stack = (props: StackProps) => {
 				state.align ? { alignItems: alignItemsMap[state.align] ?? state.align } : undefined,
 				state.justify ? { justifyContent: justifyMap[state.justify] ?? state.justify } : undefined,
 			]}
-			{...state.htmlAttrs}
 		>
 			{props.children}
 		</div>
@@ -95,14 +83,11 @@ export type InlineProps = JSX.IntrinsicElements['div'] & {
 }
 
 export const Inline = (props: InlineProps) => {
-	const state = compose(
-		{ gap: 'sm', align: 'center' as keyof typeof alignItemsMap },
-		props,
-		({ gap, align, justify, wrap, class: className, style, ...htmlAttrs }) => ({ htmlAttrs })
-	)
+	const state = compose({ gap: 'sm', align: 'center' as keyof typeof alignItemsMap }, props)
 
 	return (
 		<div
+			{...state}
 			class={['pp-inline', state.class]}
 			style={[
 				state.style,
@@ -111,7 +96,6 @@ export const Inline = (props: InlineProps) => {
 				state.justify ? { justifyContent: justifyMap[state.justify] ?? state.justify } : undefined,
 				state.wrap ? { flexWrap: 'wrap' } : { flexWrap: 'nowrap' },
 			]}
-			{...state.htmlAttrs}
 		>
 			{state.children}
 		</div>
@@ -133,16 +117,11 @@ export const Grid = (props: GridProps) => {
 		if (minItemWidth) return `repeat(auto-fit, minmax(${minItemWidth}, 1fr))`
 		return undefined
 	}
-	const state = compose(
-		{ gap: 'md' },
-		props,
-		({ gap, columns, minItemWidth, align, justify, class: className, style, ...htmlAttrs }) => ({
-			htmlAttrs,
-		})
-	)
+	const state = compose({ gap: 'md' }, props)
 
 	return (
 		<div
+			{...state}
 			class={['pp-grid', state.class]}
 			style={[
 				state.style,
@@ -154,7 +133,6 @@ export const Grid = (props: GridProps) => {
 				state.align ? { alignItems: state.align } : undefined,
 				state.justify ? { justifyItems: state.justify } : undefined,
 			].filter(Boolean)}
-			{...state.htmlAttrs}
 		>
 			{state.children}
 		</div>

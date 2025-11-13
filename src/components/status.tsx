@@ -21,23 +21,21 @@ function renderIcon(icon: string | JSX.Element | undefined, size = '16px') {
 	)
 }
 
-export type BadgeProps = JSX.IntrinsicElements['span'] & {
-	tag?: keyof JSX.IntrinsicElements
+export type BadgeProps = {
+	tag?: JSX.HTMLElementTag
 	variant?: Variant
 	icon?: string | JSX.Element
+	el?: JSX.GlobalHTMLAttributes
+	children?: JSX.Children
 }
 
 export const Badge = (props: BadgeProps) => {
-	const state = compose(
-		{ tag: 'span', variant: 'primary' },
-		props,
-		({ tag, variant, icon, class: className, children, ...htmlAttrs }) => ({ htmlAttrs })
-	)
+	const state = compose({ tag: 'span', variant: 'primary' }, props)
 	return (
 		<dynamic
 			tag={state.tag}
-			class={['pp-badge', `pp-variant-${variantKey(state.variant)}`, state.class]}
-			{...state.htmlAttrs}
+			{...state.el}
+			class={['pp-badge', `pp-variant-${variantKey(state.variant)}`, state.el?.class]}
 		>
 			{renderIcon(state.icon, '14px')}
 			<span class="pp-token-label">{state.children}</span>
@@ -45,27 +43,23 @@ export const Badge = (props: BadgeProps) => {
 	)
 }
 
-export type PillProps = JSX.IntrinsicElements['span'] & {
-	tag?: keyof JSX.IntrinsicElements
+export type PillProps = {
+	tag?: JSX.HTMLElementTag
 	variant?: Variant
 	icon?: string | JSX.Element
 	trailingIcon?: string | JSX.Element
+	el?: JSX.GlobalHTMLAttributes
+	children?: JSX.Children
 }
 
 export const Pill = (props: PillProps) => {
-	const state = compose(
-		{ tag: 'span', variant: 'primary' },
-		props,
-		({ tag, variant, icon, trailingIcon, class: className, children, ...htmlAttrs }) => ({
-			htmlAttrs,
-		})
-	)
+	const state = compose({ tag: 'span', variant: 'primary' }, props)
 
 	return (
 		<dynamic
 			tag={state.tag}
-			class={['pp-pill', `pp-variant-${variantKey(state.variant)}`, state.class]}
-			{...state.htmlAttrs}
+			{...state.el}
+			class={['pp-pill', `pp-variant-${variantKey(state.variant)}`, state.el?.class]}
 		>
 			{renderIcon(state.icon)}
 			<span class="pp-token-label">{state.children}</span>
@@ -74,10 +68,12 @@ export const Pill = (props: PillProps) => {
 	)
 }
 
-export type ChipProps = JSX.IntrinsicElements['button'] & {
-	tag?: keyof JSX.IntrinsicElements
+export type ChipProps = {
+	tag?: JSX.HTMLElementTag
 	variant?: Variant
 	icon?: string | JSX.Element
+	el?: JSX.GlobalHTMLAttributes
+	children?: JSX.Children
 	dismissible?: boolean
 	dismissLabel?: string
 	onDismiss?: () => void
@@ -85,22 +81,8 @@ export type ChipProps = JSX.IntrinsicElements['button'] & {
 
 export const Chip = (props: ChipProps) => {
 	const state = compose(
-		{ tag: 'button', variant: 'secondary', dismissible: false },
-		props,
-		({
-			tag,
-			variant,
-			icon,
-			dismissible,
-			dismissLabel,
-			onDismiss,
-			class: className,
-			children,
-			...htmlAttrs
-		}) => ({
-			htmlAttrs,
-		}),
-		{ open: true }
+		{ tag: 'button', variant: 'secondary', dismissible: false, open: true },
+		props
 	)
 
 	function close() {
@@ -112,9 +94,9 @@ export const Chip = (props: ChipProps) => {
 		<dynamic
 			if={state.open}
 			tag={state.tag}
-			class={['pp-chip', `pp-variant-${variantKey(state.variant)}`, state.class]}
 			type={state.tag === 'button' || state.tag === undefined ? 'button' : undefined}
-			{...state.htmlAttrs}
+			{...state.el}
+			class={['pp-chip', `pp-variant-${variantKey(state.variant)}`, state.el?.class]}
 		>
 			{renderIcon(state.icon)}
 			<span class="pp-token-label">{state.children}</span>

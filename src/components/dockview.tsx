@@ -3,11 +3,12 @@ import {
 	CreateComponentOptions,
 	createDockview,
 	DockviewApi,
+	DockviewComponentOptions,
 	DockviewPanelApi,
 	GroupPanelPartInitParameters,
 	IContentRenderer,
 } from 'dockview-core'
-import { effect, reactive, ScopedCallback, unreactive, watch } from 'mutts/src'
+import { effect, reactive, ScopedCallback, trackEffect, unreactive, watch } from 'mutts/src'
 import { bindApp, compose, extend } from 'pounce-ts'
 
 // Scope passed to widgets always has api defined (set before widget is called)
@@ -59,19 +60,40 @@ function contentRenderer(widget: DvWidget<any>, link: { props?: any; scope: Dock
 	} satisfies IContentRenderer
 }
 
+type FreeDockviewOptions = Omit<
+	DockviewComponentOptions,
+	| 'createComponent'
+	| 'createTabComponent'
+	| 'createLeftHeaderActionComponent'
+	| 'createRightHeaderActionComponent'
+	| 'createPrefixHeaderActionComponent'
+	| 'createWatermarkComponent'
+>
 export const Dockview = (
 	props: {
 		api?: DockviewApi
 		widgets: Record<string, DvWidget<any>>
 		tabs?: Record<string, DvWidget<any>>
-	} & Omit<JSX.BaseHTMLAttributes, 'children'>,
+		options?: FreeDockviewOptions
+		el?: JSX.GlobalHTMLAttributes
+	},
 	scope: Record<string, any>
 ) => {
+	trackEffect((obj, evolution, prop) => {
+		console.log('Dockview', obj, evolution, prop)
+	})
 	const links = new Map<string, { props?: any; scope: DockviewScope }>()
-	const state = compose(props, ({ api, widgets, ...htmlAttrs }) => ({ htmlAttrs }))
+	const state = compose({ options: {} }, props)
+	const options: FreeDockviewOptions = {}
+	effect(() => {
+		if (state.api) {
+			state.api.updateOptions(state.options)
+		} else Object.assign(options, state.options)
+	})
 	const initDockview = (element: HTMLElement) => {
 		state.api = scope.api = unreactive(
 			createDockview(element, {
+				...options,
 				createComponent(options: CreateComponentOptions) {
 					const panelLink = { scope: extend({}, scope as DockviewScope) }
 					links.set(options.id, panelLink)
@@ -116,5 +138,5 @@ export const Dockview = (
 			})
 		)
 	}
-	return <div {...state.htmlAttrs} use={initDockview}></div>
+	return <div {...state.el} use={initDockview}></div>
 }

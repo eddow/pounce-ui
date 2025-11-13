@@ -12,7 +12,7 @@ const alertIcons: Record<Variant, string> = {
 	danger: 'mdi:alert-octagon-outline',
 }
 
-export type AlertProps = JSX.IntrinsicElements['div'] & {
+export type AlertProps = {
 	variant?: Variant
 	title?: string | JSX.Element
 	icon?: string | JSX.Element | false
@@ -20,30 +20,19 @@ export type AlertProps = JSX.IntrinsicElements['div'] & {
 	dismissLabel?: string
 	onDismiss?: () => void
 	role?: 'status' | 'alert'
+	el?: JSX.GlobalHTMLAttributes
+	children?: JSX.Children
 }
 
 export const Alert = (props: AlertProps) => {
-	const state = compose(
-		{ variant: 'primary', dismissible: false },
-		props,
-		({
-			variant,
-			title,
-			icon,
-			dismissible,
-			dismissLabel,
-			onDismiss,
-			role,
-			class: className,
-			children,
-			...htmlAttrs
-		}) => ({
-			htmlAttrs,
-			chosenIcon: icon === undefined ? alertIcons[variant] : icon,
-			role: props.role ?? (props.variant === 'danger' ? 'alert' : 'status'),
-		}),
-		{ open: true }
-	)
+	const state = compose({ variant: 'primary', dismissible: false, open: true }, props, (state) => ({
+		get chosenIcon() {
+			return state.icon === undefined ? alertIcons[state.variant] : state.icon
+		},
+		get role() {
+			return state.role ?? (state.variant === 'danger' ? 'alert' : 'status')
+		},
+	}))
 	function close() {
 		state.open = false
 		props.onDismiss?.()
@@ -53,13 +42,13 @@ export const Alert = (props: AlertProps) => {
 		<div
 			if={state.open}
 			role={state.role}
+			{...state.el}
 			class={[
 				'pp-alert',
 				`pp-alert-${state.variant}`,
 				state.dismissible ? 'pp-alert-dismissible' : undefined,
-				state.class,
+				state.el?.class,
 			]}
-			{...state.htmlAttrs}
 		>
 			<span class="pp-alert-icon" if={state.chosenIcon} aria-hidden="true">
 				{typeof state.chosenIcon === 'string' ? (

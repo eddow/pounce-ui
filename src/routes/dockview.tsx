@@ -194,7 +194,7 @@ export default () => {
 				</button>
 			</div>
 			<Dockview
-				style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
+				el:style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
 				widgets={widgets}
 				api={api}
 			/>
