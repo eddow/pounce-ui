@@ -7,9 +7,9 @@
 	"module": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
-		"dev": "node --loader ts-node/esm ./node_modules/vite/bin/vite.js",
-		"build": "tsc && node --loader ts-node/esm ./node_modules/vite/bin/vite.js build",
-		"preview": "node --loader ts-node/esm ./node_modules/vite/bin/vite.js preview",
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
 		"type-check": "tsc --noEmit",
 		"lint": "biome check .",
 		"test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",

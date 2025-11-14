@@ -3,13 +3,16 @@ import { effect } from 'mutts/src'
 import { bindApp } from 'pounce-ts'
 import { stored } from './lib/storage'
 import './components/variants.scss'
+import { Button } from './components/button'
 import { Menu } from './components/menu'
+import { Toolbar } from './components/toolbar'
 import { browser } from './lib/browser'
 import { Router, type RouteWildcard } from './lib/router'
 import DisplayRoute from './routes/display'
 import DockviewRoute from './routes/dockview'
 import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
+import ToolbarRoute from './routes/toolbar'
 
 const MenuBar = () => {
 	const state = stored({
@@ -21,38 +24,25 @@ const MenuBar = () => {
 	})
 
 	return (
-		<>
-			<ul>
-				<li>
-					<strong>Pounce UI</strong>
-				</li>
-				<li>
-					<Menu summary="Menu">
-						<for each={sections.filter(({ path }) => path !== '/')}>
-							{(section) => (
-								<Menu.Item href={`${section.path}${browser.url.hash ?? ''}`}>
-									{section.label}
-								</Menu.Item>
-							)}
-						</for>
-					</Menu>
-				</li>
-			</ul>
-			<ul style="margin-left: auto;">
-				<li>
-					<label>
-						<input
-							type="checkbox"
-							checked={state.mode === 'dark'}
-							update:checked={(dark) => {
-								state.mode = dark ? 'dark' : 'light'
-							}}
-						/>
-						<span>Dark mode</span>
-					</label>
-				</li>
-			</ul>
-		</>
+		<Toolbar>
+			<strong>Pounce UI</strong>
+			<Toolbar.Spacer visible />
+			<Menu summary="Menu">
+				<for each={sections.filter(({ path }) => path !== '/')}>
+					{(section) => (
+						<Menu.Item href={`${section.path}${browser.url.hash ?? ''}`}>{section.label}</Menu.Item>
+					)}
+				</for>
+			</Menu>
+			<Toolbar.Spacer />
+			<Button
+				icon={state.mode === 'dark' ? 'mdi:weather-night' : 'mdi:weather-sunny'}
+				aria-label="Toggle dark mode"
+				onClick={() => {
+					state.mode = state.mode === 'dark' ? 'light' : 'dark'
+				}}
+			/>
+		</Toolbar>
 	)
 }
 
@@ -75,6 +65,7 @@ const sections: DemoSection[] = [
 	{ path: '/forms', label: 'Forms', view: FormsRoute },
 	{ path: '/interaction', label: 'Interaction', view: InteractionRoute },
 	{ path: '/dockview', label: 'Dockview', view: DockviewRoute },
+	{ path: '/toolbar', label: 'Toolbar', view: ToolbarRoute },
 ]
 
 const renderNotFound = (props: { url: string }) => (

@@ -8,8 +8,7 @@ type StatusVariant = Variant | 'primary'
 
 function variantKey(variant?: Variant): StatusVariant {
 	if (!variant || variant === 'primary') return 'primary'
-	const mapped = variantClass(variant)
-	return (mapped || variant) as StatusVariant
+	return (variantClass(variant) || variant) as StatusVariant
 }
 
 function renderIcon(icon: string | JSX.Element | undefined, size = '16px') {

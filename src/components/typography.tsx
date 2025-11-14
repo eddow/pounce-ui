@@ -8,8 +8,7 @@ type HeadingAlign = 'start' | 'center' | 'end'
 
 function toneForVariant(variant?: Variant): string {
 	if (!variant || variant === 'primary') return 'primary'
-	const mapped = variantClass(variant)
-	return mapped || variant
+	return variantClass(variant) || variant
 }
 
 export type HeadingProps = {

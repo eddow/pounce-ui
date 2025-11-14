@@ -1,0 +1,52 @@
+// Visual ButtonGroup - displays buttons connected together
+.pp-buttongroup {
+	display: inline-flex;
+	align-items: stretch;
+	width: fit-content; // Don't expand to fill width
+	flex: none; // Prevent flex-grow
+}
+
+.pp-buttongroup-horizontal {
+	flex-direction: row;
+}
+
+.pp-buttongroup-vertical {
+	flex-direction: column;
+}
+
+// Remove gaps between buttons
+.pp-buttongroup > * {
+	margin: 0;
+}
+
+// Round borders only on outside of first and last (for buttons)
+.pp-buttongroup-horizontal > button:not(:last-child) {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: none;
+}
+
+.pp-buttongroup-horizontal > button:not(:first-child) {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.pp-buttongroup-vertical > button:not(:last-child) {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom: none;
+}
+
+.pp-buttongroup-vertical > button:not(:first-child) {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+// Ensure focus is visible for keyboard navigation
+.pp-buttongroup button:focus-visible,
+.pp-toolbar button:focus-visible {
+	outline: 2px solid var(--pico-primary, #3b82f6);
+	outline-offset: -2px;
+	z-index: 1; // Ensure focus ring appears above connected buttons
+	position: relative;
+}

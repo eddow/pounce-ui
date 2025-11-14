@@ -13,8 +13,13 @@ import { bindApp, compose, extend } from 'pounce-ts'
 
 // Scope passed to widgets always has api defined (set before widget is called)
 type DockviewScope = Record<string, any> & { api: DockviewApi }
+export type DockviewWidgetProps<T extends Record<string, any> = Record<string, unknown>> = T & {
+	title: string
+	api: DockviewPanelApi
+	size: { width: number; height: number }
+}
 type DvWidget<T extends Record<string, any>> = (
-	props: T & { title: string; api: DockviewPanelApi; size: { width: number; height: number } },
+	props: DockviewWidgetProps<T>,
 	scope: DockviewScope
 ) => JSX.Element
 
@@ -101,7 +106,8 @@ export const Dockview = (
 					if (!widget) throw new Error(`Widget ${options.name} not found`)
 					return contentRenderer(widget, panelLink)
 				},
-				/*createLeftHeaderActionComponent(_group: DockviewGroupPanel) {
+				/* TODO: allow components for group headers
+				createLeftHeaderActionComponent(_group: DockviewGroupPanel) {
 					const element = document.createElement('div')
 					return {
 						element,
