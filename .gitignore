@@ -6,6 +6,4 @@ dist/
 playwright-report/
 test-results/
 blob-report/
-
-
-
+sandbox/

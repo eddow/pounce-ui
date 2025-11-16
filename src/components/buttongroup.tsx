@@ -1,7 +1,8 @@
 /**
  * ButtonGroup provides keyboard navigation for buttons in group containers.
- * Buttons in ButtonGroup, Toolbar, or elements with role="group" can be navigated
- * with arrow keys. Tab exits the group normally.
+ * Buttons in ButtonGroup, Toolbar, or elements with role="group" can be navigated:
+ * - Arrow keys: navigate within the group (wraps around)
+ * - Tab/Shift+Tab: jump to the next/previous group or focusable element outside groups
  *
  * Uses DOM traversal - no need for data attributes.
  */
@@ -9,6 +10,7 @@
 import './buttongroup.scss'
 import { compose } from 'pounce-ts'
 
+// TODO: add tests for tab&arrows navigation
 // Global keyboard handler - set up once
 let globalHandlerSetup = false
 
@@ -17,24 +19,157 @@ function setupGlobalHandler() {
 	globalHandlerSetup = true
 
 	document.addEventListener('keydown', (e: KeyboardEvent) => {
-		// Don't intercept Tab - let it work normally for tab navigation
-		if (e.key === 'Tab') return
-
 		const target = e.target as HTMLElement
 		const button = target.closest('button') as HTMLButtonElement | null
 
 		if (!button) return
 
-		// Only handle buttons that are in a group container
+		// Check if button is in a group container
 		const groupContainer = button.closest(
 			'.pp-buttongroup, .pp-toolbar, [role="group"], [role="radiogroup"], [role="toolbar"]'
 		) as HTMLElement | null
 
 		if (!groupContainer) return
 
-		// Handle keyboard navigation for all buttons in groups
+		// Handle Tab: jump to next/previous group or exit group
+		if (e.key === 'Tab') {
+			e.preventDefault()
+			const isShiftTab = e.shiftKey
+			const nextFocusable = findNextFocusableOutsideGroup(groupContainer, isShiftTab)
+			if (nextFocusable) {
+				nextFocusable.focus()
+			}
+			return
+		}
+
+		// Handle arrow keys: navigate within the group
 		handleButtonGroupNavigation(e, button, groupContainer)
 	})
+}
+
+/**
+ * Find the next focusable element outside a group container
+ * Prioritizes navigating to the first/last button of other group containers,
+ * then falls back to standalone focusable elements.
+ * @param groupContainer - The group container to exit from
+ * @param backwards - If true, find previous focusable; if false, find next
+ */
+function findNextFocusableOutsideGroup(
+	groupContainer: HTMLElement,
+	backwards: boolean
+): HTMLElement | null {
+	// Find all group containers (Toolbar, ButtonGroup, role="group", etc.)
+	const groupSelector =
+		'.pp-buttongroup, .pp-toolbar, [role="group"], [role="radiogroup"], [role="toolbar"]'
+	const allGroups = Array.from(document.querySelectorAll<HTMLElement>(groupSelector))
+
+	// Filter out the current group and find all other groups
+	const otherGroups = allGroups.filter((g) => g !== groupContainer && !groupContainer.contains(g))
+
+	// Get all focusable elements in the document
+	const focusableSelector = [
+		'a[href]',
+		'button:not([disabled])',
+		'input:not([disabled])',
+		'select:not([disabled])',
+		'textarea:not([disabled])',
+		'[tabindex]:not([tabindex="-1"])',
+	].join(', ')
+
+	const allFocusable = Array.from(document.querySelectorAll<HTMLElement>(focusableSelector))
+
+	// Filter out elements inside the current group container
+	const focusableOutsideGroup = allFocusable.filter((el) => !groupContainer.contains(el))
+
+	if (focusableOutsideGroup.length === 0) return null
+
+	// Helper: get first or last focusable button in a group
+	const getGroupEntryPoint = (group: HTMLElement, first: boolean): HTMLElement | null => {
+		const isRadioGroup = group.getAttribute('role') === 'radiogroup'
+		const selector = isRadioGroup ? 'button[role="radio"]' : 'button'
+		const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>(selector)).filter(
+			(btn) => !btn.disabled
+		)
+		if (buttons.length === 0) return null
+		return first ? buttons[0] : buttons[buttons.length - 1]
+	}
+
+	// Collect candidate elements: first/last buttons of other groups, and standalone focusables
+	const candidates: Array<{ element: HTMLElement; isGroup: boolean }> = []
+
+	// Add first/last buttons of other groups
+	for (const group of otherGroups) {
+		const firstButton = getGroupEntryPoint(group, true)
+		const lastButton = getGroupEntryPoint(group, false)
+		if (firstButton && firstButton === lastButton) {
+			candidates.push({ element: firstButton, isGroup: true })
+		} else {
+			if (firstButton) candidates.push({ element: firstButton, isGroup: true })
+			if (lastButton) candidates.push({ element: lastButton, isGroup: true })
+		}
+	}
+
+	// Add standalone focusable elements (not in any group)
+	for (const el of focusableOutsideGroup) {
+		const isInAnyGroup = allGroups.some((g) => g.contains(el))
+		if (!isInAnyGroup) {
+			candidates.push({ element: el, isGroup: false })
+		}
+	}
+
+	if (candidates.length === 0) return null
+
+	// Sort all candidates by document order
+	candidates.sort((a, b) => {
+		const pos = a.element.compareDocumentPosition(b.element)
+		// DOCUMENT_POSITION_FOLLOWING = 4 means a comes before b
+		return pos & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1
+	})
+
+	// Find candidates before/after the current group container
+	const before: Array<{ element: HTMLElement; isGroup: boolean }> = []
+	const after: Array<{ element: HTMLElement; isGroup: boolean }> = []
+
+	for (const candidate of candidates) {
+		const position = candidate.element.compareDocumentPosition(groupContainer)
+		// DOCUMENT_POSITION_FOLLOWING = 4 (candidate comes before group)
+		// DOCUMENT_POSITION_PRECEDING = 2 (candidate comes after group)
+		if (position & Node.DOCUMENT_POSITION_FOLLOWING) {
+			before.push(candidate)
+		} else if (position & Node.DOCUMENT_POSITION_PRECEDING) {
+			after.push(candidate)
+		}
+	}
+
+	// Prefer navigating to groups over standalone elements
+	const preferredBefore = before.filter((c) => c.isGroup)
+	const preferredAfter = after.filter((c) => c.isGroup)
+
+	if (backwards) {
+		// Return the last group before, or last standalone before, or wrap
+		if (preferredBefore.length > 0) {
+			return preferredBefore[preferredBefore.length - 1].element
+		}
+		if (before.length > 0) {
+			return before[before.length - 1].element
+		}
+		if (preferredAfter.length > 0) {
+			return preferredAfter[preferredAfter.length - 1].element
+		}
+		return after.length > 0 ? after[after.length - 1].element : null
+	} else {
+		// Return the first group after, or first standalone after, or wrap
+		if (preferredAfter.length > 0) {
+			return preferredAfter[0].element
+		}
+		if (after.length > 0) {
+			return after[0].element
+		}
+		if (preferredBefore.length > 0) {
+			return preferredBefore[0].element
+		}
+		return before.length > 0 ? before[0].element : null
+	}
 }
 
 /**

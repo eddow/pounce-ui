@@ -25,7 +25,7 @@ export default defineConfig({
 						babelPluginJsxReactive,
 						['@babel/plugin-proposal-decorators', { version: '2023-05' }],
 						['@babel/plugin-transform-react-jsx', { pragma: 'h', pragmaFrag: 'Fragment', throwIfNamespace: false }],
-						['@babel/plugin-transform-typescript', { isTSX: true, allowDeclareFields: true }],
+						['@babel/plugin-transform-typescript', { isTSX: id.endsWith('.tsx'), allowDeclareFields: true }],
 					],
 					sourceMaps: true,
 				})
