@@ -1,12 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openSection } from './helpers/nav'
 
-const openDockviewSection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Dockview' }).click()
-	await expect(page).toHaveURL(/\/dockview#playwright$/)
-	await expect(page.getByRole('heading', { level: 2, name: 'Dockview' })).toBeVisible()
-}
+const openDockviewSection = (page: Page) =>
+	openSection(page, { menuName: 'Dockview', expectedUrlPath: '/dockview', expectedHeading: 'Dockview', headingLevel: 2 })
 
 // Dockview rendering
 test('dockview container renders', async ({ page }) => {

@@ -1,16 +1,12 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { openSection } from './helpers/nav'
 
-const openDisplaySection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
-	await expect(page.getByRole('heading', { level: 1, name: 'Display' })).toBeVisible()
-}
+const openDisplaySection = (page: any) =>
+	openSection(page, { menuName: 'Display', expectedUrlPath: '/display', expectedHeading: 'Display', headingLevel: 1 })
 
 // Alert rendering
 test('all variants display correctly', async ({ page }) => {
-	await openDisplaySection(page)
+	await openSection(page, { menuName: 'Display', expectedUrlPath: '/display', expectedHeading: 'Display', headingLevel: 1 })
 	// Scroll to alerts section
 	await page.getByRole('heading', { level: 3, name: 'Alerts' }).scrollIntoViewIfNeeded()
 	
@@ -155,14 +151,13 @@ test('close button dismisses alert', async ({ page }) => {
 		const initialCount = await dismissibleAlerts.count()
 		
 		// Click close
+		await closeButton.scrollIntoViewIfNeeded()
+		await expect(closeButton).toBeVisible()
+		await expect(closeButton).toBeEnabled()
 		await closeButton.click()
 		
-		// Alert should be removed (check if count decreased or alert is hidden)
-		await page.waitForTimeout(200) // Allow for animation
-		
-		// Alert should be removed from DOM or hidden
-		const isVisible = await firstDismissible.isVisible().catch(() => false)
-		expect(isVisible).toBeFalsy()
+		// Alert list should decrease by one
+		await expect(dismissibleAlerts).toHaveCount(initialCount - 1, { timeout: 1500 })
 	} else {
 		// Test structure
 		expect(count).toBeGreaterThanOrEqual(0)
@@ -181,12 +176,13 @@ test('onDismiss callback works', async ({ page }) => {
 		const closeButton = firstDismissible.locator('button.pp-alert-close')
 		
 		// Click close (callback should be triggered)
+		await closeButton.scrollIntoViewIfNeeded()
+		await expect(closeButton).toBeVisible()
+		await expect(closeButton).toBeEnabled()
 		await closeButton.click()
 		
-		// Alert should be dismissed
-		await page.waitForTimeout(200)
-		const isVisible = await firstDismissible.isVisible().catch(() => false)
-		expect(isVisible).toBeFalsy()
+		// Alert should be dismissed (list size decreases)
+		await expect(dismissibleAlerts).toHaveCount(count - 1, { timeout: 1500 })
 	} else {
 		// Test structure
 		expect(count).toBeGreaterThanOrEqual(0)

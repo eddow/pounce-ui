@@ -13,16 +13,16 @@ export default () => (
 				<Heading level={3}>Selects and Combobox</Heading>
 				<Stack>
 					<Inline wrap gap="sm">
-						<Select>
+						<Select aria-label="Primary select">
 							<option>Alpha</option>
 							<option>Bravo</option>
 							<option>Charlie</option>
 						</Select>
-						<Select variant="secondary">
+						<Select variant="secondary" aria-label="Secondary select">
 							<option>Secondary</option>
 							<option>Option</option>
 						</Select>
-						<Select variant="contrast" fullWidth>
+						<Select variant="contrast" fullWidth aria-label="Full width select">
 							<option>Full width</option>
 							<option>Option</option>
 						</Select>

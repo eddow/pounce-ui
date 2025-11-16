@@ -1,12 +1,9 @@
 import { expect, test, type Page } from '@playwright/test'
+import { runA11yCheck } from './helpers/a11y'
+import { openSection } from './helpers/nav'
 
-const openDisplaySection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
-	await expect(page.getByRole('heading', { level: 1, name: 'Display' })).toBeVisible()
-}
+const openDisplaySection = (page: Page) =>
+	openSection(page, { menuName: 'Display', expectedUrlPath: '/display', expectedHeading: 'Display', headingLevel: 1 })
 
 // Container
 test('container renders', async ({ page }) => {
@@ -96,5 +93,10 @@ test('alignment works', async ({ page }) => {
 			expect(style).toBeTruthy()
 		}
 	}
+})
+
+test('a11y - display route passes axe checks', async ({ page }) => {
+	await page.goto('/display#playwright')
+	await runA11yCheck(page)
 })
 

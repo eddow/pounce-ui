@@ -1,12 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openSection } from './helpers/nav'
 
-const openToolbarSection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Toolbar' }).click()
-	await expect(page).toHaveURL(/\/toolbar#playwright$/)
-	await expect(page.getByRole('heading', { level: 1, name: 'Toolbars' })).toBeVisible()
-}
+const openToolbarSection = (page: Page) =>
+	openSection(page, { menuName: 'Toolbar', expectedUrlPath: '/toolbar', expectedHeading: 'Toolbars', headingLevel: 1 })
 
 // Rendering
 test('renders with children', async ({ page }) => {

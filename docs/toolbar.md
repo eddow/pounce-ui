@@ -1,5 +1,12 @@
 # Toolbar
 
+Note on app navigation and headings
+- Menu entries in the demo app are rendered with `role="menuitem"` inside a `details/summary` dropdown. Tests should select menu entries using `getByRole('menuitem', { name: ... })`, not `link`.
+- The `Overview` section is not a menu entry. Navigate to it directly (`/#playwright`) rather than clicking it in the dropdown.
+- Heading levels vary by route in the demo:
+  - Display, Forms, Toolbar use an H1 as the page heading.
+  - Interaction sub-pages (e.g., Dialog, Toasts) use an H2 under the Interaction route.
+
 Toolbar components for grouping buttons and controls with consistent styling and keyboard navigation.
 
 ## Toolbar
@@ -15,6 +22,29 @@ import { Toolbar, Button } from 'pounce-ui'
 	<Button icon="mdi:redo">Redo</Button>
 	<Toolbar.Spacer />
 	<Button icon="mdi:settings">Settings</Button>
+</Toolbar>
+```
+
+### trapTab
+
+`trapTab` controls how Tab/Shift+Tab behave within a toolbar:
+- When `trapTab={false}` (default), Tab leaves the toolbar and focus continues to the next focusable element on the page.
+- When `trapTab={true}`, the toolbar traps Tab/Shift+Tab and cycles focus across its logical segments. Segments are defined by `Toolbar.Spacer` elements; pressing Tab moves to the first control of the next segment (wrapping at the end), and Shift+Tab moves to the last control of the previous segment (wrapping at the beginning).
+
+```tsx
+// Segments: [ButtonGroup A] |spacer| [ButtonGroup B]
+<Toolbar trapTab>
+	<ButtonGroup>
+		<RadioButton icon="mdi:format-align-left" aria-label="Align left" />
+		<RadioButton icon="mdi:format-align-center" aria-label="Align center" />
+		<RadioButton icon="mdi:format-align-right" aria-label="Align right" />
+	</ButtonGroup>
+	<Toolbar.Spacer visible />
+	<ButtonGroup>
+		<CheckButton icon="mdi:format-bold" aria-label="Bold" />
+		<CheckButton icon="mdi:format-italic" aria-label="Italic" />
+		<CheckButton icon="mdi:format-underline" aria-label="Underline" />
+	</ButtonGroup>
 </Toolbar>
 ```
 

@@ -1,6 +1,7 @@
 // App-wide variant tokens
 :root {
-	--pp-success: #22c55e; // green-500
+	// Darken success/danger to meet AA contrast with white text
+	--pp-success: #15803d; // green-700
 	--pp-success-background: var(--pp-success);
 	--pp-success-border: var(--pp-success-background);
 	--pp-success-inverse: #ffffff;
@@ -10,7 +11,7 @@
 	--pp-warning-border: var(--pp-warning-background);
 	--pp-warning-inverse: #000000;
 	--pp-warning-contrast: #3a2500;
-	--pp-danger: #ef4444; // red-500
+	--pp-danger: #b91c1c; // red-700
 	--pp-danger-background: var(--pp-danger);
 	--pp-danger-border: var(--pp-danger-background);
 	--pp-danger-inverse: #ffffff;

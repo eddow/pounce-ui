@@ -13,7 +13,8 @@
 		"type-check": "tsc --noEmit",
 		"lint": "biome check .",
 		"test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
-		"test:e2e": "playwright test"
+		"test:e2e": "playwright test",
+		"lint:menu-roles": "node ./scripts/check-menu-roles.mjs"
 	},
 	"license": "MIT",
 	"devDependencies": {
@@ -24,6 +25,7 @@
 		"@babel/preset-env": "^7.28.3",
 		"@babel/preset-react": "^7.27.1",
 		"@babel/preset-typescript": "^7.27.1",
+		"@axe-core/playwright": "^4.10.0",
 		"@biomejs/biome": "^2.2.7",
 		"@playwright/test": "^1.56.1",
 		"@types/babel__core": "^7.20.5",

@@ -61,7 +61,8 @@ export function RadioButton<Value = string>(props: RadioButtonProps<Value>) {
 			{...state.el}
 			type="button"
 			role="radio"
-			aria-checked={state.checked}
+			aria-checked={`${state.checked}`}
+			aria-label={state.isIconOnly ? (props['aria-label'] ?? (typeof state.value === 'string' ? state.value : 'Option')) : props['aria-label']}
 			class={[
 				'pp-radiobutton',
 				variantClass(state.variant),

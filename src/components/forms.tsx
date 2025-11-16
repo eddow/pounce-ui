@@ -142,9 +142,9 @@ export const Switch = (props: SwitchProps) => {
 				aria-checked={state.checked}
 			/>
 			<span class="pp-switch-visual" aria-hidden="true" />
-			<span class="pp-control-copy" if={state.label || state.description}>
-				<span class="pp-control-label" if={state.label}>
-					{state.label}
+			<span class="pp-control-copy" if={state.label || state.children || state.description}>
+				<span class="pp-control-label" if={state.label || state.children}>
+					{state.label ?? state.children}
 				</span>
 				<span class="pp-control-description" if={state.description}>
 					{state.description}

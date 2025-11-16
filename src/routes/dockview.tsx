@@ -108,7 +108,7 @@ export default () => {
 
 	return (
 		<section>
-			<h2>Dockview</h2>
+			<h1>Dockview</h1>
 			<div role="group" style="margin-bottom: 1rem;">
 				<button
 					onClick={() => {

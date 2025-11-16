@@ -8,13 +8,19 @@ export type ButtonProps = {
 	icon?: string | JSX.Element
 	iconPosition?: 'start' | 'end'
 	el?: JSX.HTMLAttributes<'button'>
+	ariaLabel?: string
 	children?: JSX.Children
 	onClick?: (event: MouseEvent) => void
 }
 
 export const Button = (props: ButtonProps) => {
 	const state = compose(
-		{ variant: 'primary', iconPosition: 'start', onClick: () => {} },
+		{
+			variant: 'primary',
+			iconPosition: 'start',
+			onClick: () => {},
+			ariaLabel: undefined as string | undefined,
+		},
 		props,
 		(state) => ({
 			get iconElement() {
@@ -40,6 +46,11 @@ export const Button = (props: ButtonProps) => {
 		<button
 			{...state.el}
 			onClick={state.onClick}
+			aria-label={
+				state.isIconOnly
+					? (state.ariaLabel ?? (state.el as any)?.['aria-label'] ?? 'Action')
+					: (state.ariaLabel ?? (state.el as any)?.['aria-label'])
+			}
 			class={[
 				'pp-button',
 				variantClass(state.variant),

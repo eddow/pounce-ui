@@ -58,11 +58,9 @@
 				"useSemanticElements": "off",
 				"noRedundantRoles": "off",
 				"useKeyWithClickEvents": "off",
-				"useButtonType": "off"
+				"useButtonType": "off",
+				"noNoninteractiveElementToInteractiveRole": "off"
 			}
 		}
 	}
 }
-
-
-

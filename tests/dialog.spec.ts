@@ -1,14 +1,9 @@
 import { expect, test, type Page } from '@playwright/test'
+import { runA11yCheck } from './helpers/a11y'
+import { openSection } from './helpers/nav'
 
-const openDialogSection = async (page: Page) => {
-	await page.goto('/#playwright')
-	// Open the menu dropdown first (summary element)
-	await page.locator('summary:has-text("Menu")').click()
-	// Then click the Interaction link
-	await page.getByRole('link', { name: 'Interaction' }).click()
-	await expect(page).toHaveURL(/\/interaction#playwright$/)
-	await expect(page.getByRole('heading', { level: 2, name: 'Dialog' })).toBeVisible()
-}
+const openDialogSection = (page: Page) =>
+	openSection(page, { menuName: 'Interaction', expectedUrlPath: '/interaction', expectedHeading: 'Dialog', headingLevel: 2 })
 
 test('opens the simple dialog and closes via Ok', async ({ page }) => {
 	await openDialogSection(page)
@@ -316,5 +311,10 @@ test('document body classes (modal-is-open) applied/removed', async ({ page }) =
 	await page.waitForTimeout(200) // Allow for animation
 	const closedClasses = await page.evaluate(() => document.documentElement.className)
 	expect(closedClasses).not.toContain('modal-is-open')
+})
+
+test('a11y - interaction route passes axe checks', async ({ page }) => {
+	await page.goto('/interaction#playwright')
+	await runA11yCheck(page)
 })
 

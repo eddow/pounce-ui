@@ -89,12 +89,18 @@ export const Chip = (props: ChipProps) => {
 		state.onDismiss?.()
 	}
 
+	// Avoid nested interactive controls: if dismissible and tag is button, switch to div with group role
+	const containerTag =
+		(state.tag === 'button' || state.tag === undefined) && state.dismissible ? 'div' : state.tag
+	const containerRole = containerTag === 'div' && state.dismissible ? 'group' : undefined
+
 	return (
 		<dynamic
 			if={state.open}
-			tag={state.tag}
-			type={state.tag === 'button' || state.tag === undefined ? 'button' : undefined}
+			tag={containerTag}
+			type={containerTag === 'button' ? 'button' : undefined}
 			{...state.el}
+			role={containerRole}
 			class={['pp-chip', `pp-variant-${variantKey(state.variant)}`, state.el?.class]}
 		>
 			{renderIcon(state.icon)}

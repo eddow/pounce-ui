@@ -9,8 +9,8 @@ test('shows Overview by default and supports navigation links', async ({ page })
 	await expect(page.getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible()
 	// Open the menu dropdown first (summary element)
 	await openMenu(page)
-	// Then find and click the Interaction link
-	const interactionLink = page.getByRole('link', { name: 'Interaction' })
+	// Then find and click the Interaction item
+	const interactionLink = page.getByRole('menuitem', { name: 'Interaction' })
 	await expect(interactionLink).toHaveAttribute('href', '/interaction#playwright')
 	await interactionLink.click()
 	await expect(page).toHaveURL(/\/interaction#playwright$/)
@@ -31,11 +31,12 @@ test('all menu items navigate to correct routes', async ({ page }) => {
 	
 	for (const route of routes) {
 		await openMenu(page)
-		const link = page.getByRole('link', { name: route.name })
+		const link = page.getByRole('menuitem', { name: route.name })
 		await expect(link).toHaveAttribute('href', `${route.path}#playwright`)
 		await link.click()
 		await expect(page).toHaveURL(new RegExp(`${route.path.replace('/', '\\/')}#playwright$`))
-		await expect(page.getByRole('heading', { level: 1, name: route.heading })).toBeVisible()
+		const expectedLevel = route.name === 'Interaction' ? 2 : 1
+		await expect(page.getByRole('heading', { level: expectedLevel, name: route.heading })).toBeVisible()
 	}
 })
 
@@ -45,7 +46,7 @@ test('browser back/forward buttons work', async ({ page }) => {
 	
 	// Navigate to a route
 	await openMenu(page)
-	await page.getByRole('link', { name: 'Display' }).click()
+	await page.getByRole('menuitem', { name: 'Display' }).click()
 	await expect(page).toHaveURL(/\/display#playwright$/)
 	
 	// Go back
@@ -78,12 +79,12 @@ test('hash fragments preserved during navigation', async ({ page }) => {
 	
 	// Navigate with hash
 	await openMenu(page)
-	await page.getByRole('link', { name: 'Display' }).click()
+	await page.getByRole('menuitem', { name: 'Display' }).click()
 	await expect(page).toHaveURL(/\/display#playwright$/)
 	
 	// Navigate to another route
 	await openMenu(page)
-	await page.getByRole('link', { name: 'Forms' }).click()
+	await page.getByRole('menuitem', { name: 'Forms' }).click()
 	await expect(page).toHaveURL(/\/forms#playwright$/)
 	
 	// Hash should be preserved
@@ -97,17 +98,17 @@ test('route changes update URL correctly', async ({ page }) => {
 	
 	// Navigate to Display
 	await openMenu(page)
-	await page.getByRole('link', { name: 'Display' }).click()
+	await page.getByRole('menuitem', { name: 'Display' }).click()
 	await expect(page).toHaveURL(/\/display#playwright$/)
 	
 	// Navigate to Forms
 	await openMenu(page)
-	await page.getByRole('link', { name: 'Forms' }).click()
+	await page.getByRole('menuitem', { name: 'Forms' }).click()
 	await expect(page).toHaveURL(/\/forms#playwright$/)
 	
 	// Navigate back to Overview
-	await openMenu(page)
-	await page.getByRole('link', { name: 'Overview' }).click()
+	// Overview is not a menu item; navigate directly
+	await page.goto('/#playwright')
 	await expect(page).toHaveURL(/\/#playwright$/)
 })
 
@@ -150,7 +151,7 @@ test('theme persists across navigation', async ({ page }) => {
 	
 	// Navigate to another route
 	await openMenu(page)
-	await page.getByRole('link', { name: 'Display' }).click()
+	await page.getByRole('menuitem', { name: 'Display' }).click()
 	await expect(page).toHaveURL(/\/display#playwright$/)
 	
 	// Theme should persist

@@ -10,16 +10,23 @@ export type ToolbarProps = {
 	style?: string
 	/** Orientation - horizontal (default) or vertical */
 	orientation?: 'horizontal' | 'vertical'
+	/**
+	 * When true, the toolbar will trap Tab/Shift+Tab and cycle focus across its logical segments
+	 * (segments are separated by Toolbar.Spacer). When false (default), Tab leaves the toolbar
+	 * and focus moves to the next/previous focusable element outside the toolbar.
+	 */
+	trapTab?: boolean
 }
 
 const ToolbarComponent = (props: ToolbarProps) => {
-	const state = compose({ orientation: 'horizontal' }, props)
+	const state = compose({ orientation: 'horizontal', trapTab: false }, props)
 
 	return (
 		<div
 			class={['pp-toolbar', `pp-toolbar-${state.orientation}`, state.class]}
 			role="toolbar"
 			style={state.style}
+			data-trap-tab={state.trapTab ? 'true' : undefined}
 		>
 			{state.children}
 		</div>
@@ -46,7 +53,6 @@ const ToolbarSpacer = (props: ToolbarSpacerProps) => {
 				state.class,
 			]}
 			style={state.width ? { width: state.width, flex: 'none' } : undefined}
-			aria-hidden="true"
 		/>
 	)
 }

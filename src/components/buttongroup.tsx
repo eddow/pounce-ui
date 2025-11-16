@@ -23,6 +23,8 @@ function setupGlobalHandler() {
 		const button = target.closest('button') as HTMLButtonElement | null
 
 		if (!button) return
+		// Do not override dialog focus trapping
+		if (button.closest('dialog[open]')) return
 
 		// Check if button is in a group container
 		const groupContainer = button.closest(
@@ -30,15 +32,39 @@ function setupGlobalHandler() {
 		) as HTMLElement | null
 
 		if (!groupContainer) return
+		// Compute toolbar ancestor independently (needed when closest match is a group)
+		const toolbarAncestor = button.closest('.pp-toolbar') as HTMLElement | null
 
-		// Handle Tab: jump to next/previous group or exit group
+		// Handle Tab: custom behavior for toolbars; otherwise jump to next/previous focusable outside group
 		if (e.key === 'Tab') {
 			e.preventDefault()
 			const isShiftTab = e.shiftKey
-			const nextFocusable = findNextFocusableOutsideGroup(groupContainer, isShiftTab)
-			if (nextFocusable) {
-				nextFocusable.focus()
+			// If inside a toolbar that opts into cycling, cycle within it across segments separated by spacers
+			const cycleToolbar = (
+				toolbarAncestor && toolbarAncestor.dataset.trapTab === 'true'
+					? toolbarAncestor
+					: groupContainer.classList.contains('pp-toolbar') &&
+							(groupContainer as HTMLElement).dataset.trapTab === 'true'
+						? groupContainer
+						: null
+			) as HTMLElement | null
+			if (cycleToolbar) {
+				const nextInToolbar = findNextFocusableInToolbar(cycleToolbar, button, isShiftTab)
+				if (nextInToolbar) {
+					nextInToolbar.focus()
+					return
+				}
+			} else if (toolbarAncestor) {
+				// Not trapping tabs, but still within a toolbar: move to next/previous segment without wrap
+				const nextInToolbar = findNextFocusableInToolbarNoWrap(toolbarAncestor, button, isShiftTab)
+				if (nextInToolbar) {
+					nextInToolbar.focus()
+					return
+				}
 			}
+			// Default behavior: move to next focusable outside the current group
+			const nextFocusable = findNextFocusableOutsideGroup(groupContainer, isShiftTab)
+			;(nextFocusable ?? (document.body as HTMLElement)).focus()
 			return
 		}
 
@@ -241,6 +267,117 @@ function navigateToButtonInGroup(
 	if (nextButton) {
 		nextButton.focus()
 	}
+}
+
+/**
+ * Find the next focusable element within a toolbar, cycling across logical segments
+ * Segments are defined as groups of controls separated by .pp-toolbar-spacer elements.
+ * When tabbing forward from the last segment, wraps to the first segment; shift+tab wraps backwards.
+ */
+function findNextFocusableInToolbar(
+	toolbar: HTMLElement,
+	currentButton: HTMLButtonElement,
+	backwards: boolean
+): HTMLElement | null {
+	// Build segments based on direct children separated by spacers
+	const children = Array.from(toolbar.children) as HTMLElement[]
+	const segments: HTMLElement[][] = []
+	let currentSegment: HTMLElement[] = []
+	const pushSegmentIfAny = () => {
+		if (currentSegment.length > 0) {
+			segments.push(currentSegment)
+			currentSegment = []
+		}
+	}
+	for (const child of children) {
+		if (child.classList.contains('pp-toolbar-spacer')) {
+			pushSegmentIfAny()
+			continue
+		}
+		// Collect focusable buttons within this child
+		const childButtons = child.matches('button')
+			? [child as HTMLButtonElement]
+			: Array.from(child.querySelectorAll<HTMLButtonElement>('button'))
+		for (const btn of childButtons) {
+			if (!btn.disabled) currentSegment.push(btn)
+		}
+	}
+	pushSegmentIfAny()
+
+	if (segments.length === 0) return null
+
+	// Determine which segment contains the current button
+	let segIndex = segments.findIndex((seg) => seg.includes(currentButton))
+	// If the current button is not part of any segment (unlikely), try to locate by DOM order
+	if (segIndex === -1) {
+		const allButtons = segments.flat()
+		if (allButtons.length === 0) return null
+		// Choose segment based on nearest button
+		segIndex = segments.findIndex((seg) =>
+			seg.length > 0 &&
+			seg[0].compareDocumentPosition(currentButton) & Node.DOCUMENT_POSITION_FOLLOWING
+				? true
+				: seg.includes(currentButton)
+		)
+		if (segIndex === -1) segIndex = 0
+	}
+
+	// Compute next segment index with wrap-around
+	const nextSegIndex = backwards
+		? segIndex - 1 < 0
+			? segments.length - 1
+			: segIndex - 1
+		: segIndex + 1 >= segments.length
+			? 0
+			: segIndex + 1
+
+	// Choose the entry point in the target segment
+	const targetSegment = segments[nextSegIndex]
+	if (!targetSegment || targetSegment.length === 0) return null
+	// Entry point: first enabled button when moving forward; last when moving backwards
+	return backwards ? targetSegment[targetSegment.length - 1] : targetSegment[0]
+}
+
+/**
+ * Same as findNextFocusableInToolbar but without wrap-around.
+ * Returns null when moving past the first/last segment so callers can exit the toolbar.
+ */
+function findNextFocusableInToolbarNoWrap(
+	toolbar: HTMLElement,
+	currentButton: HTMLButtonElement,
+	backwards: boolean
+): HTMLElement | null {
+	const children = Array.from(toolbar.children) as HTMLElement[]
+	const segments: HTMLElement[][] = []
+	let currentSegment: HTMLElement[] = []
+	const pushSegmentIfAny = () => {
+		if (currentSegment.length > 0) {
+			segments.push(currentSegment)
+			currentSegment = []
+		}
+	}
+	for (const child of children) {
+		if (child.classList.contains('pp-toolbar-spacer')) {
+			pushSegmentIfAny()
+			continue
+		}
+		const childButtons = child.matches('button')
+			? [child as HTMLButtonElement]
+			: Array.from(child.querySelectorAll<HTMLButtonElement>('button'))
+		for (const btn of childButtons) {
+			if (!btn.disabled) currentSegment.push(btn)
+		}
+	}
+	pushSegmentIfAny()
+
+	if (segments.length === 0) return null
+	const segIndex = segments.findIndex((seg) => seg.includes(currentButton))
+	if (segIndex === -1) return null
+	const nextSegIndex = backwards ? segIndex - 1 : segIndex + 1
+	if (nextSegIndex < 0 || nextSegIndex >= segments.length) return null
+	const targetSegment = segments[nextSegIndex]
+	if (!targetSegment || targetSegment.length === 0) return null
+	return backwards ? targetSegment[targetSegment.length - 1] : targetSegment[0]
 }
 
 /**

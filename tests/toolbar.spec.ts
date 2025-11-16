@@ -1,12 +1,9 @@
 import { expect, test, type Page } from '@playwright/test'
+import { runA11yCheck } from './helpers/a11y'
+import { openSection } from './helpers/nav'
 
-const openToolbarSection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Toolbar' }).click()
-	await expect(page).toHaveURL(/\/toolbar#playwright$/)
-	await expect(page.getByRole('heading', { level: 1, name: 'Toolbars' })).toBeVisible()
-}
+const openToolbarSection = (page: Page) =>
+	openSection(page, { menuName: 'Toolbar', expectedUrlPath: '/toolbar', expectedHeading: 'Toolbars', headingLevel: 1 })
 
 // Toolbar layout
 test('Toolbar.Spacer works (visible and invisible)', async ({ page }) => {
@@ -82,8 +79,7 @@ test('arrow keys navigate toolbar buttons', async ({ page }) => {
 		
 		// Focus should move to next button
 		const focusedElement = await page.evaluate(() => document.activeElement)
-		const secondButton = buttons.nth(1)
-		const isSecondButton = await secondButton.evaluate((btn, focused) => btn === focused, focusedElement)
+		// intentionally avoid deep type instantiations here
 		
 		// Note: This tests expected behavior even if implementation is buggy
 		expect(focusedElement).toBeTruthy()
@@ -104,13 +100,13 @@ test('Tab exits toolbar', async ({ page }) => {
 	await page.keyboard.press('Tab')
 	
 	// Focus should move outside toolbar
-	const focusedElement = await page.evaluate(() => document.activeElement)
-	const isInToolbar = await firstToolbar.evaluate((toolbar, focused) => {
-		return toolbar.contains(focused as Node)
-	}, focusedElement)
+	const isInToolbar = await page.evaluate(() => {
+		const first = document.querySelectorAll('.pp-toolbar')[0] as HTMLElement | undefined
+		return first ? first.contains(document.activeElement) : false
+	})
 	
 	// Tab should exit toolbar
-	expect(focusedElement).toBeTruthy()
+	expect(isInToolbar).toBeFalsy()
 })
 
 test('Tab moves between button groups correctly', async ({ page }) => {
@@ -131,19 +127,72 @@ test('Tab moves between button groups correctly', async ({ page }) => {
 		// Press Tab
 		await page.keyboard.press('Tab')
 		
-		// Focus should move to next group or element
-		const focusedElement = await page.evaluate(() => document.activeElement)
-		
-		// Should not be in first group
-		const isInFirstGroup = await firstGroup.evaluate((group, focused) => {
-			return group.contains(focused as Node)
-		}, focusedElement)
-		
-		// Tab should exit first group
-		expect(focusedElement).toBeTruthy()
+		// Focus should move to next group or element: not in first group anymore
+		const isInFirstGroup = await page.evaluate(() => {
+			const firstToolbar = document.querySelectorAll('.pp-toolbar')[0] as HTMLElement | undefined
+			const firstGroupEl = firstToolbar?.querySelectorAll('.pp-buttongroup')[0] as HTMLElement | undefined
+			return firstGroupEl ? firstGroupEl.contains(document.activeElement) : false
+		})
+		expect(isInFirstGroup).toBeFalsy()
 	} else {
 		// Test structure
 		expect(groupCount).toBeGreaterThanOrEqual(0)
 	}
+})
+
+test('a11y - toolbar route passes axe checks', async ({ page }) => {
+	await page.goto('/toolbar#playwright')
+	await runA11yCheck(page)
+})
+
+// New tests to capture wrap-around Tab behavior within a toolbar
+test('Tab from last control in "Toolbar with CheckButtons" should wrap to first control (expected behavior)', async ({ page }) => {
+	await openToolbarSection(page)
+	// Target the toolbar under the "Toolbar with CheckButtons" heading
+	const targetToolbar = page
+		.getByRole('heading', { level: 3, name: 'Toolbar with CheckButtons' })
+		.locator('xpath=following::div[contains(@class,"pp-toolbar")][1]')
+	
+	// Sanity: ensure toolbar found
+	await expect(targetToolbar).toBeVisible()
+	
+	// Identify first and last focusable controls
+	const buttons = targetToolbar.locator('button:not([disabled])')
+	const count = await buttons.count()
+	expect(count).toBeGreaterThan(1)
+	
+	const firstButton = buttons.first()
+	const lastButton = buttons.last()
+	await expect(firstButton).toBeVisible()
+	await expect(lastButton).toBeVisible()
+	
+	// Focus last control and press Tab
+	await lastButton.focus()
+	await page.keyboard.press('Tab')
+	
+	// Expect focus to wrap to first control within the same toolbar
+	const isFirstFocused = await firstButton.evaluate((btn) => document.activeElement === btn)
+	expect(isFirstFocused).toBeTruthy()
+})
+
+test('Tab from the last of the alignment group should move to the first of the next group', async ({ page }) => {
+	await openToolbarSection(page)
+	// Locate the toolbar with alignment and view-mode segments by heading
+	const targetToolbar = page
+		.getByRole('heading', { level: 3, name: 'Toolbar with CheckButtons' })
+		.locator('xpath=following::div[contains(@class,"pp-toolbar")][1]')
+	await expect(targetToolbar).toBeVisible()
+	
+	// Alignment group last = "Justify", next group first = "Edit"
+	const justify = targetToolbar.getByRole('radio', { name: 'Justify' })
+	const edit = targetToolbar.getByRole('radio', { name: 'Edit' })
+	await expect(justify).toBeVisible()
+	await expect(edit).toBeVisible()
+	
+	await justify.focus()
+	await page.keyboard.press('Tab')
+	
+	const isEditFocused = await edit.evaluate((btn) => document.activeElement === btn)
+	expect(isEditFocused).toBeTruthy()
 })
 

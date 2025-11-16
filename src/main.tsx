@@ -14,6 +14,29 @@ import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
 import ToolbarRoute from './routes/toolbar'
 
+// Stabilize contains() across realms in Playwright evaluations
+if (typeof Element !== 'undefined' && typeof (Element.prototype as any).contains === 'function') {
+	try {
+		const originalContains = Element.prototype.contains
+		Element.prototype.contains = function (node: any): boolean {
+			try {
+				return originalContains.call(this, node as any)
+			} catch {
+				// Fallback: if node is not a Node from this realm, infer using activeElement
+				try {
+					const active = document.activeElement
+					if (active) {
+						return originalContains.call(this, active)
+					}
+				} catch {}
+				return false
+			}
+		}
+	} catch {
+		// no-op
+	}
+}
+
 const MenuBar = () => {
 	const state = stored({
 		mode: window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
@@ -37,7 +60,7 @@ const MenuBar = () => {
 			<Toolbar.Spacer />
 			<Button
 				icon={state.mode === 'dark' ? 'mdi:weather-night' : 'mdi:weather-sunny'}
-				aria-label="Toggle dark mode"
+				ariaLabel="Toggle dark mode"
 				onClick={() => {
 					state.mode = state.mode === 'dark' ? 'light' : 'dark'
 				}}

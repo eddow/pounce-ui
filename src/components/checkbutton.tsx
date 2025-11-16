@@ -58,7 +58,8 @@ export const CheckButton = (props: CheckButtonProps) => {
 			{...state.el}
 			type="button"
 			role="checkbox"
-			aria-checked={state.checked ?? false}
+			aria-checked={`${state.checked ?? false}`}
+			aria-label={isIconOnly ? (props['aria-label'] ?? 'Toggle') : props['aria-label']}
 			class={[
 				'pp-checkbutton',
 				variantClass(state.variant),

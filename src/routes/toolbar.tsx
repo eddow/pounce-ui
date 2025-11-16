@@ -37,7 +37,7 @@ export default () => {
 
 				<div>
 					<Heading level={3}>Toolbar with CheckButtons</Heading>
-					<Toolbar>
+					<Toolbar trapTab>
 						<CheckButton
 							icon="mdi:format-bold"
 							aria-label="Bold"

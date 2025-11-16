@@ -1,12 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
+import { openSection } from './helpers/nav'
 
-const openDisplaySection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
-	await expect(page.getByRole('heading', { level: 1, name: 'Display' })).toBeVisible()
-}
+const openDisplaySection = (page: Page) =>
+	openSection(page, { menuName: 'Display', expectedUrlPath: '/display', expectedHeading: 'Display', headingLevel: 1 })
 
 // Status components (Badge, Chip, Pill)
 test('all variants render', async ({ page }) => {

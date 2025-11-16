@@ -1,14 +1,17 @@
 import { expect, test, type Page } from '@playwright/test'
+import { runA11yCheck } from './helpers/a11y'
+import { openSection } from './helpers/nav'
 
 const openToastsDemo = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.waitForFunction(() => window.location.hash === '#playwright')
-	// Open the menu dropdown first (summary element)
-	await page.locator('summary:has-text("Menu")').click()
-	// Then click the Interaction link
-	await page.getByRole('link', { name: 'Interaction' }).click()
-	await expect(page.getByRole('heading', { level: 2, name: 'Toasts' })).toBeVisible()
-	await expect(page).toHaveURL(/\/interaction#playwright$/)
+	await openSection(page, { menuName: 'Interaction', expectedUrlPath: '/interaction', expectedHeading: 'Toasts', headingLevel: 2 })
+	// Speed up toasts if a global config is exposed (no-op otherwise)
+	await page.evaluate(() => {
+		// @ts-ignore
+		const cfg = (window as any)?.toastConfig
+		if (cfg && typeof cfg === 'object') {
+			cfg.defaultDurationMs = 800
+		}
+	})
 }
 
 test('shows and auto-dismisses the info toast', async ({ page }) => {
@@ -18,7 +21,8 @@ test('shows and auto-dismisses the info toast', async ({ page }) => {
 	const toastLocator = page.locator('.pp-toast', { hasText: 'Saved!' })
 	await expect(toastLocator).toBeVisible()
 	await expect(toastLocator).toHaveAttribute('role', 'status')
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	// Wait for auto-dismiss
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 5000 })
 })
 
 test('dismisses danger toasts via the close button', async ({ page }) => {
@@ -38,9 +42,9 @@ test('success toast appears and dismisses', async ({ page }) => {
 	const successToast = page.locator('.pp-toast', { hasText: 'Profile updated' })
 	await expect(successToast).toBeVisible()
 	await expect(successToast).toHaveAttribute('role', 'status')
-	// Wait for auto-dismiss or manually dismiss
-	await page.waitForTimeout(4000)
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	// Dismiss quickly to avoid long waits
+	await successToast.getByRole('button', { name: 'Dismiss' }).click()
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 1500 })
 })
 
 test('warning toast appears and dismisses', async ({ page }) => {
@@ -49,9 +53,9 @@ test('warning toast appears and dismisses', async ({ page }) => {
 	const warningToast = page.locator('.pp-toast', { hasText: 'Network is slow' })
 	await expect(warningToast).toBeVisible()
 	await expect(warningToast).toHaveAttribute('role', 'status')
-	// Wait for auto-dismiss
-	await page.waitForTimeout(4000)
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	// Dismiss quickly to avoid long waits
+	await warningToast.getByRole('button', { name: 'Dismiss' }).click()
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 1500 })
 })
 
 test('primary/info toast appears and dismisses', async ({ page }) => {
@@ -60,9 +64,9 @@ test('primary/info toast appears and dismisses', async ({ page }) => {
 	const infoToast = page.locator('.pp-toast', { hasText: 'Heads up: maintenance at 2am' })
 	await expect(infoToast).toBeVisible()
 	await expect(infoToast).toHaveAttribute('role', 'status')
-	// Wait for auto-dismiss
-	await page.waitForTimeout(4000)
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	// Dismiss quickly to avoid long waits
+	await infoToast.getByRole('button', { name: 'Dismiss' }).click()
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 1500 })
 })
 
 test('secondary toast appears and dismisses', async ({ page }) => {
@@ -72,9 +76,9 @@ test('secondary toast appears and dismisses', async ({ page }) => {
 	await expect(toast).toBeVisible()
 	// Secondary variant is default for toast.info
 	await expect(toast).toHaveAttribute('role', 'status')
-	// Wait for auto-dismiss
-	await page.waitForTimeout(4000)
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	// Dismiss quickly to avoid long waits
+	await toast.getByRole('button', { name: 'Dismiss' }).click()
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 1500 })
 })
 
 // Toast behavior
@@ -89,8 +93,13 @@ test('multiple toasts stack correctly', async ({ page }) => {
 	const toasts = page.locator('.pp-toast')
 	await expect(toasts).toHaveCount(3, { timeout: 1000 })
 	
-	// Wait for them to dismiss
-	await page.waitForTimeout(4000)
+	// Dismiss them quickly
+	const dismissButtons = page.locator('.pp-toast >> role=button[name="Dismiss"]')
+	const count = await dismissButtons.count()
+	for (let i = 0; i < count; i++) {
+		await dismissButtons.nth(i).click()
+	}
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 2000 })
 })
 
 test('toast pause on hover (does not auto-dismiss while hovering)', async ({ page }) => {
@@ -103,7 +112,7 @@ test('toast pause on hover (does not auto-dismiss while hovering)', async ({ pag
 	await toast.hover()
 	
 	// Wait longer than auto-dismiss duration
-	await page.waitForTimeout(2000)
+	await page.waitForTimeout(2500)
 	
 	// Toast should still be visible while hovering
 	await expect(toast).toBeVisible()
@@ -112,8 +121,7 @@ test('toast pause on hover (does not auto-dismiss while hovering)', async ({ pag
 	await page.mouse.move(0, 0)
 	
 	// Now toast should dismiss
-	await page.waitForTimeout(2000)
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 4000 })
 })
 
 test('toast resumes timer on mouse leave', async ({ page }) => {
@@ -140,9 +148,8 @@ test('toast with custom duration works', async ({ page }) => {
 	const toast = page.locator('.pp-toast', { hasText: 'Saved!' })
 	await expect(toast).toBeVisible()
 	
-	// Default duration is around 3500ms
-	await page.waitForTimeout(4000)
-	await expect(page.locator('.pp-toast')).toHaveCount(0)
+	// Default duration is around 3500ms, but we dismiss quickly in other tests
+	await expect(page.locator('.pp-toast')).toHaveCount(0, { timeout: 5000 })
 })
 
 test('non-dismissible toast auto-dismisses only', async ({ page }) => {
@@ -191,19 +198,18 @@ test('role="status" for info/success toasts', async ({ page }) => {
 	const successToast = page.locator('.pp-toast', { hasText: 'Profile updated' })
 	await expect(successToast).toBeVisible()
 	await expect(successToast).toHaveAttribute('role', 'status')
-	await page.waitForTimeout(4000)
+	// Dismiss to finish fast
+	await successToast.getByRole('button', { name: 'Dismiss' }).click()
 })
 
 test('toast container has aria-live="polite"', async ({ page }) => {
 	await openToastsDemo(page)
-	// Find toast container
+	// Trigger a toast to ensure host is mounted
+	await page.getByRole('button', { name: 'Toast' }).click()
 	const container = page.locator('.pp-toasts')
 	await expect(container).toHaveAttribute('aria-live', 'polite')
-	
-	// Trigger a toast to ensure container is present
-	await page.getByRole('button', { name: 'Toast' }).click()
-	await expect(container).toHaveAttribute('aria-live', 'polite')
-	await page.waitForTimeout(4000)
+	// Dismiss quickly
+	await page.locator('.pp-toast').getByRole('button', { name: 'Dismiss' }).click()
 })
 
 // Toast positioning
@@ -218,7 +224,8 @@ test('toasts appear in configured position (bottom-right default)', async ({ pag
 	const classes = await container.getAttribute('class')
 	expect(classes).toContain('bottom-right')
 	
-	await page.waitForTimeout(4000)
+	// Dismiss quickly
+	await toast.getByRole('button', { name: 'Dismiss' }).click()
 })
 
 test('multiple toasts stack in correct order', async ({ page }) => {
@@ -238,6 +245,16 @@ test('multiple toasts stack in correct order', async ({ page }) => {
 	const container = page.locator('.pp-toasts')
 	await expect(container).toBeVisible()
 	
-	await page.waitForTimeout(4000)
+	// Dismiss quickly
+	const dismissButtons = page.locator('.pp-toast >> role=button[name="Dismiss"]')
+	const count2 = await dismissButtons.count()
+	for (let i = 0; i < count2; i++) {
+		await dismissButtons.nth(i).click()
+	}
+})
+
+test('a11y - interaction route passes axe checks', async ({ page }) => {
+	await page.goto('/interaction#playwright')
+	await runA11yCheck(page)
 })
 

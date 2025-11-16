@@ -1,15 +1,12 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { runA11yCheck } from './helpers/a11y'
+import { openSection } from './helpers/nav'
 
-const openFormsSection = async (page: Page) => {
-	await page.goto('/#playwright')
-	await page.locator('summary:has-text("Menu")').click()
-	await page.getByRole('link', { name: 'Forms' }).click()
-	await expect(page).toHaveURL(/\/forms#playwright$/)
-	await expect(page.getByRole('heading', { level: 1, name: 'Forms' })).toBeVisible()
-}
+const openFormsSection = (page: any) =>
+	openSection(page, { menuName: 'Forms', expectedUrlPath: '/forms', expectedHeading: 'Forms', headingLevel: 1 })
 
 // Select
-test('all variants render correctly', async ({ page }) => {
+test('Select - all variants render correctly', async ({ page }) => {
 	await openFormsSection(page)
 	const selects = page.locator('select.pp-select')
 	const count = await selects.count()
@@ -158,7 +155,7 @@ test('checkbox toggles on click', async ({ page }) => {
 	expect(finalChecked).toBe(initialChecked)
 })
 
-test('all variants render correctly', async ({ page }) => {
+test('Checkbox - all variants render correctly', async ({ page }) => {
 	await openFormsSection(page)
 	const checkboxes = page.locator('label.pp-checkbox')
 	const count = await checkboxes.count()
@@ -171,7 +168,7 @@ test('all variants render correctly', async ({ page }) => {
 	}
 })
 
-test('description text displays', async ({ page }) => {
+test('Checkbox - description text displays', async ({ page }) => {
 	await openFormsSection(page)
 	const checkboxes = page.locator('label.pp-checkbox')
 	const count = await checkboxes.count()
@@ -215,7 +212,7 @@ test('disabled checkbox does not toggle', async ({ page }) => {
 	}
 })
 
-test('checked state persists', async ({ page }) => {
+test('Checkbox - checked state persists', async ({ page }) => {
 	await openFormsSection(page)
 	const checkboxes = page.locator('input[type="checkbox"].pp-control-input:not([disabled])')
 	const firstCheckbox = checkboxes.first()
@@ -253,7 +250,7 @@ test('radio buttons in group work (only one selected)', async ({ page }) => {
 	}
 })
 
-test('all variants render correctly', async ({ page }) => {
+test('Radio - all variants render correctly', async ({ page }) => {
 	await openFormsSection(page)
 	const radios = page.locator('label.pp-radio')
 	const count = await radios.count()
@@ -294,7 +291,7 @@ test('stacked layout works', async ({ page }) => {
 	}
 })
 
-test('description text displays', async ({ page }) => {
+test('Radio - description text displays', async ({ page }) => {
 	await openFormsSection(page)
 	const radios = page.locator('label.pp-radio')
 	const count = await radios.count()
@@ -354,7 +351,7 @@ test('switch toggles on click', async ({ page }) => {
 	expect(finalChecked).toBe(initialChecked)
 })
 
-test('all variants render correctly', async ({ page }) => {
+test('Switch - all variants render correctly', async ({ page }) => {
 	await openFormsSection(page)
 	const switches = page.locator('label.pp-switch')
 	const count = await switches.count()
@@ -395,7 +392,7 @@ test('label at end works (default)', async ({ page }) => {
 	await expect(firstSwitch).toBeVisible()
 })
 
-test('description text displays', async ({ page }) => {
+test('Switch - description text displays', async ({ page }) => {
 	await openFormsSection(page)
 	const switches = page.locator('label.pp-switch')
 	const count = await switches.count()
@@ -438,7 +435,7 @@ test('disabled switch does not toggle', async ({ page }) => {
 	}
 })
 
-test('checked state persists', async ({ page }) => {
+test('Switch - checked state persists', async ({ page }) => {
 	await openFormsSection(page)
 	const switches = page.locator('input[type="checkbox"].pp-switch-input:not([disabled])')
 	const firstSwitch = switches.first()
@@ -454,5 +451,10 @@ test('checked state persists', async ({ page }) => {
 	// Check again
 	await firstSwitch.check()
 	expect(await firstSwitch.isChecked()).toBe(true)
+})
+
+test('a11y - forms route passes axe checks', async ({ page }) => {
+	await page.goto('/forms#playwright')
+	await runA11yCheck(page)
 })
 
