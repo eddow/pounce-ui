@@ -31,7 +31,8 @@ test('all menu items navigate to correct routes', async ({ page }) => {
 	
 	for (const route of routes) {
 		await openMenu(page)
-		const link = page.getByRole('menuitem', { name: route.name })
+		// Use exact match to avoid matching "Dockview Harsh" when looking for "Dockview"
+		const link = page.getByRole('menuitem', { name: route.name, exact: true })
 		await expect(link).toHaveAttribute('href', `${route.path}#playwright`)
 		await link.click()
 		await expect(page).toHaveURL(new RegExp(`${route.path.replace('/', '\\/')}#playwright$`))

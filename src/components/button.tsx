@@ -2,6 +2,7 @@ import { Icon } from './icon'
 import { Variant, variantClass } from './variants'
 import './button.scss'
 import { compose } from 'pounce-ts'
+import { Badged } from './badged'
 
 export type ButtonProps = {
 	variant?: Variant
@@ -11,6 +12,20 @@ export type ButtonProps = {
 	ariaLabel?: string
 	children?: JSX.Children
 	onClick?: (event: MouseEvent) => void
+	/**
+	 * Badge to display on the button (e.g., notification count).
+	 * Can be a number, string, or JSX element.
+	 *
+	 * The badge is positioned at the top-right corner of the button using the Badged component.
+	 *
+	 * @example
+	 * ```tsx
+	 * <Button badge={5}>Inbox</Button>
+	 * <Button badge="99+">Messages</Button>
+	 * <Button badge={<Icon name="mdi:star" />}>Favorite</Button>
+	 * ```
+	 */
+	badge?: number | string | JSX.Element
 }
 
 export const Button = (props: ButtonProps) => {
@@ -42,13 +57,13 @@ export const Button = (props: ButtonProps) => {
 		})
 	)
 
-	return (
+	const buttonElement = (
 		<button
 			{...state.el}
 			onClick={state.onClick}
 			aria-label={
 				state.isIconOnly
-					? (state.ariaLabel ?? (state.el as any)?.['aria-label'] ?? 'Action')
+					? (state.ariaLabel ?? state.el?.['aria-label'] ?? 'Action')
 					: (state.ariaLabel ?? (state.el as any)?.['aria-label'])
 			}
 			class={[
@@ -63,4 +78,11 @@ export const Button = (props: ButtonProps) => {
 			{state.iconPosition === 'end' ? state.iconElement : null}
 		</button>
 	)
+
+	// Use Badged wrapper when badge is provided
+	if (state.badge !== undefined && state.badge !== null) {
+		return <Badged badge={state.badge}>{buttonElement}</Badged>
+	}
+
+	return buttonElement
 }

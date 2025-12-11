@@ -1,13 +1,17 @@
 import { expect, test, type Page } from '@playwright/test'
+import type { ToastConfig } from '../src/index'
 import { runA11yCheck } from './helpers/a11y'
 import { openSection } from './helpers/nav'
+
+interface WindowWithToastConfig extends Window {
+	toastConfig?: Partial<ToastConfig>
+}
 
 const openToastsDemo = async (page: Page) => {
 	await openSection(page, { menuName: 'Interaction', expectedUrlPath: '/interaction', expectedHeading: 'Toasts', headingLevel: 2 })
 	// Speed up toasts if a global config is exposed (no-op otherwise)
 	await page.evaluate(() => {
-		// @ts-ignore
-		const cfg = (window as any)?.toastConfig
+		const cfg = (window as WindowWithToastConfig)?.toastConfig
 		if (cfg && typeof cfg === 'object') {
 			cfg.defaultDurationMs = 800
 		}

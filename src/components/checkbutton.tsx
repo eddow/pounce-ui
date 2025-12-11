@@ -41,7 +41,7 @@ export const CheckButton = (props: CheckButtonProps) => {
 
 	const handleClick = (e: MouseEvent) => {
 		if (state.el?.onClick) {
-			;(state.el.onClick as any)(e)
+			state.el.onClick(e)
 		}
 		if (e.defaultPrevented) return
 		state.checked = !state.checked

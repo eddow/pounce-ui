@@ -47,7 +47,7 @@ test('applies vertical orientation when specified', async ({ page }) => {
 	}
 	
 	// Note: May not be present in demo, but we test the class structure
-	expect(buttonGroups.count()).resolves.toBeGreaterThan(0)
+	expect(count).toBeGreaterThan(0)
 })
 
 test('applies custom classes and styles', async ({ page }) => {

@@ -21,8 +21,14 @@ function isDevEnv(): boolean {
 	return true
 }
 
+interface PounceA11yGlobal {
+	PounceA11y?: {
+		STRICT?: boolean
+	}
+}
+
 function reportA11yIssue(message: string) {
-	const strict = (globalThis as any).PounceA11y?.STRICT === true
+	const strict = (globalThis as PounceA11yGlobal).PounceA11y?.STRICT === true
 	const prefix = '[pounce-ui/menu a11y]'
 	if (strict) throw new Error(`${prefix} ${message}`)
 	console.warn(`${prefix} ${message}`)

@@ -31,7 +31,7 @@ export default defineConfig({
 				})
 
 				if (!result) return null
-				return { code: result.code || '', map: result.map as any }
+				return { code: result.code || '', map: result.map}
 			},
 		} as Plugin,
 	],

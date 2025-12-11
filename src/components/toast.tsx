@@ -25,12 +25,13 @@ type ToastItem = {
 }
 
 export type ToastPosition = 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left'
-export const toastConfig: {
+export type ToastConfig = {
 	defaultDurationMs: number
 	position: ToastPosition
 	template: (item: ToastItem) => JSX.Element
 	variantIcon: Record<Variant, string>
-} = {
+}
+export const toastConfig: ToastConfig = {
 	defaultDurationMs: 3500,
 	position: 'bottom-right',
 	template: (item: ToastItem) => (

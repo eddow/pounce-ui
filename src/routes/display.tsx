@@ -1,4 +1,5 @@
 import { Alert } from '../components/alert'
+import { Badged } from '../components/badged'
 import { Button } from '../components/button'
 import { Icon } from '../components/icon'
 import { Container, Grid, Inline, Stack } from '../components/layout'
@@ -67,6 +68,35 @@ export default () => (
 						GitHub
 					</Button>
 				</Inline>
+			</div>
+			<div>
+				<Heading level={3}>Buttons with Badges</Heading>
+				<Stack gap="sm">
+					<Text size="sm" muted>
+						Badges can be used to show notification counts, unread items, or other indicators.
+					</Text>
+					<Inline role="group" wrap gap="sm">
+						<Button icon="mdi:email" badge={5} ariaLabel="Inbox">
+							Inbox
+						</Button>
+						<Button icon="mdi:bell" badge={12} ariaLabel="Notifications" />
+						<Button icon="mdi:message" badge="99+" ariaLabel="Messages" />
+						<Button icon="mdi:cart" badge={3} ariaLabel="Shopping cart">
+							Cart
+						</Button>
+						<Button
+							variant="secondary"
+							icon="mdi:account-circle"
+							badge="New"
+							ariaLabel="Profile"
+						/>
+						<Badged badge={<Icon name="mdi:star" size="12px" />}>
+							<Button variant="success" ariaLabel="Starred">
+								Starred
+							</Button>
+						</Badged>
+					</Inline>
+				</Stack>
 			</div>
 			<div>
 				<Heading level={3}>Badges</Heading>
@@ -143,22 +173,25 @@ export default () => (
 			</div>
 			<div>
 				<Heading level={3}>Fluid container</Heading>
-				<Container style={surfaceStyle}>
-					<Inline wrap gap="sm">
-						<span>Container without fluid width for media or dashboards.</span>
-						<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
-							Expand
-						</Button>
-					</Inline>
-				</Container>
-				<Container fluid style={surfaceStyle}>
-					<Inline wrap gap="sm">
-						<span>Container with fluid width for media or dashboards.</span>
-						<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
-							Expand
-						</Button>
-					</Inline>
-				</Container>
+				{/* Break out of parent container to show fluid effect - extends to viewport edges */}
+				<div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw;">
+					<Container style={surfaceStyle}>
+						<Inline wrap gap="sm">
+							<span>Container without fluid width for media or dashboards.</span>
+							<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
+								Expand
+							</Button>
+						</Inline>
+					</Container>
+					<Container fluid style={surfaceStyle}>
+						<Inline wrap gap="sm">
+							<span>Container with fluid width for media or dashboards.</span>
+							<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
+								Expand
+							</Button>
+						</Inline>
+					</Container>
+				</div>
 			</div>
 			<div>
 				<Heading level={3}>Alerts</Heading>

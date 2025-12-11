@@ -9,7 +9,7 @@ test('all variants render', async ({ page }) => {
 	await openDisplaySection(page)
 	
 	// Badges
-	await page.getByRole('heading', { level: 3, name: 'Badges' }).scrollIntoViewIfNeeded()
+	await page.getByRole('heading', { level: 3, name: 'Badges', exact: true }).scrollIntoViewIfNeeded()
 	const badges = page.locator('.pp-badge')
 	const badgeCount = await badges.count()
 	expect(badgeCount).toBeGreaterThan(0)
@@ -42,7 +42,7 @@ test('status content displays', async ({ page }) => {
 	await openDisplaySection(page)
 	
 	// Badges
-	await page.getByRole('heading', { level: 3, name: 'Badges' }).scrollIntoViewIfNeeded()
+	await page.getByRole('heading', { level: 3, name: 'Badges', exact: true }).scrollIntoViewIfNeeded()
 	const badges = page.locator('.pp-badge')
 	const badgeCount = await badges.count()
 	

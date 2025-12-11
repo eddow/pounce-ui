@@ -19,6 +19,3 @@ export async function runA11yCheck(page: Page) {
 	expect.soft(seriousOrWorse, message).toHaveLength(0)
 	return results
 }
-
-
-

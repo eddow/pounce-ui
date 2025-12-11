@@ -1,4 +1,5 @@
-import type { DockviewApi, DockviewPanelApi } from 'dockview-core'
+import type { DockviewApi, DockviewGroupPanel, DockviewPanelApi } from 'dockview-core'
+import { reactive, watch } from 'mutts/src'
 import { dialog } from '../components/dialog'
 import { Dockview } from '../components/dockview'
 import { toast } from '../components/toast'
@@ -8,13 +9,14 @@ export default () => {
 
 	const testWidget1 = (
 		props: { title: string; api: DockviewPanelApi; size?: { width: number; height: number } },
-		_widgetScope: Record<string, any>
+		scope: Record<string, any>
 	) => (
 		<div style="padding: 1rem;">
 			<h3>Test Panel 1</h3>
 			<p>
 				Size: {props.size?.width ?? 0} x {props.size?.height ?? 0}
 			</p>
+			<p>Clicks: {scope.state?.clicks ?? 0}</p>
 			<div role="group">
 				<button onClick={() => toast.info('Button 1 clicked!')}>Test Button 1</button>
 				<button class="success" onClick={() => toast.success('Success from panel 1')}>
@@ -32,6 +34,127 @@ export default () => {
 			</div>
 		</div>
 	)
+
+	// Tab widget for default tabComponent 'normal' that shares scope with panel widget
+	const normalTabWidget = (
+		_props: { title: string; api: DockviewPanelApi; size?: { width: number; height: number } },
+		scope: Record<string, any>
+	) => {
+		if (!scope.state) {
+			scope.state = reactive({ clicks: 0 })
+		}
+		return (
+			<div style="display: flex; gap: .25rem; align-items: center; justify-content: center; height: 100%;">
+				<button aria-label="Tab +1" onClick={() => scope.state!.clicks++}>
+					+1
+				</button>
+			</div>
+		)
+	}
+
+	const titleParamsWidget = (
+		props: {
+			title: string
+			api: DockviewPanelApi
+			params?: unknown
+			size?: { width: number; height: number }
+		},
+		_scope: Record<string, any>
+	) => {
+		// Reactive state for displaying current title/params
+		const state = reactive({
+			displayTitle: props.title,
+			displayParams: props.params ? JSON.stringify(props.params) : '{}',
+		})
+
+		// Watch props.title and props.params to update display (tests reverse sync)
+		watch(
+			() => props.title,
+			(title) => {
+				state.displayTitle = title
+			}
+		)
+		watch(
+			() => props.params,
+			(params) => {
+				state.displayParams = params ? JSON.stringify(params) : '{}'
+			},
+			{ deep: true }
+		)
+
+		return (
+			<div style="padding: 1rem;">
+				<h3>Title/Params Sync Test</h3>
+				<div>
+					<span>
+						Title (from props): <span data-testid="title-display">{state.displayTitle}</span>
+					</span>
+				</div>
+				<div>
+					<span>
+						Params (from props): <span data-testid="params-display">{state.displayParams}</span>
+					</span>
+				</div>
+				<div
+					role="group"
+					style="display: flex; gap: 0.5rem; flex-direction: column; margin-top: 1rem;"
+				>
+					<button
+						data-testid="update-title-prop"
+						onClick={() => {
+							// Update title via props (tests forward sync)
+							props.title = `Updated Title ${Date.now()}`
+						}}
+					>
+						Update Title via Props
+					</button>
+					<button
+						data-testid="update-title-api"
+						onClick={() => {
+							// Update title via API (tests reverse sync)
+							props.api.setTitle(`API Title ${Date.now()}`)
+						}}
+					>
+						Update Title via API
+					</button>
+					<button
+						data-testid="update-params-prop"
+						onClick={() => {
+							// Update params via props (tests forward sync)
+							props.params = { test: Date.now(), updated: true }
+						}}
+					>
+						Update Params via Props
+					</button>
+					<button
+						data-testid="update-params-api"
+						onClick={() => {
+							// Update params via API (tests reverse sync)
+							props.api.updateParameters({ test: Date.now(), fromAPI: true })
+						}}
+					>
+						Update Params via API
+					</button>
+					<button
+						data-testid="update-params-event"
+						onClick={() => {
+							// Update params via CustomEvent (tests fallback reverse sync)
+							const panelId = props.api?.id
+							if (panelId) {
+								window.dispatchEvent(
+									new CustomEvent('param-update', {
+										detail: { id: panelId, params: { test: Date.now(), fromEvent: true } },
+									})
+								)
+							}
+						}}
+					>
+						Update Params via Event
+					</button>
+				</div>
+			</div>
+		)
+	}
 
 	const testWidget2 = (
 		props: { title: string; api: DockviewPanelApi; size?: { width: number; height: number } },
@@ -104,6 +227,33 @@ export default () => {
 		test1: testWidget1,
 		test2: testWidget2,
 		test3: testWidget3,
+		titleParams: titleParamsWidget,
+	}
+	const tabs = {
+		normal: normalTabWidget,
+	}
+
+	// Demo header action component - shows panel count in group (reactive)
+	const groupHeaderAction = ({
+		group,
+		panelsState,
+	}: {
+		api: DockviewApi
+		group: DockviewGroupPanel
+		panelsState?: { count: number }
+	}) => {
+		// Use reactive state if provided, otherwise fallback to direct access
+		const count = panelsState?.count ?? group.panels.length
+		return (
+			<div style="display: flex; align-items: center; gap: .25rem; padding: 0 .25rem;">
+				<span style="font-size: 0.75rem; color: var(--pico-muted-color);">
+					{count} panel{count !== 1 ? 's' : ''}
+				</span>
+			</div>
+		)
+	}
+	const headerActions = {
+		default: groupHeaderAction,
 	}
 
 	return (
@@ -123,6 +273,21 @@ export default () => {
 					}}
 				>
 					Add Panel 1
+				</button>
+				<button
+					data-testid="add-title-params-panel"
+					onClick={() => {
+						if (api) {
+							api.addPanel({
+								id: `title-params-${Date.now()}`,
+								component: 'titleParams',
+								title: 'Initial Title',
+								params: { initial: true },
+							})
+						}
+					}}
+				>
+					Add Title/Params Panel
 				</button>
 				<button
 					class="secondary"
@@ -196,6 +361,8 @@ export default () => {
 			<Dockview
 				el:style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
 				widgets={widgets}
+				tabs={tabs}
+				headerRight={headerActions}
 				api={api}
 			/>
 		</section>

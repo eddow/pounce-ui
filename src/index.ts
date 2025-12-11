@@ -6,6 +6,8 @@ import './components/buttongroup' // Initialize global keyboard handler
 
 export type { AlertProps } from './components/alert'
 export { Alert } from './components/alert'
+export type { BadgedProps } from './components/badged'
+export { Badged } from './components/badged'
 export type { ButtonProps } from './components/button'
 export { Button } from './components/button'
 export type { ButtonGroupProps } from './components/buttongroup'
@@ -19,7 +21,7 @@ export type {
 	UIContent,
 } from './components/dialog'
 export { confirm, dialog } from './components/dialog'
-export type { DockviewWidgetProps } from './components/dockview'
+export type { DockviewHeaderActionProps, DockviewWidgetProps } from './components/dockview'
 export { Dockview } from './components/dockview'
 export type {
 	CheckboxProps,
@@ -37,7 +39,7 @@ export type { RadioButtonProps } from './components/radiobutton'
 export { RadioButton } from './components/radiobutton'
 export type { BadgeProps, ChipProps, PillProps } from './components/status'
 export { Badge, Chip, Pill } from './components/status'
-export type { ToastContent, ToastOptions } from './components/toast'
+export type { ToastConfig, ToastContent, ToastOptions } from './components/toast'
 export {
 	toast,
 	toastConfig,

@@ -55,6 +55,15 @@ class StorageEventMock {
 	}
 }
 
+interface MockGlobalThis {
+	window?: {
+		localStorage?: Storage
+		addEventListener?: (type: string, listener: EventListener) => void
+		removeEventListener?: (type: string, listener: EventListener) => void
+	}
+	localStorage?: Storage
+}
+
 describe('stored()', () => {
 	let mockLocalStorage: LocalStorageMock
 	let storageEventListeners: Array<(event: StorageEvent) => void> = []
@@ -63,32 +72,33 @@ describe('stored()', () => {
 		mockLocalStorage = new LocalStorageMock()
 		storageEventListeners = []
 
+		const mockGlobal = globalThis as MockGlobalThis
 		// Create window mock if it doesn't exist
-		if (typeof (globalThis as any).window === 'undefined') {
-			;(globalThis as any).window = {}
+		if (typeof mockGlobal.window === 'undefined') {
+			mockGlobal.window = {}
 		}
 		// Mock window.localStorage
-		;(globalThis as any).window.localStorage = mockLocalStorage
+		mockGlobal.window.localStorage = mockLocalStorage
 
 		// Mock global localStorage (used directly in storage.ts)
-		;(globalThis as any).localStorage = mockLocalStorage
+		mockGlobal.localStorage = mockLocalStorage
 
 		// Mock window.addEventListener for storage events
-		;(globalThis as any).window.addEventListener = ((type: string, listener: any) => {
+		mockGlobal.window.addEventListener = ((type: string, listener: EventListener) => {
 			if (type === 'storage') {
-				storageEventListeners.push(listener)
+				storageEventListeners.push(listener as (event: StorageEvent) => void)
 			}
-		}) as any
+		}) as typeof window.addEventListener
 
 		// Mock window.removeEventListener
-		;(globalThis as any).window.removeEventListener = ((type: string, listener: any) => {
+		mockGlobal.window.removeEventListener = ((type: string, listener: EventListener) => {
 			if (type === 'storage') {
-				const index = storageEventListeners.indexOf(listener)
+				const index = storageEventListeners.indexOf(listener as (event: StorageEvent) => void)
 				if (index > -1) {
 					storageEventListeners.splice(index, 1)
 				}
 			}
-		}) as any
+		}) as typeof window.removeEventListener
 	})
 
 	afterEach(() => {
@@ -106,8 +116,8 @@ describe('stored()', () => {
 			key,
 			newValue,
 			oldValue,
-			storageArea: mockLocalStorage as any,
-		}) as any as StorageEvent
+			storageArea: mockLocalStorage,
+		}) as StorageEvent
 
 		storageEventListeners.forEach((listener) => {
 			listener(event)
@@ -332,7 +342,7 @@ describe('stored()', () => {
 			const originalSetItem = mockLocalStorage.setItem.bind(mockLocalStorage)
 			let setItemCallCount = 0
 			let errorThrown = false
-			mockLocalStorage.setItem = ((key: string, value: string) => {
+			mockLocalStorage.setItem = (key: string, value: string) => {
 				setItemCallCount++
 				if (value.length > 100) {
 					errorThrown = true
@@ -341,7 +351,7 @@ describe('stored()', () => {
 					throw error
 				}
 				originalSetItem(key, value)
-			}) as any
+			}
 
 			const state = stored({
 				name: 'John',

@@ -3,6 +3,7 @@ import { effect } from 'mutts/src'
 import { bindApp } from 'pounce-ts'
 import { stored } from './lib/storage'
 import './components/variants.scss'
+import { enableDevTools } from 'mutts/src'
 import { Button } from './components/button'
 import { Menu } from './components/menu'
 import { Toolbar } from './components/toolbar'
@@ -10,17 +11,19 @@ import { browser } from './lib/browser'
 import { Router, type RouteWildcard } from './lib/router'
 import DisplayRoute from './routes/display'
 import DockviewRoute from './routes/dockview'
+import DockviewHarshRoute from './routes/dockview-harsh'
 import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
 import ToolbarRoute from './routes/toolbar'
 
+enableDevTools()
 // Stabilize contains() across realms in Playwright evaluations
-if (typeof Element !== 'undefined' && typeof (Element.prototype as any).contains === 'function') {
+if (typeof Element !== 'undefined' && typeof Element.prototype.contains === 'function') {
 	try {
 		const originalContains = Element.prototype.contains
 		Element.prototype.contains = function (node: any): boolean {
 			try {
-				return originalContains.call(this, node as any)
+				return originalContains.call(this, node)
 			} catch {
 				// Fallback: if node is not a Node from this realm, infer using activeElement
 				try {
@@ -88,6 +91,7 @@ const sections: DemoSection[] = [
 	{ path: '/forms', label: 'Forms', view: FormsRoute },
 	{ path: '/interaction', label: 'Interaction', view: InteractionRoute },
 	{ path: '/dockview', label: 'Dockview', view: DockviewRoute },
+	{ path: '/dockview-harsh', label: 'Dockview Harsh', view: DockviewHarshRoute },
 	{ path: '/toolbar', label: 'Toolbar', view: ToolbarRoute },
 ]
 

@@ -139,3 +139,159 @@ test('focus indicators visible', async ({ page }) => {
 	expect(isFocused).toBeTruthy()
 })
 
+// Button badges (now using Badged component)
+test('button with badge renders correctly', async ({ page }) => {
+	await openDisplaySection(page)
+	
+	// Check button with number badge
+	const inboxButton = page.getByRole('button', { name: 'Inbox' })
+	await expect(inboxButton).toBeVisible()
+	
+	// Badge is now in a Badged wrapper
+	const badge = inboxButton.locator('..').locator('.pp-badge')
+	await expect(badge).toBeVisible()
+	await expect(badge).toHaveText('5')
+})
+
+test('icon-only button with badge has correct size', async ({ page }) => {
+	await openDisplaySection(page)
+	
+	// Scroll to buttons with badges section
+	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
+	
+	// Check the bell button with badge (icon-only)
+	const notificationsButton = page.getByRole('button', { name: 'Notifications' })
+	await expect(notificationsButton).toBeVisible()
+	
+	// Verify it's an icon-only button
+	const isIconOnly = await notificationsButton.evaluate((el) => {
+		return el.classList.contains('pp-button-icon-only')
+	})
+	expect(isIconOnly).toBeTruthy()
+	
+	// Check button size - should not exceed reasonable dimensions
+	// Icon-only buttons should be approximately 2.5rem (40px) based on form element height
+	const boundingBox = await notificationsButton.boundingBox()
+	expect(boundingBox).not.toBeNull()
+	
+	if (boundingBox) {
+		// Button should not be excessively large (was 218x218, should be ~40px)
+		// Allow some tolerance for different browsers/rendering
+		expect(boundingBox.width).toBeLessThan(60) // Should be ~40px, allow up to 60px
+		expect(boundingBox.height).toBeLessThan(60) // Should be ~40px, allow up to 60px
+		expect(boundingBox.width).toBeGreaterThan(30) // At least 30px
+		expect(boundingBox.height).toBeGreaterThan(30) // At least 30px
+	}
+	
+	// Verify badge is present and visible (in Badged wrapper)
+	const badge = notificationsButton.locator('..').locator('.pp-badge')
+	await expect(badge).toBeVisible()
+	await expect(badge).toHaveText('12')
+	
+	// Badge should be positioned absolutely and not affect button size
+	const badgeBox = await badge.boundingBox()
+	if (badgeBox && boundingBox) {
+		// Badge should be positioned outside the button's main area (top-right)
+		// It may extend beyond the button bounds, which is fine
+		expect(badgeBox.width).toBeLessThan(35) // Badge should be small (allow some tolerance for "12" text)
+		expect(badgeBox.height).toBeLessThan(35) // Badge should be small (allow some tolerance)
+	}
+})
+
+test('buttons with different badge types render', async ({ page }) => {
+	await openDisplaySection(page)
+	
+	// Scroll to buttons with badges section
+	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
+	await page.waitForTimeout(200) // Allow for rendering
+	
+	// Test number badge
+	const notificationsButton = page.getByRole('button', { name: 'Notifications' })
+	await expect(notificationsButton).toBeVisible()
+	await expect(notificationsButton.locator('..').locator('.pp-badge')).toHaveText('12')
+	
+	// Test string badge
+	const messagesButton = page.getByRole('button', { name: 'Messages' })
+	await expect(messagesButton.locator('..').locator('.pp-badge')).toHaveText('99+')
+	
+	// Test button with label and badge
+	const inboxButton = page.getByRole('button', { name: 'Inbox' })
+	await expect(inboxButton).toBeVisible()
+	await expect(inboxButton.locator('..').locator('.pp-badge')).toHaveText('5')
+})
+
+test('buttons with labels and badges have correct badge positioning and no clipping', async ({ page }) => {
+	await openDisplaySection(page)
+	
+	// Scroll to buttons with badges section
+	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
+	await page.waitForTimeout(200) // Allow for rendering
+	
+	// Check Inbox button (has label and badge)
+	const inboxButton = page.getByRole('button', { name: 'Inbox' })
+	await expect(inboxButton).toBeVisible()
+	
+	const inboxBadge = inboxButton.locator('..').locator('.pp-badge')
+	await expect(inboxBadge).toBeVisible()
+	await expect(inboxBadge).toHaveText('5')
+	
+	// Verify badge is not clipped - check dimensions
+	const inboxBadgeBox = await inboxBadge.boundingBox()
+	if (inboxBadgeBox) {
+		// Badge should have reasonable dimensions (not squished or clipped)
+		expect(inboxBadgeBox.width).toBeGreaterThan(15) // Should be wide enough for content
+		expect(inboxBadgeBox.height).toBeGreaterThan(15) // Should be tall enough
+		// Badge should be roughly circular/square (not extremely wide or tall)
+		expect(inboxBadgeBox.width).toBeLessThan(40)
+		expect(inboxBadgeBox.height).toBeLessThan(30)
+	}
+	
+	// Check Cart button (has label and badge)
+	const cartButton = page.getByRole('button', { name: 'Shopping cart' })
+	await expect(cartButton).toBeVisible()
+	
+	const cartBadge = cartButton.locator('..').locator('.pp-badge')
+	await expect(cartBadge).toBeVisible()
+	await expect(cartBadge).toHaveText('3')
+	
+	// Verify badge is complete (not truncated)
+	const cartBadgeBox = await cartBadge.boundingBox()
+	if (cartBadgeBox) {
+		// Badge should have reasonable dimensions (not squished)
+		expect(cartBadgeBox.width).toBeGreaterThan(15) // Should be wide enough for content
+		expect(cartBadgeBox.height).toBeGreaterThan(15) // Should be tall enough
+	}
+})
+
+test('badged buttons maintain correct button size', async ({ page }) => {
+	await openDisplaySection(page)
+	
+	// Scroll to buttons with badges section
+	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
+	await page.waitForTimeout(200) // Allow for rendering
+	
+	// Check that buttons with badges don't have excessive size
+	const inboxButton = page.getByRole('button', { name: 'Inbox' })
+	await expect(inboxButton).toBeVisible()
+	const inboxBox = await inboxButton.boundingBox()
+	
+	if (inboxBox) {
+		// Button should have reasonable width (not excessively wide)
+		expect(inboxBox.width).toBeLessThan(200) // Should be reasonable for "Inbox" text
+		expect(inboxBox.height).toBeLessThan(65) // Should be reasonable height (allow some tolerance for padding/borders)
+		expect(inboxBox.height).toBeGreaterThan(30) // At least minimum height
+	}
+	
+	// Icon-only button should maintain small size
+	const notificationsButton = page.getByRole('button', { name: 'Notifications' })
+	const notificationsBox = await notificationsButton.boundingBox()
+	
+	if (notificationsBox) {
+		// Icon-only button should be approximately square and small
+		expect(notificationsBox.width).toBeLessThan(60)
+		expect(notificationsBox.height).toBeLessThan(60)
+		expect(notificationsBox.width).toBeGreaterThan(30)
+		expect(notificationsBox.height).toBeGreaterThan(30)
+	}
+})
+

@@ -65,7 +65,7 @@ function getOrderedTabstops(root: HTMLElement): HTMLElement[] {
 		'[tabindex]:not([tabindex="-1"])',
 	].join(', ')
 	const all = Array.from(root.querySelectorAll<HTMLElement>(genericSelector))
-	const exclusions = new Set<HTMLElement>([...(footerActions as any as HTMLElement[])])
+	const exclusions = new Set<HTMLElement>(footerActions)
 	if (headerClose) exclusions.add(headerClose)
 	const contentFocusables = all.filter((el) => !exclusions.has(el))
 	// 4) Fallback to the dialog element itself
@@ -308,16 +308,24 @@ export function dialog<
 				}
 			} catch {}
 			// Deterministic initial focus (header close → footer actions → content → dialog)
+			// If dialogElement isn't available yet, defer focus to next tick
 			if (dialogElement) {
 				const ordered = getOrderedTabstops(dialogElement)
 				const initial = ordered[0] ?? dialogElement
 				try {
-					;(initial as any).focus?.({ preventScroll: true })
+					initial.focus({ preventScroll: true })
 				} catch {}
 			} else {
-				try {
-					;(dialogElement as any)?.focus?.({ preventScroll: true })
-				} catch {}
+				// Element not yet mounted; defer focusing to next tick
+				setTimeout(() => {
+					if (dialogElement) {
+						const ordered = getOrderedTabstops(dialogElement)
+						const initial = ordered[0] ?? dialogElement
+						try {
+							initial.focus({ preventScroll: true })
+						} catch {}
+					}
+				}, 0)
 			}
 			setTimeout(() => {
 				document.documentElement.classList.remove('modal-is-opening')

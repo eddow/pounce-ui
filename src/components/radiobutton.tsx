@@ -47,7 +47,7 @@ export function RadioButton<Value = string>(props: RadioButtonProps<Value>) {
 
 	const handleClick = (e: MouseEvent) => {
 		if (state.el?.onClick) {
-			;(state.el.onClick as any)(e)
+			state.el.onClick(e)
 		}
 		if (e.defaultPrevented) return
 		// 2-way binding: set group = value
