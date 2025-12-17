@@ -78,6 +78,7 @@ css`
 }
 
 .pp-toolbar .dropdown > summary {
+	list-style: none;
 	height: calc(var(--pico-form-element-height, 2.5rem));
 	padding: 0 0.75rem;
 	display: inline-flex;
@@ -87,6 +88,10 @@ css`
 	border-radius: var(--pico-border-radius, 0.5rem);
 	background-color: var(--pico-card-background-color, #fff);
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pp-toolbar .dropdown > summary::-webkit-details-marker {
+	display: none;
 }
 
 .pp-toolbar .dropdown > summary:hover {

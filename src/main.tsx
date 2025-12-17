@@ -1,12 +1,12 @@
 import '@picocss/pico/css/pico.min.css'
-import { effect } from 'mutts/src'
+import { effect, project } from 'mutts/src'
 import { bindApp } from 'pounce-ts'
 import { stored } from './lib/storage'
 import './components/variants.scss'
 import { enableDevTools } from 'mutts/src'
 import { Button } from './components/button'
+import { AppShell } from './components/layout'
 import { Menu } from './components/menu'
-import { Toolbar } from './components/toolbar'
 import { browser } from './lib/browser'
 import { Router, type RouteWildcard } from './lib/router'
 import DisplayRoute from './routes/display'
@@ -50,25 +50,23 @@ const MenuBar = () => {
 	})
 
 	return (
-		<Toolbar>
-			<strong>Pounce UI</strong>
-			<Toolbar.Spacer visible />
-			<Menu summary="Menu">
-				<for each={sections.filter(({ path }) => path !== '/')}>
-					{(section) => (
-						<Menu.Item href={`${section.path}${browser.url.hash ?? ''}`}>{section.label}</Menu.Item>
-					)}
-				</for>
-			</Menu>
-			<Toolbar.Spacer />
-			<Button
-				icon={state.mode === 'dark' ? 'mdi:weather-night' : 'mdi:weather-sunny'}
-				ariaLabel="Toggle dark mode"
-				onClick={() => {
-					state.mode = state.mode === 'dark' ? 'light' : 'dark'
-				}}
-			/>
-		</Toolbar>
+		<Menu.Bar
+			brand="Pounce UI"
+			trailing={
+				<Button
+					icon={state.mode === 'dark' ? 'mdi:weather-night' : 'mdi:weather-sunny'}
+					ariaLabel="Toggle dark mode"
+					onClick={() => {
+						state.mode = state.mode === 'dark' ? 'light' : 'dark'
+					}}
+				/>
+			}
+			items={project.array(sections.filter(({ path }) => path !== '/'), ({value}) => (
+					<Menu.Item href={`${value.path}${browser.url.hash ?? ''}`}>
+						{value.label}
+					</Menu.Item>
+				))}
+		/>
 	)
 }
 
@@ -105,16 +103,19 @@ const renderNotFound = (props: { url: string }) => (
 )
 
 const App = () => (
-	<div class="demo-app">
-		<header>
-			<nav class="container">
-				<MenuBar />
-			</nav>
-		</header>
+	<AppShell
+		header={
+			<header>
+				<nav class="container pp-menu-nav">
+					<MenuBar />
+				</nav>
+			</header>
+		}
+	>
 		<main class="container">
 			<Router routes={sections} notFound={renderNotFound} />
 		</main>
-	</div>
+	</AppShell>
 )
 
 bindApp(<App />, '#app')

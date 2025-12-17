@@ -33,8 +33,14 @@ export type {
 export { Checkbox, Combobox, Radio, Select, Switch } from './components/forms'
 export type { IconProps } from './components/icon'
 export { Icon } from './components/icon'
-export type { ContainerProps, GridProps, InlineProps, StackProps } from './components/layout'
-export { Container, Grid, Inline, Stack } from './components/layout'
+export type {
+	AppShellProps,
+	ContainerProps,
+	GridProps,
+	InlineProps,
+	StackProps,
+} from './components/layout'
+export { AppShell, Container, Grid, Inline, Stack } from './components/layout'
 export type { RadioButtonProps } from './components/radiobutton'
 export { RadioButton } from './components/radiobutton'
 export type { BadgeProps, ChipProps, PillProps } from './components/status'

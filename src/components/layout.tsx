@@ -25,6 +25,28 @@ css`
 	display: grid;
 	gap: var(--pico-spacing);
 }
+
+/* App shell layout for sticky top header and content below */
+.pp-app-shell {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.pp-app-shell-header {
+	position: sticky;
+	top: 0;
+	z-index: var(--pp-app-shell-z, 100);
+	background: var(--pp-app-shell-bg, var(--pico-background-color, #fff));
+}
+
+.pp-app-shell-header--shadow {
+	box-shadow: var(--pp-app-shell-shadow, 0 2px 4px rgba(0, 0, 0, 0.08));
+}
+
+.pp-app-shell-main {
+	flex: 1 0 auto;
+}
 `
 
 type SpacingToken = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | string
@@ -73,6 +95,37 @@ export const Container = (props: ContainerProps) => {
 		<dynamic class={[state.fluid ? 'container-fluid' : 'container', state.class]} {...state}>
 			{state.children}
 		</dynamic>
+	)
+}
+
+export type AppShellProps = {
+	header: JSX.Element
+	children?: JSX.Children
+	shadowOnScroll?: boolean
+}
+
+export const AppShell = (props: AppShellProps) => {
+	let headerEl: HTMLElement | undefined
+
+	if (props.shadowOnScroll !== false && typeof window !== 'undefined') {
+		queueMicrotask(() => {
+			if (!headerEl) return
+			const onScroll = () => {
+				const scrolled = window.scrollY > 0
+				headerEl.classList.toggle('pp-app-shell-header--shadow', scrolled)
+			}
+			onScroll()
+			window.addEventListener('scroll', onScroll, { passive: true })
+		})
+	}
+
+	return (
+		<div class="pp-app-shell">
+			<header this={headerEl} class="pp-app-shell-header">
+				{props.header}
+			</header>
+			<main class="pp-app-shell-main">{props.children}</main>
+		</div>
 	)
 }
 
