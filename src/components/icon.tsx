@@ -1,8 +1,30 @@
 import '@picocss/pico/css/pico.min.css'
-import './icon.scss'
 import Iconify from '@iconify/iconify'
 import { addBatchCleanup } from 'mutts/src'
 import { compose } from 'pounce-ts'
+import { css } from '../lib/css'
+
+css`
+.iconify {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.pp-icon-btn {
+	--pp-icon-btn-size: 2rem;
+	min-width: 0;
+	width: var(--pp-icon-btn-size);
+	height: var(--pp-icon-btn-size);
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+.pp-icon-btn .iconify {
+	width: 1.125rem;
+	height: 1.125rem;
+}
+`
 
 export type IconProps = {
 	/** Icon name in the form "prefix:name", e.g. "mdi:home" */

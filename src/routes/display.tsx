@@ -5,6 +5,25 @@ import { Icon } from '../components/icon'
 import { Container, Grid, Inline, Stack } from '../components/layout'
 import { Badge, Chip, Pill } from '../components/status'
 import { Heading, Link, Text } from '../components/typography'
+import { css, sass } from '../lib/css'
+
+// Test the css tag function
+css`.css-tag-test { 
+	color: red; 
+	font-weight: bold;
+	padding: 0.5rem;
+	border: 2px solid blue;
+}`
+
+// Test the sass tag function (indented SASS syntax)
+sass`
+.sass-tag-test
+	color: green
+	font-size: 1.2em
+	&:hover
+		color: darkgreen
+		text-decoration: underline
+`
 
 const surfaceStyle =
 	'background: var(--pico-muted-border-color, rgba(0,0,0,.08)); padding: 0.75rem; border-radius: var(--pico-border-radius);'
@@ -208,6 +227,20 @@ export default () => (
 					<Alert title="Critical issue" variant="danger" dismissible>
 						Service interruptions detected. Investigate immediately.
 					</Alert>
+				</Stack>
+			</div>
+			<div>
+				<Heading level={3}>CSS Tag Function Test</Heading>
+				<Stack gap="sm">
+					<Text size="sm" muted>
+						Testing the css and sass template tag functions.
+					</Text>
+					<div class="css-tag-test">
+						This div uses the css tag function (red text, blue border)
+					</div>
+					<div class="sass-tag-test">
+						This div uses the sass tag function (green text, hover effect)
+					</div>
 				</Stack>
 			</div>
 		</Stack>

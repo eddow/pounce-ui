@@ -6,9 +6,20 @@ Minimal UI utilities built on PicoCSS and pounce-ts.
 
 See the docs per topic in `/docs`:
 
+- [Alert](./docs/alert.md)
+- [Badged](./docs/badged.md)
+- [Button](./docs/button.md)
+- [CSS Template Tags](./docs/css.md)
 - [Dialog](./docs/dialog.md)
-- [Toasts](./docs/toast.md)
+- [Dockview](./docs/dockview.md)
+- [Forms](./docs/forms.md)
 - [Icons and Variants](./docs/icons-variants.md)
+- [Layout](./docs/layout.md)
+- [Menu](./docs/menu.md)
+- [Status](./docs/status.md)
+- [Toast](./docs/toast.md)
+- [Toolbar](./docs/toolbar.md)
+- [Typography](./docs/typography.md)
 
 ## TODOs
 

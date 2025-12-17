@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite'
 import { transformSync } from '@babel/core'
 // Reuse the JSX reactive plugin directly from pounce sources
 import { babelPluginJsxReactive } from 'pounce-ts/plugin'
+import { cssTagPlugin } from './vite-plugin-css-tag'
 
 export default defineConfig({
 	root: '.',
@@ -11,6 +12,7 @@ export default defineConfig({
 		}
 	},
 	plugins: [
+		cssTagPlugin(),
 		{
 			name: 'babel-jsx-transform',
 			enforce: 'pre',
