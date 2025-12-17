@@ -8,6 +8,7 @@ import {
 	DockviewPanelApi,
 	GroupPanelPartInitParameters,
 	IContentRenderer,
+	SerializedDockview,
 } from 'dockview-core'
 import { effect, reactive, ScopedCallback, unreactive, watch } from 'mutts/src'
 import { bindApp, compose, extend } from 'pounce-ts'
@@ -176,6 +177,7 @@ export const Dockview = (
 		headerRight?: Record<string, DvHeaderAction>
 		headerPrefix?: Record<string, DvHeaderAction>
 		options?: FreeDockviewOptions
+		layout?: SerializedDockview
 		el?: JSX.GlobalHTMLAttributes
 	},
 	scope: Record<string, any>
@@ -265,6 +267,71 @@ export const Dockview = (
 		)
 		// Set api on props, scope, and call callback to update parent
 		props.api = scope.api = createdApi
+
+		// Handle layout initialization and updates
+		let suppressLayout = false
+
+		// Restore initial layout if provided
+		if (state.layout !== undefined && state.layout !== null) {
+			try {
+				// Use dockview-core fromJSON method with type assertion
+				if (typeof createdApi.fromJSON === 'function') {
+					createdApi.fromJSON(state.layout)
+				}
+			} catch {
+				// best-effort layout restoration; ignore if API shape differs
+			}
+		}
+
+		// Subscribe to layout changes from dockview
+		try {
+			const onDidLayoutChange = createdApi?.onDidLayoutChange
+			if (typeof onDidLayoutChange === 'function') {
+				onDidLayoutChange(() => {
+					try {
+						// Get current layout from dockview
+						let currentLayout: SerializedDockview | undefined
+						if (typeof createdApi.toJSON === 'function') {
+							currentLayout = createdApi.toJSON()
+						} else {
+							return
+						}
+
+						// Update layout prop (with loop suppression)
+						suppressLayout = true
+						if (props.layout !== currentLayout)
+							props.layout = currentLayout
+						queueMicrotask(() => {
+							suppressLayout = false
+						})
+					} catch {
+						// best-effort layout sync; ignore if API shape differs
+					}
+				})
+			}
+		} catch {
+			// best-effort layout subscription; ignore if API shape differs
+		}
+
+		// Watch layout prop changes to restore layout
+		effect(() => {
+			watch(
+				() => state.layout,
+				(layout) => {
+					if (!suppressLayout && layout !== undefined && layout !== null && createdApi) {
+						try {
+							// Use dockview-core fromJSON method with type assertion
+							if (typeof createdApi.fromJSON === 'function') {
+								createdApi.fromJSON(layout as any)
+							}
+						} catch {
+							// best-effort layout restoration; ignore if API shape differs
+						}
+					}
+				},
+				{ deep: true }
+			)
+		})
 	}
 	return <div {...state.el} use={initDockview}></div>
 }

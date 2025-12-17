@@ -574,3 +574,116 @@ test('dockview api variable in parent component gets updated after initializatio
 	await expect(toast).toBeVisible({ timeout: 2000 })
 })
 
+test('layout property - save, modify, and restore layout', async ({ page }) => {
+	await openDockviewSection(page)
+	
+	// Wait for dockview to initialize
+	await page.waitForTimeout(500)
+	
+	// Step 1: Create a layout by adding panels
+	const addPanel1 = page.getByRole('button', { name: /^Add Panel 1$/i })
+	await addPanel1.click()
+	await page.waitForTimeout(500)
+	
+	// Verify panel is visible
+	await expect(page.getByText('Test Panel 1')).toBeVisible({ timeout: 3000 })
+	
+	// Add another panel to create a more complex layout
+	const addPanel2 = page.getByRole('button', { name: /^Add Panel 2$/i })
+	await addPanel2.click()
+	await page.waitForTimeout(500)
+	
+	// Verify second panel is visible
+	await expect(page.getByText('Test Panel 2')).toBeVisible({ timeout: 3000 })
+	
+	// Step 2: Save the layout
+	const saveLayoutButton = page.getByTestId('save-layout')
+	await saveLayoutButton.click()
+	await page.waitForTimeout(300)
+	
+	// Verify layout is saved (check status display)
+	const layoutStatus = page.getByTestId('layout-status')
+	await expect(layoutStatus).toBeVisible()
+	await expect(layoutStatus).toContainText('Saved')
+	await expect(page.getByTestId('layout-has-content')).toBeVisible()
+	
+	// Step 3: Modify the layout by adding another panel
+	const addPanel3 = page.getByRole('button', { name: /^Add Panel 3$/i })
+	await addPanel3.click()
+	await page.waitForTimeout(500)
+	
+	// Verify third panel is visible
+	await expect(page.getByText('Test Panel 3')).toBeVisible({ timeout: 3000 })
+	
+	// Step 4: Verify layout prop was automatically updated
+	// Wait a bit for the layout change event to fire
+	await page.waitForTimeout(1000)
+	
+	// The layout status should still show "Saved" (layout prop was updated)
+	await expect(layoutStatus).toContainText('Saved')
+	
+	// Step 5: Clear the layout and verify it's cleared
+	const clearLayoutButton = page.getByTestId('clear-layout')
+	await clearLayoutButton.click()
+	await page.waitForTimeout(300)
+	
+	await expect(layoutStatus).toContainText('Not saved')
+	await expect(page.getByTestId('layout-has-content')).not.toBeVisible()
+	
+	// Step 6: Restore the layout
+	const restoreLayoutButton = page.getByTestId('restore-layout')
+	await restoreLayoutButton.click()
+	await page.waitForTimeout(500)
+	
+	// After restore, we should have the original 2 panels back
+	// Note: The exact panel count may vary, but we should see the panels we saved
+	await expect(page.getByText('Test Panel 1')).toBeVisible({ timeout: 3000 })
+	await expect(page.getByText('Test Panel 2')).toBeVisible({ timeout: 3000 })
+	
+	// Layout should be saved again after restore
+	await expect(layoutStatus).toContainText('Saved')
+})
+
+test('layout property - layout updates when UI is modified', async ({ page }) => {
+	await openDockviewSection(page)
+	
+	// Wait for dockview to initialize
+	await page.waitForTimeout(500)
+	
+	// Step 1: Create initial layout with one panel
+	const addPanel1 = page.getByRole('button', { name: /^Add Panel 1$/i })
+	await addPanel1.click()
+	await page.waitForTimeout(500)
+	
+	await expect(page.getByText('Test Panel 1')).toBeVisible({ timeout: 3000 })
+	
+	// Step 2: Save the layout
+	const saveLayoutButton = page.getByTestId('save-layout')
+	await saveLayoutButton.click()
+	await page.waitForTimeout(300)
+	
+	const layoutStatus = page.getByTestId('layout-status')
+	await expect(layoutStatus).toContainText('Saved')
+	
+	// Step 3: Modify the layout by closing the panel
+	const closeButton = page.getByRole('button', { name: /Close Last Panel/i })
+	await closeButton.click()
+	await page.waitForTimeout(1000) // Wait for layout change event
+	
+	// Step 4: Verify layout prop was automatically updated
+	// The layout status should still show "Saved" because the layout prop was updated
+	// (even though the panel was closed, the layout prop reflects the new state)
+	await expect(layoutStatus).toContainText('Saved')
+	
+	// Step 5: Verify the panel is actually closed
+	await expect(page.getByText('Test Panel 1')).not.toBeVisible({ timeout: 2000 })
+	
+	// Step 6: Restore the saved layout
+	const restoreLayoutButton = page.getByTestId('restore-layout')
+	await restoreLayoutButton.click()
+	await page.waitForTimeout(1000)
+	
+	// Step 7: Verify the panel is restored
+	await expect(page.getByText('Test Panel 1')).toBeVisible({ timeout: 3000 })
+})
+

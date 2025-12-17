@@ -1,4 +1,4 @@
-import type { DockviewApi, DockviewGroupPanel, DockviewPanelApi } from 'dockview-core'
+import type { DockviewApi, DockviewGroupPanel, DockviewPanelApi, SerializedDockview } from 'dockview-core'
 import { reactive, watch } from 'mutts/src'
 import { dialog } from '../components/dialog'
 import { Dockview } from '../components/dockview'
@@ -6,6 +6,7 @@ import { toast } from '../components/toast'
 
 export default () => {
 	let api: DockviewApi | undefined
+	const layoutState = reactive({ layout: undefined as SerializedDockview | undefined })
 
 	const testWidget1 = (
 		props: { title: string; api: DockviewPanelApi; size?: { width: number; height: number } },
@@ -357,6 +358,54 @@ export default () => {
 				>
 					Close Last Panel
 				</button>
+				<button
+					data-testid="save-layout"
+					class="success"
+					onClick={() => {
+						if (api && typeof api.toJSON === 'function') {
+							layoutState.layout = api.toJSON()
+							toast.success('Layout saved')
+						}
+					}}
+				>
+					Save Layout
+				</button>
+				<button
+					data-testid="restore-layout"
+					class="secondary"
+					onClick={() => {
+						if (layoutState.layout) {
+							// Trigger restore by creating a deep copy to ensure watch triggers
+							layoutState.layout = JSON.parse(JSON.stringify(layoutState.layout))
+							toast.info('Layout restored')
+						} else {
+							toast.warning('No layout to restore')
+						}
+					}}
+				>
+					Restore Layout
+				</button>
+				<button
+					data-testid="clear-layout"
+					class="warning"
+					onClick={() => {
+						layoutState.layout = undefined
+						toast.info('Layout cleared')
+					}}
+				>
+					Clear Layout
+				</button>
+			</div>
+			<div
+				data-testid="layout-status"
+				style="margin-bottom: 1rem; padding: 0.5rem; background: var(--pico-muted-border-color); border-radius: 4px; font-size: 0.875rem;"
+			>
+				Layout: {layoutState.layout ? 'Saved' : 'Not saved'}
+				{layoutState.layout ? (
+					<span data-testid="layout-has-content" style="margin-left: 0.5rem;">
+						(has content)
+					</span>
+				) : null}
 			</div>
 			<Dockview
 				el:style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
@@ -364,6 +413,7 @@ export default () => {
 				tabs={tabs}
 				headerRight={headerActions}
 				api={api}
+				layout={layoutState.layout}
 			/>
 		</section>
 	)
