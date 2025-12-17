@@ -50,4 +50,5 @@ export type { HeadingProps, LinkProps, TextProps } from './components/typography
 export { Heading, Link, Text } from './components/typography'
 export type { Variant } from './components/variants'
 export { variantClass } from './components/variants'
+export { css, sass, scss } from './lib/css'
 export { stored } from './lib/storage'

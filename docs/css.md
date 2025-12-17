@@ -11,7 +11,7 @@ The CSS template tag system allows you to write CSS directly in your TypeScript/
 The CSS template tag functions are available from `./lib/css`:
 
 ```ts
-import { css, sass, less } from './lib/css'
+import { css, sass, scss } from './lib/css'
 ```
 
 ## Basic Usage
@@ -45,10 +45,26 @@ sass`
 `
 ```
 
-### LESS
+### SCSS (curly-brace syntax)
 
-The `less` tag is reserved for future use. At the moment it is treated as plain CSS
-and **LESS‑specific features are not supported yet**.
+Use the `scss` tag for standard SCSS syntax (curly braces and semicolons):
+
+```ts
+scss`
+.container {
+  color: blue;
+  padding: 1rem;
+
+  &:hover {
+    color: darkblue;
+  }
+
+  .nested {
+    font-size: 1.2em;
+  }
+}
+`
+```
 
 ## How It Works
 
@@ -63,7 +79,7 @@ For syntax highlighting in VS Code/Cursor, install the **es6-string-html** exten
 
 **Extension**: [es6-string-html](https://open-vsx.org/extension/Tobermory/es6-string-html)
 
-This extension automatically detects `css`, `sass`, and `less` tags in template literals and provides proper syntax highlighting without any configuration.
+This extension automatically detects `css`, `sass`, and `scss` tags in template literals and provides proper syntax highlighting without any configuration.
 
 ## Limitations
 

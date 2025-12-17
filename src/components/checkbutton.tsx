@@ -1,7 +1,76 @@
 import { Icon } from './icon'
 import { Variant, variantClass } from './variants'
-import './checkbutton.scss'
 import { compose } from 'pounce-ts'
+import { css } from '../lib/css'
+
+css`
+.pp-checkbutton {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	position: relative;
+	margin: 0;
+}
+
+.pp-checkbutton .pp-checkbutton-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.pp-checkbutton .pp-checkbutton-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+button.pp-checkbutton {
+	border-color: var(--pico-muted-border-color, rgba(0, 0, 0, 0.2));
+}
+
+button.pp-checkbutton:not(.pp-checkbutton-checked) {
+	background-color: transparent;
+	border-width: 1px;
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton.pp-checkbutton-checked {
+	background-color: color-mix(in srgb, var(--pico-primary, #3b82f6) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton.pp-checkbutton-checked.success {
+	background-color: color-mix(in srgb, var(--pp-success, #22c55e) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton.pp-checkbutton-checked.warning {
+	background-color: color-mix(in srgb, var(--pp-warning, #f59e0b) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton.pp-checkbutton-checked.danger {
+	background-color: color-mix(in srgb, var(--pp-danger, #ef4444) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton.pp-checkbutton-checked.secondary {
+	background-color: color-mix(in srgb, var(--pico-secondary, #64748b) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton.pp-checkbutton-checked.contrast {
+	background-color: color-mix(in srgb, var(--pico-contrast, #0f172a) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-checkbutton:not(.pp-checkbutton-checked):hover {
+	background-color: var(--pico-card-background-color, rgba(0, 0, 0, 0.05));
+}
+
+button.pp-checkbutton.pp-checkbutton-checked:hover {
+	filter: brightness(0.95);
+}
+`
 
 export type CheckButtonProps = {
 	/** Button variant */

@@ -1,4 +1,3 @@
-import './dockview.scss'
 import {
 	CreateComponentOptions,
 	createDockview,
@@ -12,6 +11,9 @@ import {
 } from 'dockview-core'
 import { effect, reactive, ScopedCallback, unreactive, watch } from 'mutts/src'
 import { bindApp, compose, extend } from 'pounce-ts'
+import { css } from '../lib/css'
+
+css`@import 'dockview-core/dist/styles/dockview.css';`
 
 // Scope passed to widgets always has api defined (set before widget is called)
 type DockviewScope = Record<string, any> & { api: DockviewApi }
@@ -299,8 +301,7 @@ export const Dockview = (
 
 						// Update layout prop (with loop suppression)
 						suppressLayout = true
-						if (props.layout !== currentLayout)
-							props.layout = currentLayout
+						if (props.layout !== currentLayout) props.layout = currentLayout
 						queueMicrotask(() => {
 							suppressLayout = false
 						})

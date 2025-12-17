@@ -1,5 +1,31 @@
 import { compose } from 'pounce-ts'
-import './layout.scss'
+import { css } from '../lib/css'
+
+css`
+.pp-stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--pico-spacing);
+	/* Allow badges on buttons to overflow */
+	overflow: visible;
+}
+
+.pp-inline {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--pico-spacing) * 0.75);
+	overflow-x: auto;
+	/* Allow badges on buttons to overflow in all directions */
+	overflow-y: visible;
+	/* Ensure badges aren't clipped by this container */
+	contain: none;
+}
+
+.pp-grid {
+	display: grid;
+	gap: var(--pico-spacing);
+}
+`
 
 type SpacingToken = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | string
 

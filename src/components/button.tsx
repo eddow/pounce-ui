@@ -1,8 +1,52 @@
+import { compose } from 'pounce-ts'
+import { css } from '../lib/css'
+import { Badged } from './badged'
 import { Icon } from './icon'
 import { Variant, variantClass } from './variants'
-import './button.scss'
-import { compose } from 'pounce-ts'
-import { Badged } from './badged'
+
+css`
+.pp-button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0;
+}
+
+.pp-button .pp-button-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.pp-button .pp-button-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.pp-button-icon-only {
+	aspect-ratio: 1;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	max-width: calc(var(--pico-form-element-height, 2.5rem));
+	max-height: calc(var(--pico-form-element-height, 2.5rem));
+	width: calc(var(--pico-form-element-height, 2.5rem));
+	height: calc(var(--pico-form-element-height, 2.5rem));
+}
+
+.pp-button-icon-only .pp-button-icon {
+	max-width: 1.5rem;
+	max-height: 1.5rem;
+	flex-shrink: 1;
+}
+
+.pp-button-icon-only .pp-button-icon .iconify {
+	max-width: 1.5rem;
+	max-height: 1.5rem;
+}
+`
 
 export type ButtonProps = {
 	variant?: Variant

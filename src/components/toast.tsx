@@ -1,8 +1,120 @@
 import { reactive } from 'mutts/src'
 import { array, bindApp, compose, isElement } from 'pounce-ts'
 import { Icon } from './icon'
-import './toast.scss'
+import { css } from '../lib/css'
 import type { Variant } from './variants'
+
+css`
+.pp-toasts {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	z-index: 1000;
+}
+
+.pp-toasts.top-right {
+	top: 1rem;
+	right: 1rem;
+}
+
+.pp-toasts.top-left {
+	top: 1rem;
+	left: 1rem;
+}
+
+.pp-toasts.bottom-right {
+	bottom: 1rem;
+	right: 1rem;
+}
+
+.pp-toasts.bottom-left {
+	bottom: 1rem;
+	left: 1rem;
+}
+
+.pp-toast {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	align-items: center;
+	gap: 0.5rem 0.75rem;
+	min-width: 16rem;
+	max-width: 28rem;
+	padding: 0.6rem 0.75rem;
+	border-radius: 0.5rem;
+	background: var(--pico-card-background-color);
+	border: 1px solid var(--pico-muted-border-color);
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+	transition: transform 0.16s ease, opacity 0.16s ease;
+	transform: translateY(0);
+	opacity: 1;
+}
+
+.pp-toast-closing {
+	transform: translateY(6px);
+	opacity: 0;
+}
+
+.pp-toast .pp-icon-btn {
+	min-width: 0;
+}
+
+.pp-toast-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.pp-toast-content {
+	min-width: 0;
+}
+
+.pp-toast-content p {
+	margin: 0;
+}
+
+.pp-toast .pp-toast-content,
+.pp-toast .pp-toast-content p,
+.pp-toast .pp-toast-content a,
+.pp-toast .pp-toast-content span {
+	color: inherit;
+}
+
+.pp-toast.success {
+	background-color: var(--pp-success-background);
+	border-color: var(--pp-success-border);
+	color: var(--pp-success-inverse);
+}
+
+.pp-toast.warning {
+	background-color: var(--pp-warning-background);
+	border-color: var(--pp-warning-border);
+	color: var(--pp-warning-inverse);
+}
+
+.pp-toast.danger {
+	background-color: var(--pp-danger-background);
+	border-color: var(--pp-danger-border);
+	color: var(--pp-danger-inverse);
+}
+
+.pp-toast.primary {
+	background-color: var(--pico-primary-background);
+	border-color: var(--pico-primary-border);
+	color: var(--pico-primary-inverse);
+}
+
+.pp-toast.primary .pp-toast-icon {
+	color: var(--pico-primary-inverse);
+}
+
+.pp-toast.primary .pp-icon-btn,
+.pp-toast.success .pp-icon-btn,
+.pp-toast.warning .pp-icon-btn,
+.pp-toast.danger .pp-icon-btn {
+	filter: brightness(0.95);
+}
+`
 
 export type ToastContent = string | JSX.Element
 

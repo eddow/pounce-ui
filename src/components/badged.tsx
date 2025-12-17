@@ -1,4 +1,59 @@
-import './badged.scss'
+import { css } from '../lib/css'
+
+css`
+.pp-badged {
+	position: relative;
+	display: inline-flex;
+	overflow: visible;
+}
+
+.pp-badged .pp-badge {
+	position: absolute;
+	min-width: 1.25rem;
+	height: 1.25rem;
+	padding: 0 0.35rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.7rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	border-radius: 999px;
+	background-color: var(--pico-del-color, #d32f2f);
+	color: var(--pico-color-inverse, #fff);
+	box-shadow: 0 0 0 2px var(--pico-background-color, #fff);
+	z-index: 10;
+	pointer-events: none;
+}
+
+.pp-badged-top-right .pp-badge {
+	top: -0.5rem;
+	right: -0.4rem;
+}
+
+.pp-badged-top-left .pp-badge {
+	top: -0.5rem;
+	left: -0.4rem;
+}
+
+.pp-badged-bottom-right .pp-badge {
+	bottom: -0.5rem;
+	right: -0.4rem;
+}
+
+.pp-badged-bottom-left .pp-badge {
+	bottom: -0.5rem;
+	left: -0.4rem;
+}
+
+.pp-badged-top-right:has(.pp-button-icon-only) .pp-badge,
+.pp-badged-top-right:has(.pp-checkbutton-icon-only) .pp-badge,
+.pp-badged-top-right:has(.pp-radiobutton-icon-only) .pp-badge {
+	top: -0.35rem;
+	right: -0.3rem;
+}
+`
 
 /**
  * Badged component - wraps any element with a badge indicator.

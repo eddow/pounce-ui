@@ -12,8 +12,8 @@ interface CSSTagMatch {
 }
 
 /**
- * Vite plugin that transforms css/sass/less template literals
- * into processed CSS imports and injections
+ * Vite plugin that transforms css/sass/scss template literals
+ * into processed CSS injections
  */
 export function cssTagPlugin(): Plugin {
 	const cssIdMap = new Map<string, string>()
@@ -29,7 +29,7 @@ export function cssTagPlugin(): Plugin {
 			// Skip processing the css.ts file itself to avoid circular imports
 			if (id.includes('/lib/css.ts') || id.endsWith('lib/css.ts')) return null
 
-			// Find all css/sass/less template literal calls
+			// Find all css/sass/scss template literal calls
 			const matches = findCSSTagCalls(code)
 			if (matches.length === 0) return null
 
@@ -60,10 +60,25 @@ export function cssTagPlugin(): Plugin {
 							}`,
 						)
 					}
+				} else if (match.tagName === 'scss') {
+					// For scss`...` use SCSS syntax and compile to CSS
+					try {
+						const result = compileString(processedCSS, {
+							syntax: 'scss',
+							style: 'expanded',
+							sourceMap: false,
+						})
+						processedCSS = result.css
+					} catch (error) {
+						throw new Error(
+							`SCSS compilation failed in ${id}: ${
+								error instanceof Error ? error.message : String(error)
+							}`,
+						)
+					}
 				}
 
-				// For css`...` and less`...` we currently treat content as plain CSS
-				// LESS-specific features are not supported yet.
+				// For css`...` we currently treat content as plain CSS
 
 				// Inline the processed CSS directly into the module
 				const replacement = `__injectCSS(${JSON.stringify(processedCSS)});`
@@ -195,8 +210,8 @@ export function cssTagPlugin(): Plugin {
 }
 
 /**
- * Find all css/sass/less template literal calls in code
- * Matches patterns like: css`...`, sass`...`, less`...`
+ * Find all css/sass/scss template literal calls in code
+ * Matches patterns like: css`...`, sass`...`, scss`...`
  *
  * Note: Currently only supports static template strings without interpolation.
  * Template strings with ${...} expressions are not yet supported.
@@ -204,10 +219,10 @@ export function cssTagPlugin(): Plugin {
 function findCSSTagCalls(code: string): CSSTagMatch[] {
 	const matches: CSSTagMatch[] = []
 
-	// Match css`...`, sass`...`, less`...` template literals
+	// Match css`...`, sass`...`, scss`...` template literals
 	// Also handles cases like: css `.class { }` (with space)
 	// This regex only matches static template strings (no ${...} interpolation)
-	const regex = /\b(css|sass|less)\s*`([^`${]*(?:\\.[^`${]*)*)`/g
+	const regex = /\b(css|sass|scss)\s*`([^`${]*(?:\\.[^`${]*)*)`/g
 
 	let match: RegExpExecArray | null = null
 	// biome-ignore lint/suspicious/noAssignInExpressions: Because I can

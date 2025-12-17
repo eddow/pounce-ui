@@ -1,7 +1,76 @@
 import { Icon } from './icon'
 import { Variant, variantClass } from './variants'
-import './radiobutton.scss'
 import { compose } from 'pounce-ts'
+import { css } from '../lib/css'
+
+css`
+.pp-radiobutton {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	position: relative;
+	margin: 0;
+}
+
+.pp-radiobutton .pp-radiobutton-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.pp-radiobutton .pp-radiobutton-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+button.pp-radiobutton {
+	border-color: var(--pico-muted-border-color, rgba(0, 0, 0, 0.2));
+}
+
+button.pp-radiobutton:not(.pp-radiobutton-checked) {
+	background-color: transparent;
+	border-width: 1px;
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton.pp-radiobutton-checked {
+	background-color: color-mix(in srgb, var(--pico-primary, #3b82f6) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton.pp-radiobutton-checked.success {
+	background-color: color-mix(in srgb, var(--pp-success, #22c55e) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton.pp-radiobutton-checked.warning {
+	background-color: color-mix(in srgb, var(--pp-warning, #f59e0b) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton.pp-radiobutton-checked.danger {
+	background-color: color-mix(in srgb, var(--pp-danger, #ef4444) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton.pp-radiobutton-checked.secondary {
+	background-color: color-mix(in srgb, var(--pico-secondary, #64748b) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton.pp-radiobutton-checked.contrast {
+	background-color: color-mix(in srgb, var(--pico-contrast, #0f172a) 20%, transparent);
+	color: var(--pico-contrast);
+}
+
+button.pp-radiobutton:not(.pp-radiobutton-checked):hover {
+	background-color: var(--pico-card-background-color, rgba(0, 0, 0, 0.05));
+}
+
+button.pp-radiobutton.pp-radiobutton-checked:hover {
+	filter: brightness(0.95);
+}
+`
 
 export type RadioButtonProps<Value = string> = {
 	/** Button variant */

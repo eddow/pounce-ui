@@ -7,8 +7,59 @@
  * Uses DOM traversal - no need for data attributes.
  */
 
-import './buttongroup.scss'
 import { compose } from 'pounce-ts'
+import { css } from '../lib/css'
+
+css`
+.pp-buttongroup {
+	display: inline-flex;
+	align-items: stretch;
+	width: fit-content;
+	flex: none;
+}
+
+.pp-buttongroup-horizontal {
+	flex-direction: row;
+}
+
+.pp-buttongroup-vertical {
+	flex-direction: column;
+}
+
+.pp-buttongroup > * {
+	margin: 0;
+}
+
+.pp-buttongroup-horizontal > button:not(:last-child) {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: none;
+}
+
+.pp-buttongroup-horizontal > button:not(:first-child) {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.pp-buttongroup-vertical > button:not(:last-child) {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-bottom: none;
+}
+
+.pp-buttongroup-vertical > button:not(:first-child) {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.pp-buttongroup button:focus-visible,
+.pp-toolbar button:focus-visible {
+	outline: 2px solid var(--pico-primary, #3b82f6);
+	outline-offset: -2px;
+	z-index: 1;
+	position: relative;
+}
+`
 
 // TODO: add tests for tab&arrows navigation
 // Global keyboard handler - set up once

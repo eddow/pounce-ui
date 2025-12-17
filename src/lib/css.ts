@@ -7,20 +7,29 @@
  * For syntax highlighting in VS Code/Cursor, install the "es6-string-html" extension:
  * https://open-vsx.org/extension/Tobermory/es6-string-html
  *
- * This extension automatically detects `css`, `sass`, and `less` tags in template
+ * This extension automatically detects `css`, `sass`, and `scss` tags in template
  * literals and provides proper syntax highlighting without any configuration.
  *
  * @example
  * ```ts
- * import { css, sass } from './lib/css'
+ * import { css, sass, scss } from './lib/css'
  *
  * css`.my-class { color: red; }`
  *
  * sass`
- *   .container {
- *     color: blue;
- *     &:hover { color: red; }
+ * .container
+ *   color: blue
+ *   &:hover
+ *     color: red
+ * `
+ *
+ * scss`
+ * .container {
+ *   color: blue;
+ *   &:hover {
+ *     color: red;
  *   }
+ * }
  * `
  * ```
  */
@@ -97,21 +106,23 @@ export function sass(strings: TemplateStringsArray, ...values: any[]): void {
 }
 
 /**
- * LESS template tag function
+ * SCSS template tag function
  *
- * Processes LESS syntax through Vite's LESS preprocessor.
+ * Processes SCSS syntax (curly braces, semicolons) through the SASS preprocessor.
  *
  * @example
  * ```ts
- * less`
- *   .container {
- *     color: blue;
- *     &:hover { color: red; }
+ * scss`
+ * .container {
+ *   color: blue;
+ *   &:hover {
+ *     color: red;
  *   }
+ * }
  * `
  * ```
  */
-export function less(strings: TemplateStringsArray, ...values: any[]): void {
+export function scss(strings: TemplateStringsArray, ...values: any[]): void {
 	// This function is replaced by the Vite plugin during build
 	// This is just a runtime fallback (shouldn't be reached in normal usage)
 	const cssText = strings.reduce((acc, str, i) => {

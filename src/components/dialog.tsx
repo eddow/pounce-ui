@@ -1,8 +1,70 @@
 import { reactive } from 'mutts/src'
 import { bindApp, compose, isElement } from 'pounce-ts'
 import { Icon } from './icon'
-import './dialog.scss'
+import { css } from '../lib/css'
 import { Variant, variantClass } from './variants'
+
+css`
+.pp-size-sm {
+	width: 22rem;
+}
+
+.pp-size-md {
+	width: 32rem;
+}
+
+.pp-size-lg {
+	width: 48rem;
+}
+
+footer > .pp-actions[role='group'] {
+	display: flex;
+	justify-content: flex-end;
+	width: 100%;
+}
+
+footer > .pp-actions[role='group'] > * {
+	flex: 0 0 auto;
+}
+
+footer > .pp-actions[role='group'] button {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+footer > .pp-actions[role='group'] button .pp-button-icon {
+	display: inline-flex;
+	align-items: center;
+}
+
+footer > .pp-actions[role='group'] button .pp-button-label {
+	display: inline-flex;
+}
+
+.pp-dialog-article .pp-body {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 1rem;
+	align-items: start;
+	min-width: 0;
+}
+
+.pp-dialog-article .pp-body .pp-stamp {
+	width: 4rem;
+	height: 4rem;
+	border-radius: 0.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--pico-muted-border-color, #e5e7eb);
+}
+
+.pp-dialog-article .pp-body .pp-stamp .iconify {
+	width: 2.25rem;
+	height: 2.25rem;
+}
+`
 
 export type UIContent = string | JSX.Element
 export type DialogSize = 'sm' | 'md' | 'lg'
