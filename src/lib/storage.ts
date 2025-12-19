@@ -17,18 +17,41 @@ export function stored<T extends Record<string, any>>(initial: T): T {
 		else if (event.key in initial) {
 			const evKey = event.key as keyof T
 			read[evKey] = false
-			rv[evKey] = event.newValue ? json.parse<T[typeof evKey]>(event.newValue) : initial[evKey]
+			if (event.newValue == null) rv[evKey] = initial[evKey]
+			else {
+				try {
+					rv[evKey] = json.parse<T[typeof evKey]>(event.newValue)
+				} catch {
+					try {
+						localStorage.removeItem(evKey as string)
+					} catch {}
+					rv[evKey] = initial[evKey]
+				}
+			}
 		}
 	}
 	window.addEventListener('storage', eventListener)
 	const cleanups: ScopedCallback[] = []
 	function bind(key: keyof T & string) {
 		const stored = localStorage.getItem(key)
-		rv[key] = stored ? json.parse<T[typeof key]>(stored) : initial[key]
+		if (stored == null) rv[key] = initial[key]
+		else {
+			try {
+				rv[key] = json.parse<T[typeof key]>(stored)
+			} catch {
+				try {
+					localStorage.removeItem(key)
+				} catch {}
+				rv[key] = initial[key]
+			}
+		}
 		cleanups.push(
 			effect(() => {
-				const stored = json.stringify(rv[key])
-				if (read[key]) localStorage.setItem(key, stored)
+				const value = rv[key]
+				if (read[key]) {
+					if (value === undefined) localStorage.removeItem(key)
+					else localStorage.setItem(key, json.stringify(value))
+				}
 				read[key] = true
 			})
 		)

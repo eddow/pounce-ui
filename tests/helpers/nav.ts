@@ -1,7 +1,11 @@
 import { expect, type Page } from '@playwright/test'
 
 export const openMenu = async (page: Page) => {
-	await page.locator('summary:has-text("Menu")').click()
+	// Desktop layout exposes menu items directly; mobile layout uses a burger button.
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	if (await burger.isVisible()) {
+		await burger.click()
+	}
 }
 
 type OpenSectionArgs = {

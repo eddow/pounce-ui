@@ -1,5 +1,7 @@
 import { expect, test, type Page } from '@playwright/test'
 
+test.use({ viewport: { width: 375, height: 667 } })
+
 const openPage = async (page: Page) => {
 	await page.goto('/#playwright')
 }
@@ -7,21 +9,21 @@ const openPage = async (page: Page) => {
 // Menu behavior
 test('menu summary displays', async ({ page }) => {
 	await openPage(page)
-	const menuSummary = page.locator('summary:has-text("Menu")')
-	await expect(menuSummary).toBeVisible()
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	await expect(burger).toBeVisible()
 })
 
 test('menu opens on click', async ({ page }) => {
 	await openPage(page)
-	const menuSummary = page.locator('summary:has-text("Menu")')
+	const burger = page.getByRole('button', { name: 'Open navigation' })
 	
 	// Menu should be closed initially
-	const details = menuSummary.locator('xpath=ancestor::details')
+	const details = page.locator('details.dropdown')
 	const isOpen = await details.getAttribute('open')
 	expect(isOpen).toBeNull()
 	
 	// Click to open
-	await menuSummary.click()
+	await burger.click()
 	
 	// Menu should be open
 	await expect(details).toHaveAttribute('open', '')
@@ -29,8 +31,8 @@ test('menu opens on click', async ({ page }) => {
 
 test('menu items navigate correctly', async ({ page }) => {
 	await openPage(page)
-	const menuSummary = page.locator('summary:has-text("Menu")')
-	await menuSummary.click()
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	await burger.click()
 	
 	// Find menu items
 	const menuItems = page.locator('details.dropdown a[href]')
@@ -52,10 +54,10 @@ test('menu items navigate correctly', async ({ page }) => {
 
 test('menu closes on item selection', async ({ page }) => {
 	await openPage(page)
-	const menuSummary = page.locator('summary:has-text("Menu")')
-	await menuSummary.click()
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	await burger.click()
 	
-	const details = menuSummary.locator('xpath=ancestor::details')
+	const details = page.locator('details.dropdown')
 	await expect(details).toHaveAttribute('open', '')
 	
 	// Click a menu item
@@ -70,10 +72,10 @@ test('menu closes on item selection', async ({ page }) => {
 
 test('menu closes on outside click', async ({ page }) => {
 	await openPage(page)
-	const menuSummary = page.locator('summary:has-text("Menu")')
-	await menuSummary.click()
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	await burger.click()
 	
-	const details = menuSummary.locator('xpath=ancestor::details')
+	const details = page.locator('details.dropdown')
 	await expect(details).toHaveAttribute('open', '')
 	
 	// Click outside menu
@@ -87,17 +89,17 @@ test('menu closes on outside click', async ({ page }) => {
 
 test('keyboard navigation works', async ({ page }) => {
 	await openPage(page)
-	const menuSummary = page.locator('summary:has-text("Menu")')
-	await menuSummary.click()
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	await burger.click()
 	
 	// Focus menu
-	await menuSummary.focus()
+	await burger.focus()
 	
 	// Press Enter or Space to interact
 	await page.keyboard.press('Enter')
 	
 	// Menu should be accessible via keyboard
-	const details = menuSummary.locator('xpath=ancestor::details')
+	const details = page.locator('details.dropdown')
 	const isOpen = await details.getAttribute('open')
 	
 	// Menu state should be toggled

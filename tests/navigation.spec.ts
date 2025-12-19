@@ -1,7 +1,10 @@
 import { expect, test } from '@playwright/test'
 
 const openMenu = async (page: any) => {
-	await page.locator('summary:has-text("Menu")').click()
+	const burger = page.getByRole('button', { name: 'Open navigation' })
+	if (await burger.isVisible()) {
+		await burger.click()
+	}
 }
 
 test('shows Overview by default and supports navigation links', async ({ page }) => {

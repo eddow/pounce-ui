@@ -1,5 +1,5 @@
 import type { DockviewApi } from 'dockview-core'
-import { effect, reactive } from 'mutts/src'
+import { cleanedBy, effect, reactive } from 'mutts/src'
 import { Dockview, type DockviewWidgetProps } from '../components/dockview'
 import { toast } from '../components/toast'
 
@@ -11,8 +11,12 @@ import { toast } from '../components/toast'
  * 4. Race conditions where panels are added before api is ready
  */
 export default () => {
+	const cleanupFns: Array<() => void> = []
+	const previousTheme = document.documentElement.dataset.theme
+
 	// Store api in reactive state so effects can track changes
 	const state = reactive({ api: undefined as DockviewApi | undefined })
+	const pendingPanels = new Map<string, { component: string; id: string; params?: Record<string, any> }>()
 
 	// Track if api was set (to test if parent's api variable gets updated)
 	const apiSetState = reactive({ wasSet: false, setCount: 0 })
@@ -23,13 +27,16 @@ export default () => {
 	// PROBLEM 1: Effect that uses api before it's initialized
 	// This demonstrates an effect that depends on api (even if just checking if it exists)
 	// In real scenarios, effects might try to call api methods when api becomes available
-	effect(() => {
+	cleanupFns.push(
+		effect(() => {
 		const theme = themeState.darkMode ? 'dark' : 'light'
 		document.documentElement.dataset.theme = theme
-	})
+		})
+	)
 
 	// Monitor api variable changes - now reading from reactive state
-	effect(() => {
+	cleanupFns.push(
+		effect(() => {
 		// Track if api is available when theme changes
 		if (state.api) {
 			// API is available - could use it here if needed
@@ -39,7 +46,8 @@ export default () => {
 				apiSetState.setCount++
 			}
 		}
-	})
+		})
+	)
 
 	// PROBLEM 2: Effect that calls api methods before api exists
 	// This mimics: effect(() => { if (!api) return; restoreOrBootstrapLayout(); api.onDidLayoutChange?.(...) })
@@ -51,19 +59,22 @@ export default () => {
 		openTestPanel()
 	}
 
-	effect(() => {
-		if (!state.api) return
-		restoreOrBootstrapLayout()
-		const disposable = state.api.onDidLayoutChange?.(() => {
-			toast.info('Layout changed')
+	cleanupFns.push(
+		effect(() => {
+			if (!state.api) return
+			restoreOrBootstrapLayout()
+			const disposable = state.api.onDidLayoutChange?.(() => {
+				toast.info('Layout changed')
+			})
+			return () => disposable?.dispose?.()
 		})
-		return () => disposable?.dispose?.()
-	})
+	)
 
 	// PROBLEM 3: Function that tries to use api before it's set
 	// This mimics: const ensurePanel = (component, id, params) => { if (!api) return; ... }
 	const ensurePanel = (component: string, id: string, params?: Record<string, any>) => {
 		if (!state.api) {
+			pendingPanels.set(id, { component, id, params })
 			toast.warning(`API not ready when trying to add panel ${id}`)
 			return
 		}
@@ -80,13 +91,26 @@ export default () => {
 		})
 	}
 
+	cleanupFns.push(
+		effect(() => {
+			if (!state.api) return
+			if (pendingPanels.size === 0) return
+			const items = Array.from(pendingPanels.values())
+			pendingPanels.clear()
+			for (const item of items) {
+				ensurePanel(item.component, item.id, item.params)
+			}
+		})
+	)
+
 	const openTestPanel = () => ensurePanel('test1', 'test-panel', { test: true })
 
 	// PROBLEM 4: Race condition - try to add panel immediately (before api is ready)
 	// This simulates calling ensurePanel before the component has mounted
-	setTimeout(() => {
+	const raceTimeout = window.setTimeout(() => {
 		ensurePanel('test1', 'race-condition-panel', { race: true })
 	}, 0)
+	cleanupFns.push(() => window.clearTimeout(raceTimeout))
 
 	const testWidget1 = (
 		props: DockviewWidgetProps,
@@ -105,7 +129,7 @@ export default () => {
 		test1: testWidget1,
 	}
 
-	return (
+	const view = (
 		<section>
 			<h1>Dockview Harsh Tests</h1>
 			<p>
@@ -164,8 +188,23 @@ export default () => {
 			<Dockview
 				el:style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
 				widgets={widgets}
-				api={state.api}
+				api={{
+					get: () => state.api,
+					set: (value) => {
+						state.api = value
+					},
+				}}
 			/>
 		</section>
+	)
+
+	return (
+		<>
+			{cleanedBy(view, () => {
+				for (const fn of cleanupFns) fn()
+				if (previousTheme === undefined) document.documentElement.removeAttribute('data-theme')
+				else document.documentElement.dataset.theme = previousTheme
+			})}
+		</>
 	)
 }

@@ -8,10 +8,12 @@ const openDisplaySection = (page: Page) =>
 test('icons render by name', async ({ page }) => {
 	await openDisplaySection(page)
 	// Scroll to icons section
-	await page.getByRole('heading', { level: 3, name: 'Icons' }).scrollIntoViewIfNeeded()
+	const iconsHeading = page.getByRole('heading', { level: 3, name: 'Icons' })
+	await iconsHeading.scrollIntoViewIfNeeded()
+	const iconsSection = iconsHeading.locator('xpath=ancestor::div[1]')
 	
 	// Find iconify icons
-	const icons = page.locator('.iconify, [class*="iconify"]')
+	const icons = iconsSection.locator('.iconify, [class*="iconify"]')
 	const count = await icons.count()
 	expect(count).toBeGreaterThan(0)
 	
@@ -24,9 +26,11 @@ test('icons render by name', async ({ page }) => {
 
 test('custom size works', async ({ page }) => {
 	await openDisplaySection(page)
-	await page.getByRole('heading', { level: 3, name: 'Icons' }).scrollIntoViewIfNeeded()
+	const iconsHeading = page.getByRole('heading', { level: 3, name: 'Icons' })
+	await iconsHeading.scrollIntoViewIfNeeded()
+	const iconsSection = iconsHeading.locator('xpath=ancestor::div[1]')
 	
-	const icons = page.locator('.iconify, [class*="iconify"]')
+	const icons = iconsSection.locator('.iconify, [class*="iconify"]')
 	const count = await icons.count()
 	
 	// Find icons with custom size
@@ -44,9 +48,11 @@ test('custom size works', async ({ page }) => {
 
 test('icons are visible', async ({ page }) => {
 	await openDisplaySection(page)
-	await page.getByRole('heading', { level: 3, name: 'Icons' }).scrollIntoViewIfNeeded()
+	const iconsHeading = page.getByRole('heading', { level: 3, name: 'Icons' })
+	await iconsHeading.scrollIntoViewIfNeeded()
+	const iconsSection = iconsHeading.locator('xpath=ancestor::div[1]')
 	
-	const icons = page.locator('.iconify, [class*="iconify"]')
+	const icons = iconsSection.locator('.iconify, [class*="iconify"]')
 	const count = await icons.count()
 	expect(count).toBeGreaterThan(0)
 	
