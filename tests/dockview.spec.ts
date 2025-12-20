@@ -413,23 +413,77 @@ test('dockview handles effects that depend on api before initialization', async 
 	expect(criticalErrors.length).toBe(0)
 })
 
-test('dockview handles theme changes via api.setTheme in effect', async ({ page }) => {
+test('dockview theme syncs with page theme', async ({ page }) => {
 	await page.goto('/dockview-harsh#playwright')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
+	await waitForDockviewReady(page)
 	
 	// Wait for dockview to initialize
 	await page.waitForTimeout(500)
 	
-	// Toggle theme - this should work even if api wasn't ready initially
+	// Check initial theme class - find any element with dockview-theme class
+	const dockviewElement = page.locator('[class*="dockview-theme"]').first()
+	await expect(dockviewElement).toBeVisible()
+	
+	// Get initial page theme
+	const initialPageTheme = await page.evaluate(() => document.documentElement.dataset.theme)
+	const initialThemeClass = await dockviewElement.getAttribute('class')
+	
+	// Dockview theme should match page theme
+	if (initialPageTheme === 'dark') {
+		expect(initialThemeClass).toContain('dockview-theme-abyss')
+	} else {
+		expect(initialThemeClass).toContain('dockview-theme-light')
+	}
+	
+	// Toggle theme to opposite of initial
 	const toggleButton = page.getByRole('button', { name: /Toggle Theme/i })
 	await toggleButton.click()
+
+	// Check that dockview theme changed to abyss if it wasn't already
+	await page.waitForTimeout(200)
+	const toggledThemeClass = await dockviewElement.getAttribute('class')
+	expect(toggledThemeClass).toContain('dockview-theme-abyss')
+
+	// Toggle theme back to original state
+	await toggleButton.click()
+
+	// Check that dockview theme changed back to original state
+	await page.waitForTimeout(200)
+	const finalThemeClass = await dockviewElement.getAttribute('class')
+	if (initialPageTheme === 'dark') {
+		expect(finalThemeClass).toContain('dockview-theme-abyss')
+	} else {
+		expect(finalThemeClass).toContain('dockview-theme-light')
+	}
+})
+
+test('dockview-harsh toast cleanup on route change', async ({ page }) => {
+	await page.goto('/dockview-harsh#playwright')
+	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
+	await waitForDockviewReady(page)
 	
-	// Should not throw errors
+	// Wait for dockview to initialize
+	await page.waitForTimeout(500)
+	
+	// Trigger some toasts by clicking buttons
+	const addPanelButton = page.getByRole('button', { name: /Add Panel/i })
+	await addPanelButton.click()
 	await page.waitForTimeout(200)
 	
-	// Check that theme attribute changed
-	const theme = await page.evaluate(() => document.documentElement.dataset.theme)
-	expect(theme).toBeTruthy()
+	const toggleThemeButton = page.getByRole('button', { name: /Toggle Theme/i })
+	await toggleThemeButton.click()
+	await page.waitForTimeout(200)
+	
+	// Navigate away from the page
+	await page.goto('/')
+	
+	// Should not have any errors about undefined 'each'
+	await page.waitForTimeout(1000)
+	
+	// Navigate back to check if page loads correctly
+	await page.goto('/dockview-harsh#playwright')
+	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 })
 
 test('dockview handles ensurePanel calls before api is ready', async ({ page }) => {

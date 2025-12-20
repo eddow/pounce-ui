@@ -1,8 +1,7 @@
 import type { DockviewApi } from 'dockview-core'
-import { cleanedBy, effect, reactive } from 'mutts/src'
-import { Dockview, type DockviewWidgetProps } from '../components/dockview'
+import { reactive, effect, cleanedBy } from 'mutts/src'
+import { Dockview, DockviewWidgetProps } from '../components/dockview'
 import { toast } from '../components/toast'
-
 /**
  * This route reproduces the problematic pattern from App.tsx where:
  * 1. Effects depend on `api` before it's initialized
@@ -22,7 +21,9 @@ export default () => {
 	const apiSetState = reactive({ wasSet: false, setCount: 0 })
 
 	// Simulate theme state that effects depend on
-	const themeState = reactive({ darkMode: false })
+	const themeState = reactive({ 
+		darkMode: document.documentElement.dataset.theme === 'dark' 
+	})
 
 	// PROBLEM 1: Effect that uses api before it's initialized
 	// This demonstrates an effect that depends on api (even if just checking if it exists)
@@ -30,7 +31,10 @@ export default () => {
 	cleanupFns.push(
 		effect(() => {
 		const theme = themeState.darkMode ? 'dark' : 'light'
-		document.documentElement.dataset.theme = theme
+		// Only update DOM if theme actually changed to avoid reactive cycles
+		if (document.documentElement.dataset.theme !== theme) {
+			document.documentElement.dataset.theme = theme
+		}
 		})
 	)
 
@@ -52,11 +56,26 @@ export default () => {
 	// PROBLEM 2: Effect that calls api methods before api exists
 	// This mimics: effect(() => { if (!api) return; restoreOrBootstrapLayout(); api.onDidLayoutChange?.(...) })
 	let layoutInitialized = false
+	let layoutPromise: Promise<void> | null = null
 	const restoreOrBootstrapLayout = () => {
 		if (!state.api || layoutInitialized) return
 		layoutInitialized = true
-		// Try to restore layout or bootstrap
-		openTestPanel()
+		
+		// Break reactive cycle by using a promise that resolves outside the current tick
+		if (!layoutPromise) {
+			layoutPromise = new Promise<void>((resolve) => {
+				// Use requestAnimationFrame to ensure we're outside the reactive cycle
+				requestAnimationFrame(() => {
+					try {
+						openTestPanel()
+					} finally {
+						resolve()
+						layoutPromise = null
+					}
+				})
+			})
+		}
+		return layoutPromise
 	}
 
 	cleanupFns.push(
@@ -72,6 +91,7 @@ export default () => {
 
 	// PROBLEM 3: Function that tries to use api before it's set
 	// This mimics: const ensurePanel = (component, id, params) => { if (!api) return; ... }
+	let isProcessingPendingPanels = false // Flag to prevent reactive cycles
 	const ensurePanel = (component: string, id: string, params?: Record<string, any>) => {
 		if (!state.api) {
 			pendingPanels.set(id, { component, id, params })
@@ -95,11 +115,14 @@ export default () => {
 		effect(() => {
 			if (!state.api) return
 			if (pendingPanels.size === 0) return
+			if (isProcessingPendingPanels) return // Prevent reactive cycles
+			isProcessingPendingPanels = true
 			const items = Array.from(pendingPanels.values())
 			pendingPanels.clear()
 			for (const item of items) {
 				ensurePanel(item.component, item.id, item.params)
 			}
+			isProcessingPendingPanels = false
 		})
 	)
 
@@ -107,10 +130,15 @@ export default () => {
 
 	// PROBLEM 4: Race condition - try to add panel immediately (before api is ready)
 	// This simulates calling ensurePanel before the component has mounted
-	const raceTimeout = window.setTimeout(() => {
-		ensurePanel('test1', 'race-condition-panel', { race: true })
-	}, 0)
-	cleanupFns.push(() => window.clearTimeout(raceTimeout))
+	new Promise<void>((resolve) => {
+		requestAnimationFrame(() => {
+			try {
+				ensurePanel('test1', 'race-condition-panel', { race: true })
+			} finally {
+				resolve()
+			}
+		})
+	})
 
 	const testWidget1 = (
 		props: DockviewWidgetProps,
@@ -202,6 +230,7 @@ export default () => {
 		<>
 			{cleanedBy(view, () => {
 				for (const fn of cleanupFns) fn()
+				// toastCleanup() // Temporarily disabled for debugging
 				if (previousTheme === undefined) document.documentElement.removeAttribute('data-theme')
 				else document.documentElement.dataset.theme = previousTheme
 			})}

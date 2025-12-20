@@ -236,7 +236,6 @@ type MenuBarProps = {
 }
 
 const MenuBar = (props: MenuBarProps) => {
-
 	return (
 		<Toolbar>
 			<div class="pp-menu-bar-mobile">

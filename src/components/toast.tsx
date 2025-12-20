@@ -199,9 +199,20 @@ function closeToast(item: ToastItem) {
 	setTimeout(() => array.remove(state.items, item), 160)
 }
 
+// Cleanup function to clear all toasts and reset state
+function cleanupToasts() {
+	state.items.forEach(item => {
+		if (!item.closing) {
+			closeToast(item)
+		}
+	})
+	state.items = []
+	hostMounted = false
+}
+
 const Host = () => (
 	<div class={[`pp-toasts`, toastConfig.position]} aria-live="polite" aria-atomic="false">
-		<for each={state.items}>{(t) => <ToastItemView item={t} />}</for>
+		<for each={state.items || []}>{(t) => <ToastItemView item={t} />}</for>
 	</div>
 )
 
@@ -280,5 +291,6 @@ export const toast = Object.assign(
 			toast({ content, variant: 'danger', ...opts }),
 		info: (content: ToastContent, opts?: Omit<ToastOptions, 'content' | 'variant'>) =>
 			toast({ content, variant: 'primary', ...opts }),
+		cleanup: cleanupToasts,
 	}
 )

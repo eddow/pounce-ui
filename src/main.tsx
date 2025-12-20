@@ -1,12 +1,12 @@
 import '@picocss/pico/css/pico.min.css'
-import { effect, project } from 'mutts/src'
-import { bindApp } from 'pounce-ts'
+import { reactive, effect } from 'mutts/src'
+import { bindApp, Scope } from 'pounce-ts'
 import { stored } from './lib/storage'
 import './components/variants.scss'
 import { enableDevTools } from 'mutts/src'
-import { Button } from './components/button'
 import { AppShell } from './components/layout'
 import { Menu } from './components/menu'
+import { DarkModeButton } from './components/dark-mode-button'
 import { browser } from './lib/browser'
 import { Router, type RouteWildcard } from './lib/router'
 import DisplayRoute from './routes/display'
@@ -38,36 +38,6 @@ if (typeof Element !== 'undefined' && typeof Element.prototype.contains === 'fun
 	} catch {
 		// no-op
 	}
-}
-
-const MenuBar = () => {
-	const state = stored({
-		mode: window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light',
-	})
-
-	effect(() => {
-		document.documentElement.dataset.theme = state.mode
-	})
-
-	return (
-		<Menu.Bar
-			brand="Pounce UI"
-			trailing={
-				<Button
-					icon={state.mode === 'dark' ? 'mdi:weather-night' : 'mdi:weather-sunny'}
-					ariaLabel="Toggle dark mode"
-					onClick={() => {
-						state.mode = state.mode === 'dark' ? 'light' : 'dark'
-					}}
-				/>
-			}
-			items={project.array(sections.filter(({ path }) => path !== '/'), ({value}) => (
-					<Menu.Item href={`${value.path}${browser.url.hash ?? ''}`}>
-						{value.label}
-					</Menu.Item>
-				))}
-		/>
-	)
 }
 
 const OverviewSection = () => (
@@ -102,20 +72,31 @@ const renderNotFound = (props: { url: string }) => (
 	</section>
 )
 
-const App = () => (
-	<AppShell
-		header={
-			<header>
-				<nav class="container pp-menu-nav">
-					<MenuBar />
-				</nav>
-			</header>
-		}
-	>
-		<main class="container">
-			<Router routes={sections} notFound={renderNotFound} />
-		</main>
-	</AppShell>
-)
+const App = (_props: {}, scope: Scope) => {
+
+	return (
+		<AppShell
+			header={
+				<header>
+					<nav class="container pp-menu-nav">
+						<Menu.Bar
+							brand="Pounce UI"
+							trailing={<DarkModeButton theme={scope.theme}/>}
+							items={sections.map(({ path, label }) => (
+								<Menu.Item href={`${path}${browser.url.hash ?? ''}`}>
+									{label}
+								</Menu.Item>
+							))}
+						/>
+					</nav>
+				</header>
+			}
+		>
+			<main class="container">
+				<Router routes={sections} notFound={renderNotFound} />
+			</main>
+		</AppShell>
+	)
+}
 
 bindApp(<App />, '#app')
