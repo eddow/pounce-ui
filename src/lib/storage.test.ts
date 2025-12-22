@@ -327,14 +327,14 @@ describe('stored()', () => {
 			// Set invalid JSON in localStorage
 			mockLocalStorage.setItem('name', 'invalid-json{')
 
-			// The current implementation throws on parse error
-			// This test documents the current behavior
-			// In a production app, you might want to wrap JSON.parse in a try-catch
+			// The current implementation handles parse errors gracefully
+			// It removes invalid data and uses the initial value
 			expect(() => {
-				stored({
+				const result = stored({
 					name: 'John',
 				})
-			}).toThrow()
+				expect(result.name).toBe('John') // Should use initial value
+			}).not.toThrow()
 		})
 
 		test('handles localStorage quota exceeded errors', () => {

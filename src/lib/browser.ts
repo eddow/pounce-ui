@@ -41,6 +41,7 @@ export interface Browser extends BrowserState {
 	replace(to: string | URL, options?: Omit<NavigateOptions, 'replace'>): void
 	reload(): void
 	dispose(): void
+	prefersDark(): boolean
 }
 
 type MutableBrowser = Browser & {
@@ -74,6 +75,16 @@ const state = reactive<MutableBrowser>({
 	},
 	reload,
 	dispose,
+	prefersDark: () => {
+		if (!isBrowserEnvironment || typeof window === 'undefined') {
+			return false
+		}
+		try {
+			return window.matchMedia('(prefers-color-scheme: dark)').matches
+		} catch {
+			return false
+		}
+	},
 })
 
 const browser = state as Browser

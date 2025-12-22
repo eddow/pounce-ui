@@ -4,7 +4,7 @@ import { dialog } from '../components/dialog'
 import { Dockview, type DockviewSnapshot } from '../components/dockview'
 import { toast } from '../components/toast'
 
-export default () => {
+export default (_props: {}, scope: Record<string, any>) => {
 	const state = reactive({ api: undefined as DockviewApi | undefined })
 	const layoutState = reactive({
 		dockviewLayout: undefined as DockviewSnapshot | undefined,
@@ -491,6 +491,7 @@ export default () => {
 				layout={layoutState.dockviewLayout}
 				onApiChange={(api) => { state.api = api }}
 				onLayoutChange={(layout) => { layoutState.dockviewLayout = layout }}
+				theme={scope.theme === 'dark' ? 'abyss' : 'light'}
 			/>
 		</section>
 	)

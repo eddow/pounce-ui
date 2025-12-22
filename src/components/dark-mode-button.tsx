@@ -1,4 +1,4 @@
-import { effect, untracked } from 'mutts/src'
+import { effect } from 'mutts/src'
 import { browser } from '../lib/browser'
 import { stored } from '../lib/storage'
 import { Button } from './button'
@@ -8,6 +8,7 @@ export interface DarkModeButtonProps {
 	icon?: string
 	children?: JSX.Element | string
 	theme?: 'light' | 'dark'
+	onThemeChange?: (theme: 'light' | 'dark') => void
 }
 
 const defaultIcons = {
@@ -19,21 +20,40 @@ const defaultChildren = {
 	light: 'Dark'
 }
 const systemTheme = (browser as any).prefersDark?.() ? 'dark' : 'light' as 'light' | 'dark'
+
 export const DarkModeButton = (props: DarkModeButtonProps) => {
 	const themeStorage = stored({ theme: systemTheme })
-	untracked(() => {
-		props.theme ??= themeStorage.theme
-	})
-	// Sync theme with document element
+	
+	// Initialize theme from storage or system
+	if (props.theme === undefined) {
+		props.theme = themeStorage.theme
+	}
+	
+	// Sync theme with document element and storage
 	effect(() => {
-		themeStorage.theme = document.documentElement.dataset.theme = props.theme ?? systemTheme
+		const theme = props.theme ?? systemTheme
+		themeStorage.theme = theme
+		document.documentElement.dataset.theme = theme
+		
+		// Notify parent of theme change
+		if (props.onThemeChange) {
+			props.onThemeChange(theme)
+		}
 	})
+
+	const handleToggle = () => {
+		const newTheme = props.theme === 'light' ? 'dark' : 'light'
+		if (props.onThemeChange) {
+			props.onThemeChange(newTheme)
+		} else {
+			// Direct mutation only if no callback provided (for standalone usage)
+			(props as any).theme = newTheme
+		}
+	}
 
 	return (
 		<Button 
-			onClick={() => {
-				props.theme = props.theme === 'light' ? 'dark' : 'light'
-			}}
+			onClick={handleToggle}
 			ariaLabel={props.ariaLabel || 'Toggle dark mode'}
 			icon={props.icon || defaultIcons[props.theme ?? systemTheme]}
 		>

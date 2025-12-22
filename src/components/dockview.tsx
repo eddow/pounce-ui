@@ -300,7 +300,7 @@ export const Dockview = (
 		onApiChange?: (api: DockviewApi | undefined) => void
 		onLayoutChange?: (layout: DockviewSnapshot | undefined) => void
 		el?: JSX.GlobalHTMLAttributes
-		theme?: string | {light: string, dark: string}
+		theme?: string
 	},
 	scope: Record<string, any>
 ) => {
@@ -478,20 +478,13 @@ export const Dockview = (
 		
 		// Theme sync effect - watches scope.theme and updates dockview theme
 		effect(() => {
-			const theme = scope.theme || 'light'
-			const themeConfig = props.theme || {light: 'dockview-theme-light', dark: 'dockview-theme-abyss'}
-			
 			// Find dockview theme elements within this dockview container
 			const htmlElement = element.querySelectorAll('[class*="dockview-theme-"]')[0] as HTMLElement
 			if(htmlElement) {
 				// Remove existing dockview theme classes
 				htmlElement.className = htmlElement.className.replace(/dockview-theme-\w+/g, '')
 				// Add the appropriate theme class
-				if(typeof themeConfig === 'string') {
-					htmlElement.classList.add(themeConfig)
-				} else {
-					htmlElement.classList.add(themeConfig[theme as keyof typeof themeConfig])
-				}
+				htmlElement.classList.add(`dockview-theme-${props.theme ?? 'light'}`)
 			}
 		})
 		

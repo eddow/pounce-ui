@@ -149,7 +149,7 @@ function attachGlobalTrap() {
 		ev.stopPropagation()
 		if (!root) {
 			// Dialog not yet mounted; defer focusing to next tick
-			setTimeout(() => (dialogElement as any)?.focus(), 0)
+			setTimeout(() => dialogElement?.focus(), 0)
 			return
 		}
 		// Explicit tabstop order
@@ -211,7 +211,9 @@ function closeCurrent(value: PropertyKey | null) {
 	// close native modal if present
 	try {
 		dialogElement?.close()
-	} catch {}
+	} catch (error) {
+		console.error('Failed to close native dialog:', error)
+	}
 	// re-enable app interactions while dialog is closed
 	document.querySelector('.demo-app')?.removeAttribute('inert')
 	document.documentElement.classList.remove('modal-is-open')
@@ -224,7 +226,9 @@ function closeCurrent(value: PropertyKey | null) {
 	if (lastActiveElement && typeof lastActiveElement.focus === 'function') {
 		try {
 			lastActiveElement.focus()
-		} catch {}
+		} catch (error) {
+			console.error('Failed to restore focus:', error)
+		}
 	}
 	lastActiveElement = null
 }
@@ -368,7 +372,9 @@ export function dialog<
 				if (dialogElement && typeof dialogElement.showModal === 'function') {
 					if (!dialogElement.open) dialogElement.showModal()
 				}
-			} catch {}
+			} catch (error) {
+				console.error('Failed to show native modal:', error)
+			}
 			// Deterministic initial focus (header close → footer actions → content → dialog)
 			// If dialogElement isn't available yet, defer focus to next tick
 			if (dialogElement) {
@@ -376,7 +382,9 @@ export function dialog<
 				const initial = ordered[0] ?? dialogElement
 				try {
 					initial.focus({ preventScroll: true })
-				} catch {}
+				} catch (error) {
+					console.error('Failed to set initial focus:', error)
+				}
 			} else {
 				// Element not yet mounted; defer focusing to next tick
 				setTimeout(() => {
@@ -385,7 +393,9 @@ export function dialog<
 						const initial = ordered[0] ?? dialogElement
 						try {
 							initial.focus({ preventScroll: true })
-						} catch {}
+						} catch (error) {
+							console.error('Failed to set deferred focus:', error)
+						}
 					}
 				}, 0)
 			}

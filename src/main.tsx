@@ -1,7 +1,6 @@
 import '@picocss/pico/css/pico.min.css'
 import { reactive, effect } from 'mutts/src'
 import { bindApp, Scope } from 'pounce-ts'
-import { stored } from './lib/storage'
 import './components/variants.scss'
 import { enableDevTools } from 'mutts/src'
 import { AppShell } from './components/layout'
@@ -31,7 +30,10 @@ if (typeof Element !== 'undefined' && typeof Element.prototype.contains === 'fun
 					if (active) {
 						return originalContains.call(this, active)
 					}
-				} catch {}
+				} catch (error) {
+					console.error('Failed to fallback to activeElement:', error)
+					return false
+				}
 				return false
 			}
 		}
@@ -50,7 +52,7 @@ const OverviewSection = () => (
 type DemoSection = {
 	readonly path: RouteWildcard
 	readonly label: string
-	readonly view: () => JSX.Element
+	readonly view: (props: {}, scope: Scope) => JSX.Element
 }
 
 const sections: DemoSection[] = [
@@ -73,7 +75,6 @@ const renderNotFound = (props: { url: string }) => (
 )
 
 const App = (_props: {}, scope: Scope) => {
-
 	return (
 		<AppShell
 			header={
@@ -81,7 +82,7 @@ const App = (_props: {}, scope: Scope) => {
 					<nav class="container pp-menu-nav">
 						<Menu.Bar
 							brand="Pounce UI"
-							trailing={<DarkModeButton theme={scope.theme}/>}
+							trailing={<DarkModeButton theme={scope.theme} />}
 							items={sections.map(({ path, label }) => (
 								<Menu.Item href={`${path}${browser.url.hash ?? ''}`}>
 									{label}

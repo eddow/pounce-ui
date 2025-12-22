@@ -24,7 +24,9 @@ export function stored<T extends Record<string, any>>(initial: T): T {
 				} catch {
 					try {
 						localStorage.removeItem(evKey as string)
-					} catch {}
+					} catch (error) {
+						console.warn('Failed to remove localStorage item:', evKey, error)
+					}
 					rv[evKey] = initial[evKey]
 				}
 			}
@@ -41,7 +43,9 @@ export function stored<T extends Record<string, any>>(initial: T): T {
 			} catch {
 				try {
 					localStorage.removeItem(key)
-				} catch {}
+				} catch (error) {
+					console.warn('Failed to remove localStorage item:', key, error)
+				}
 				rv[key] = initial[key]
 			}
 		}

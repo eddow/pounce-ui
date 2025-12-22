@@ -39,15 +39,7 @@
 const injectedStyles = new Set<string>()
 
 export function __injectCSS(css: string): void {
-	if (typeof document === 'undefined') {
-		// SSR - no-op
-		return
-	}
-
-	// Avoid duplicate injections
-	if (injectedStyles.has(css)) {
-		return
-	}
+	if (typeof document === 'undefined' || injectedStyles.has(css)) return
 
 	injectedStyles.add(css)
 
