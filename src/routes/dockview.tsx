@@ -1,5 +1,5 @@
 import type { DockviewApi, DockviewGroupPanel, DockviewPanelApi } from 'dockview-core'
-import { reactive, watch } from 'mutts/src'
+import { reactive, watch } from 'mutts'
 import { dialog } from '../components/dialog'
 import { Dockview, type DockviewSnapshot } from '../components/dockview'
 import { toast } from '../components/toast'
@@ -12,8 +12,8 @@ export default (_props: {}, scope: Record<string, any>) => {
 	})
 	// Expose state for Playwright tests
 	if (typeof window !== 'undefined' && window.location.hash.includes('playwright')) {
-		;(window as any).__dockviewApiState = state
-		;(window as any).__dockviewLayoutState = layoutState
+		; (window as any).__dockviewApiState = state
+			; (window as any).__dockviewLayoutState = layoutState
 	}
 
 	let panelIdCounter = 0
@@ -303,25 +303,25 @@ export default (_props: {}, scope: Record<string, any>) => {
 						if (layoutState.savedLayout && state.api) {
 							try {
 								console.log('[Load] Recreating panels directly from saved layout')
-								
+
 								// Step 1: Clear existing panels
 								state.api.clear()
 								state.api.closeAllGroups()
-								
+
 								// Step 2: Wait for clear to complete, then recreate panels
 								setTimeout(() => {
 									const savedPanels = layoutState.savedLayout?.panels
 									if (savedPanels && state.api) {
 										console.log('[Load] Recreating panels:', Object.keys(savedPanels))
-										
+
 										// Recreate each panel with correct component and title
 										Object.entries(savedPanels).forEach(([panelId, panelData]: [string, any]) => {
 											console.log('[Load] Recreating panel:', panelId, panelData)
-											
+
 											// Determine component based on panel data or ID
 											let component = 'test1'
 											let title = panelData.title || `Panel ${panelId}`
-											
+
 											if (panelId === 'panel-1') {
 												component = 'test1'
 												title = panelData.title || 'Test Panel 1'
@@ -332,7 +332,7 @@ export default (_props: {}, scope: Record<string, any>) => {
 												component = panelData.component || panelData.viewComponent || 'test1'
 												title = panelData.title || `Panel ${panelId}`
 											}
-											
+
 											state.api!.addPanel({
 												id: panelId,
 												component: component,
@@ -340,12 +340,12 @@ export default (_props: {}, scope: Record<string, any>) => {
 												title: title
 											})
 										})
-										
+
 										// Update layout state after panels are created
 										layoutState.dockviewLayout = layoutState.savedLayout
 									}
 								}, 100)
-								
+
 								toast.info('Layout loaded')
 							} catch (error) {
 								console.error('[Load] Error loading layout:', error)

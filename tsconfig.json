@@ -1,7 +1,11 @@
 {
 	"compilerOptions": {
 		"target": "ES2022",
-		"lib": ["ES2022", "DOM", "DOM.Iterable"],
+		"lib": [
+			"ES2022",
+			"DOM",
+			"DOM.Iterable"
+		],
 		"module": "ESNext",
 		"skipLibCheck": true,
 		"moduleResolution": "bundler",
@@ -26,11 +30,11 @@
 	"include": [
 		"src/**/*",
 		"../pounce/src/types/**/*.d.ts",
-		"../mutts/src/**/*.ts"
+		"../mutts/**/*.ts"
 	],
-	"references": [{ "path": "./tsconfig.node.json" }]
+	"references": [
+		{
+			"path": "./tsconfig.node.json"
+		}
+	]
 }
-
-
-
-

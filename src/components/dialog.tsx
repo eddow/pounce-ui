@@ -1,4 +1,4 @@
-import { reactive } from 'mutts/src'
+import { reactive } from 'mutts'
 import { bindApp, compose, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import { css } from '../lib/css'

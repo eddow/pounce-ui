@@ -16,8 +16,8 @@ export default {
 	extensionsToTreatAsEsm: ['.ts', '.tsx'],
 	moduleNameMapper: {
 		'^(\.{1,2}/.*)\.js$': '$1',
-		'^mutts/src$': '<rootDir>/node_modules/mutts/src/index.ts',
-		'^mutts/src/(.*)$': '<rootDir>/node_modules/mutts/src/$1.ts',
+		'^mutts$': '<rootDir>/node_modules/mutts/index.ts',
+		'^mutts/(.*)$': '<rootDir>/node_modules/mutts/$1.ts',
 	},
 	collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts'],
 }

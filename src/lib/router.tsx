@@ -1,4 +1,4 @@
-import { cleanedBy, effect, reactive, unreactive } from 'mutts/src'
+import { cleanedBy, effect, reactive, unreactive } from 'mutts'
 import { compose, copyObject } from 'pounce-ts'
 import { browser } from './browser'
 

@@ -1,5 +1,5 @@
 import type { DockviewApi } from 'dockview-core'
-import { reactive, effect, cleanedBy } from 'mutts/src'
+import { reactive, effect, cleanedBy } from 'mutts'
 import { Dockview, DockviewWidgetProps } from '../components/dockview'
 import { toast } from '../components/toast'
 /**
@@ -21,8 +21,8 @@ export default () => {
 	const apiSetState = reactive({ wasSet: false, setCount: 0 })
 
 	// Simulate theme state that effects depend on
-	const themeState = reactive({ 
-		darkMode: document.documentElement.dataset.theme === 'dark' 
+	const themeState = reactive({
+		darkMode: document.documentElement.dataset.theme === 'dark'
 	})
 
 	// PROBLEM 1: Effect that uses api before it's initialized
@@ -30,26 +30,26 @@ export default () => {
 	// In real scenarios, effects might try to call api methods when api becomes available
 	cleanupFns.push(
 		effect(() => {
-		const theme = themeState.darkMode ? 'dark' : 'light'
-		// Only update DOM if theme actually changed to avoid reactive cycles
-		if (document.documentElement.dataset.theme !== theme) {
-			document.documentElement.dataset.theme = theme
-		}
+			const theme = themeState.darkMode ? 'dark' : 'light'
+			// Only update DOM if theme actually changed to avoid reactive cycles
+			if (document.documentElement.dataset.theme !== theme) {
+				document.documentElement.dataset.theme = theme
+			}
 		})
 	)
 
 	// Monitor api variable changes - now reading from reactive state
 	cleanupFns.push(
 		effect(() => {
-		// Track if api is available when theme changes
-		if (state.api) {
-			// API is available - could use it here if needed
-			// For example: state.api.addPanel(...) or other valid API methods
-			if (!apiSetState.wasSet) {
-				apiSetState.wasSet = true
-				apiSetState.setCount++
+			// Track if api is available when theme changes
+			if (state.api) {
+				// API is available - could use it here if needed
+				// For example: state.api.addPanel(...) or other valid API methods
+				if (!apiSetState.wasSet) {
+					apiSetState.wasSet = true
+					apiSetState.setCount++
+				}
 			}
-		}
 		})
 	)
 
@@ -60,7 +60,7 @@ export default () => {
 	const restoreOrBootstrapLayout = () => {
 		if (!state.api || layoutInitialized) return
 		layoutInitialized = true
-		
+
 		// Break reactive cycle by using a promise that resolves outside the current tick
 		if (!layoutPromise) {
 			layoutPromise = new Promise<void>((resolve) => {

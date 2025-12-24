@@ -1,6 +1,6 @@
 import '@picocss/pico/css/pico.min.css'
 import Iconify from '@iconify/iconify'
-import { addBatchCleanup } from 'mutts/src'
+import { addBatchCleanup } from 'mutts'
 import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
 

@@ -1,4 +1,4 @@
-import { effect } from 'mutts/src'
+import { effect } from 'mutts'
 import { browser } from '../lib/browser'
 import { stored } from '../lib/storage'
 import { Button } from './button'
@@ -23,18 +23,18 @@ const systemTheme = (browser as any).prefersDark?.() ? 'dark' : 'light' as 'ligh
 
 export const DarkModeButton = (props: DarkModeButtonProps) => {
 	const themeStorage = stored({ theme: systemTheme })
-	
+
 	// Initialize theme from storage or system
 	if (props.theme === undefined) {
 		props.theme = themeStorage.theme
 	}
-	
+
 	// Sync theme with document element and storage
 	effect(() => {
 		const theme = props.theme ?? systemTheme
 		themeStorage.theme = theme
 		document.documentElement.dataset.theme = theme
-		
+
 		// Notify parent of theme change
 		if (props.onThemeChange) {
 			props.onThemeChange(theme)
@@ -52,7 +52,7 @@ export const DarkModeButton = (props: DarkModeButtonProps) => {
 	}
 
 	return (
-		<Button 
+		<Button
 			onClick={handleToggle}
 			ariaLabel={props.ariaLabel || 'Toggle dark mode'}
 			icon={props.icon || defaultIcons[props.theme ?? systemTheme]}

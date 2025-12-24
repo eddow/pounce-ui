@@ -10,7 +10,7 @@ import {
 	SerializedDockview,
 } from 'dockview-core'
 import 'dockview-core/dist/styles/dockview.css'
-import { effect, isObject, reactive, ScopedCallback, unreactive, watch } from 'mutts/src'
+import { effect, isObject, reactive, ScopedCallback, unreactive, watch } from 'mutts'
 import { bindApp, compose, extend } from 'pounce-ts'
 
 // Scope passed to widgets always has api defined (set before widget is called)
@@ -308,7 +308,7 @@ export const Dockview = (
 	const metaById = reactive({}) as DockviewSnapshot['panels']
 	const state = compose({ options: {} }, props)
 	const options: FreeDockviewOptions = {}
-	
+
 	effect(() => {
 		const api = resolveApi(props.api)
 		if (api) api.updateOptions(state.options)
@@ -331,7 +331,7 @@ export const Dockview = (
 			layoutSyncMode = 'ignore_next_external'
 			const layoutProp = (props as any).layout
 			if (isObject(layoutProp) && layoutProp !== null && 'get' in layoutProp && 'set' in layoutProp) {
-				;(layoutProp as Binding<DockviewSnapshot | undefined>).set(snapshot)
+				; (layoutProp as Binding<DockviewSnapshot | undefined>).set(snapshot)
 			} else {
 				// For reactive values, use the callback
 				if (props.onLayoutChange) {
@@ -373,7 +373,7 @@ export const Dockview = (
 					added?.focus?.()
 					added?.api?.focus?.()
 				} catch {
-					
+
 				}
 			}
 		}
@@ -398,12 +398,12 @@ export const Dockview = (
 					const widget = state.headerLeft?.default
 					if (!widget) {
 						const element = document.createElement('div')
-						return { element, init: () => {}, dispose: () => {} }
+						return { element, init: () => { }, dispose: () => { } }
 					}
 					const api = resolveApi(props.api)
 					if (!api) {
 						const element = document.createElement('div')
-						return { element, init: () => {}, dispose: () => {} }
+						return { element, init: () => { }, dispose: () => { } }
 					}
 					return headerActionRenderer(widget, api, group)
 				},
@@ -411,12 +411,12 @@ export const Dockview = (
 					const widget = state.headerRight?.default
 					if (!widget) {
 						const element = document.createElement('div')
-						return { element, init: () => {}, dispose: () => {} }
+						return { element, init: () => { }, dispose: () => { } }
 					}
 					const api = resolveApi(props.api)
 					if (!api) {
 						const element = document.createElement('div')
-						return { element, init: () => {}, dispose: () => {} }
+						return { element, init: () => { }, dispose: () => { } }
 					}
 					return headerActionRenderer(widget, api, group)
 				},
@@ -424,12 +424,12 @@ export const Dockview = (
 					const widget = state.headerPrefix?.default
 					if (!widget) {
 						const element = document.createElement('div')
-						return { element, init: () => {}, dispose: () => {} }
+						return { element, init: () => { }, dispose: () => { } }
 					}
 					const api = resolveApi(props.api)
 					if (!api) {
 						const element = document.createElement('div')
-						return { element, init: () => {}, dispose: () => {} }
+						return { element, init: () => { }, dispose: () => { } }
 					}
 					return headerActionRenderer(widget, api, group)
 				},
@@ -438,9 +438,9 @@ export const Dockview = (
 					element.style.height = '100%'
 					element.style.width = '100%'
 					const widget = state.tabs?.[options.name]
-					if (!widget) return { element, init: () => {}, dispose: () => {} }
+					if (!widget) return { element, init: () => { }, dispose: () => { } }
 					const panelLink = links.get(options.id)
-					if (!panelLink) return { element, init: () => {}, dispose: () => {} }
+					if (!panelLink) return { element, init: () => { }, dispose: () => { } }
 					let cleanup: ScopedCallback | undefined
 					return {
 						element,
@@ -462,32 +462,32 @@ export const Dockview = (
 		scope.api = createdApi
 		const apiProp = (props as any).api
 		if (isObject(apiProp) && apiProp !== null && 'get' in apiProp && 'set' in apiProp) {
-			;(apiProp as Binding<DockviewApi | undefined>).set(createdApi)
+			; (apiProp as Binding<DockviewApi | undefined>).set(createdApi)
 		} else {
 			// For reactive values, use the callback
 			if (props.onApiChange) {
 				props.onApiChange(createdApi)
 			} else {
 				try {
-					;(props as any).api = createdApi
+					; (props as any).api = createdApi
 				} catch {
-					
+
 				}
 			}
 		}
-		
+
 		// Theme sync effect - watches scope.theme and updates dockview theme
 		effect(() => {
 			// Find dockview theme elements within this dockview container
 			const htmlElement = element.querySelectorAll('[class*="dockview-theme-"]')[0] as HTMLElement
-			if(htmlElement) {
+			if (htmlElement) {
 				// Remove existing dockview theme classes
 				htmlElement.className = htmlElement.className.replace(/dockview-theme-\w+/g, '')
 				// Add the appropriate theme class
 				htmlElement.classList.add(`dockview-theme-${props.theme ?? 'light'}`)
 			}
 		})
-		
+
 		// Restore initial layout if provided
 		const initialSnapshot = resolveSnapshot(props.layout)
 		const initialLayout = initialSnapshot?.layout
@@ -504,15 +504,15 @@ export const Dockview = (
 							for (const p of panels) {
 								try {
 									p?.api?.close?.()
-									;(createdApi as any)?.removePanel?.(p)
+										; (createdApi as any)?.removePanel?.(p)
 								} catch {
-									
+
 								}
 							}
-							;(createdApi as any)?.closeAllGroups?.()
-							;(createdApi as any)?.clear?.()
+							; (createdApi as any)?.closeAllGroups?.()
+								; (createdApi as any)?.clear?.()
 						} catch {
-							
+
 						}
 						ensurePanelsFromSnapshot(initialSnapshot)
 						createdApi.fromJSON(unreactive(initialLayout as any))
@@ -558,8 +558,8 @@ export const Dockview = (
 						try {
 							try {
 								console.warn('[Dockview] Clearing layout: calling closeAllGroups and clear')
-								;(createdApi as any)?.closeAllGroups?.()
-								;(createdApi as any)?.clear?.()
+									; (createdApi as any)?.closeAllGroups?.()
+									; (createdApi as any)?.clear?.()
 								const panels: any[] = Array.isArray((createdApi as any).panels)
 									? [...createdApi.panels]
 									: []
@@ -568,7 +568,7 @@ export const Dockview = (
 									createdApi.removePanel(p)
 								}
 							} catch {
-								
+
 							}
 							for (const id of Object.keys(metaById)) delete (metaById as any)[id]
 						} finally {
@@ -591,15 +591,15 @@ export const Dockview = (
 										for (const p of panels) {
 											try {
 												p?.api?.close?.()
-												;(createdApi as any)?.removePanel?.(p)
+													; (createdApi as any)?.removePanel?.(p)
 											} catch {
-												
+
 											}
 										}
-										;(createdApi as any)?.closeAllGroups?.()
-										;(createdApi as any)?.clear?.()
+										; (createdApi as any)?.closeAllGroups?.()
+											; (createdApi as any)?.clear?.()
 									} catch {
-										
+
 									}
 									ensurePanelsFromSnapshot(resolvedSnapshot)
 									createdApi.fromJSON(unreactive(resolvedSnapshot.layout as any))

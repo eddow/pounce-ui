@@ -1,4 +1,4 @@
-import { reactive } from 'mutts/src'
+import { reactive } from 'mutts'
 
 export interface BrowserUrl {
 	readonly href: string

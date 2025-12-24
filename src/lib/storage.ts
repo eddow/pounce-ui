@@ -1,4 +1,4 @@
-import { cleanedBy, effect, reactive, ScopedCallback } from 'mutts/src'
+import { cleanedBy, effect, reactive, ScopedCallback } from 'mutts'
 
 export const json = {
 	parse: <T>(value: string): T => JSON.parse(value),
