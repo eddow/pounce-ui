@@ -1,0 +1,16 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      mutts:
+        specifier: link:../mutts
+        version: link:../mutts
+      pounce-ts:
+        specifier: link:../pounce-ts
+        version: link:../pounce-ts

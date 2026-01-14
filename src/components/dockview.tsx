@@ -225,7 +225,8 @@ function contentRenderer(
 					{ deep: true }
 				)
 			)
-			const jsx = widget(link.props!, link.scope as DockviewScope)
+			// Use h() to create a proper component element that goes through the pounce lifecycle
+			const jsx = h(widget, link.props!)
 			bindApp(jsx, element, link.scope)
 		},
 		layout: (width: number, height: number) => {
@@ -276,7 +277,8 @@ function headerActionRenderer(widget: DvHeaderAction, api: DockviewApi, group: D
 		init(_params: any) {
 			let jsx: JSX.Element | undefined
 			cleanup = effect(() => {
-				jsx = widget({ api, group })
+				// Use h() to create proper component elements
+				jsx = h(widget, { api, group })
 			})
 			const headerScope = extend({}, { api }) as DockviewScope
 			bindApp(jsx!, element, headerScope)
@@ -447,7 +449,8 @@ export const Dockview = (
 						init(_params: GroupPanelPartInitParameters) {
 							let jsx: JSX.Element | undefined
 							cleanup = effect(() => {
-								jsx = widget(panelLink.props, panelLink.scope as DockviewScope)
+								// Use h() to create proper component elements
+								jsx = h(widget, panelLink.props)
 							})
 							bindApp(jsx!, element, panelLink.scope as DockviewScope)
 						},
