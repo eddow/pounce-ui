@@ -230,6 +230,24 @@ test('Checkbox - checked state persists', async ({ page }) => {
 	expect(await firstCheckbox.isChecked()).toBe(true)
 })
 
+test('Checkbox - values are synced with state', async ({ page }) => {
+	await openFormsSection(page)
+	const notificationsCheckbox = page.getByLabel('Notifications')
+	await expect(notificationsCheckbox).toBeVisible()
+
+	// Initial State: Checked (default true)
+	await expect(notificationsCheckbox).toBeChecked()
+	await expect(page.getByText('Value: true').first()).toBeVisible()
+
+	// Uncheck
+	await notificationsCheckbox.uncheck()
+	await expect(page.getByText('Value: false').first()).toBeVisible()
+
+	// Check again
+	await notificationsCheckbox.check()
+	await expect(page.getByText('Value: true').first()).toBeVisible()
+})
+
 // Radio
 test('radio buttons in group work (only one selected)', async ({ page }) => {
 	await openFormsSection(page)
@@ -248,6 +266,25 @@ test('radio buttons in group work (only one selected)', async ({ page }) => {
 		expect(await firstGroup.nth(1).isChecked()).toBe(true)
 		expect(await firstGroup.first().isChecked()).toBe(false)
 	}
+})
+
+test('Radio - values are synced with state', async ({ page }) => {
+	await openFormsSection(page)
+	const inlineRadios = page.locator('input[name="radio-sample-inline"]')
+	
+    // Initial State: Option A checked
+	await expect(inlineRadios.nth(0)).toBeChecked()
+    await expect(page.getByText('Value: a').first()).toBeVisible()
+
+    // Select Option B
+    await inlineRadios.nth(1).check()
+    await expect(inlineRadios.nth(1)).toBeChecked()
+    await expect(page.getByText('Value: b').first()).toBeVisible()
+
+    // Select Option C
+    await inlineRadios.nth(2).check()
+    await expect(inlineRadios.nth(2)).toBeChecked()
+    await expect(page.getByText('Value: c').first()).toBeVisible()
 })
 
 test('Radio - all variants render correctly', async ({ page }) => {

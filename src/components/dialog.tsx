@@ -103,10 +103,10 @@ const okButton: DialogButton = { text: 'Ok', variant: 'primary' }
 const state = reactive({
 	pending: null as PendingDialog | null,
 	open: false,
+	dialogElement: undefined as HTMLDialogElement | undefined,
 })
 
 let hostMounted = false
-let dialogElement: HTMLDialogElement | undefined
 let lastActiveElement: HTMLElement | null = null
 let trapKeydownListener: ((e: KeyboardEvent) => void) | null = null
 let trapKeyupListener: ((e: KeyboardEvent) => void) | null = null
@@ -142,14 +142,14 @@ function attachGlobalTrap() {
 	if (trapKeydownListener) return
 	trapKeydownListener = (ev: KeyboardEvent) => {
 		if (ev.key !== 'Tab') return
-		const root = dialogElement
+		const root = state.dialogElement
 		if (!state.open) return
 		// Capture phase trap to win over other handlers; block default always while open
 		ev.preventDefault()
 		ev.stopPropagation()
 		if (!root) {
 			// Dialog not yet mounted; defer focusing to next tick
-			setTimeout(() => dialogElement?.focus(), 0)
+			setTimeout(() => state.dialogElement?.focus(), 0)
 			return
 		}
 		// Explicit tabstop order
@@ -177,7 +177,7 @@ function attachGlobalTrap() {
 		if (ev.key !== 'Tab' || !state.open) return
 		ev.preventDefault()
 		ev.stopPropagation()
-		const root = dialogElement
+		const root = state.dialogElement
 		if (!root) return
 		const focusables = getOrderedTabstops(root)
 		const target = focusables[0] ?? root
@@ -210,7 +210,7 @@ function closeCurrent(value: PropertyKey | null) {
 	detachGlobalTrap()
 	// close native modal if present
 	try {
-		dialogElement?.close()
+		state.dialogElement?.close()
 	} catch (error) {
 		console.error('Failed to close native dialog:', error)
 	}
@@ -266,7 +266,7 @@ const Host = () => {
 			// Capture-phase handler already cycles focus; just block bubbling here
 			ev.preventDefault()
 			ev.stopPropagation()
-			const root = dialogElement
+			const root = state.dialogElement
 			if (!root) return
 			// Do nothing else here; capture-phase trap handled cycling
 		}
@@ -287,7 +287,7 @@ const Host = () => {
 
 	return state.pending ? (
 		<dialog
-			this={dialogElement as HTMLDialogElement}
+			this={state.dialogElement as HTMLDialogElement}
 			open={state.open}
 			onClick={onBackdropClick}
 			onKeydown={onDialogKeyDown}
@@ -369,17 +369,17 @@ export function dialog<
 			document.querySelector('.demo-app')?.setAttribute('inert', '')
 			// prefer native modal behavior for focus trapping
 			try {
-				if (dialogElement && typeof dialogElement.showModal === 'function') {
-					if (!dialogElement.open) dialogElement.showModal()
+				if (state.dialogElement && typeof state.dialogElement.showModal === 'function') {
+					if (!state.dialogElement.open) state.dialogElement.showModal()
 				}
 			} catch (error) {
 				console.error('Failed to show native modal:', error)
 			}
 			// Deterministic initial focus (header close → footer actions → content → dialog)
 			// If dialogElement isn't available yet, defer focus to next tick
-			if (dialogElement) {
-				const ordered = getOrderedTabstops(dialogElement)
-				const initial = ordered[0] ?? dialogElement
+			if (state.dialogElement) {
+				const ordered = getOrderedTabstops(state.dialogElement)
+				const initial = ordered[0] ?? state.dialogElement
 				try {
 					initial.focus({ preventScroll: true })
 				} catch (error) {
@@ -388,9 +388,9 @@ export function dialog<
 			} else {
 				// Element not yet mounted; defer focusing to next tick
 				setTimeout(() => {
-					if (dialogElement) {
-						const ordered = getOrderedTabstops(dialogElement)
-						const initial = ordered[0] ?? dialogElement
+					if (state.dialogElement) {
+						const ordered = getOrderedTabstops(state.dialogElement)
+						const initial = ordered[0] ?? state.dialogElement
 						try {
 							initial.focus({ preventScroll: true })
 						} catch (error) {

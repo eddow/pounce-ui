@@ -1,4 +1,5 @@
 import { compose } from 'pounce-ts'
+import { effect, reactive } from 'mutts'
 import { css } from '../lib/css'
 
 css`
@@ -105,14 +106,16 @@ export type AppShellProps = {
 }
 
 export const AppShell = (props: AppShellProps) => {
-	let headerEl: HTMLElement | undefined
+	const state = reactive({
+		headerEl: undefined as HTMLElement | undefined,
+	})
 
 	if (props.shadowOnScroll !== false && typeof window !== 'undefined') {
-		queueMicrotask(() => {
-			if (!headerEl) return
+		effect(() => {
+			if (!state.headerEl) return
 			const onScroll = () => {
 				const scrolled = window.scrollY > 0
-				headerEl.classList.toggle('pp-app-shell-header--shadow', scrolled)
+				state.headerEl!.classList.toggle('pp-app-shell-header--shadow', scrolled)
 			}
 			onScroll()
 			window.addEventListener('scroll', onScroll, { passive: true })
@@ -121,7 +124,7 @@ export const AppShell = (props: AppShellProps) => {
 
 	return (
 		<div class="pp-app-shell">
-			<header this={headerEl} class="pp-app-shell-header">
+			<header this={state.headerEl} class="pp-app-shell-header">
 				{props.header}
 			</header>
 			<main class="pp-app-shell-main">{props.children}</main>

@@ -1,3 +1,4 @@
+import { effect, reactive } from 'mutts'
 import { css } from '../lib/css'
 import { A } from '../lib/router'
 import { Button } from './button'
@@ -171,7 +172,7 @@ function checkMenuStructure(detailsEl: HTMLDetailsElement) {
 	}
 }
 
-const MenuList = ({items}: {items: JSX.Element[]}) => (
+const MenuList = ({ items }: { items: JSX.Element[] }) => (
 	<ul role="menu">
 		<for each={items}>
 			{(item) => <li role="none">{item}</li>}
@@ -180,21 +181,24 @@ const MenuList = ({items}: {items: JSX.Element[]}) => (
 )
 
 const MenuComponent = (props: MenuProps) => {
-	let detailsEl: HTMLDetailsElement | undefined
+	const state = reactive({
+		detailsEl: undefined as HTMLDetailsElement | undefined,
+	})
+
 	// Schedule a structure check after render (dev only)
 	if (isDevEnv()) {
-		queueMicrotask(() => {
-			if (detailsEl) checkMenuStructure(detailsEl)
+		effect(() => {
+			if (state.detailsEl) checkMenuStructure(state.detailsEl)
 		})
 	}
 	return (
 		<details
-			this={detailsEl}
+			this={state.detailsEl}
 			class={props.class ?? 'dropdown'}
 			onClick={(e) => {
 				const target = e.target as HTMLElement
 				if (target.closest('a')) {
-					;(e.currentTarget as HTMLDetailsElement).removeAttribute('open')
+					; (e.currentTarget as HTMLDetailsElement).removeAttribute('open')
 				}
 			}}
 			onToggle={(e) => {

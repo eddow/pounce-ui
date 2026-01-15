@@ -212,7 +212,7 @@ export type ComboboxProps = JSX.IntrinsicElements['input'] & {
 export const Combobox = (props: ComboboxProps) => {
 	const generatedId = `pp-combobox-${Math.random().toString(36).slice(2, 9)}`
 	const state = compose(
-		{ variant: 'primary', list: generatedId, options: [] as ComboboxOption[] },
+		{ variant: 'primary', list: generatedId, options: [] as ComboboxOption[], type: 'text' },
 		props
 	)
 
@@ -232,7 +232,8 @@ export const Combobox = (props: ComboboxProps) => {
 	)
 }
 
-type ControlBaseProps = JSX.IntrinsicElements['input'] & {
+
+type ControlBaseProps = Omit<JSX.IntrinsicElements['input'], 'checked'> & {
 	label?: JSX.Element | string
 	description?: JSX.Element | string
 	variant?: Variant
@@ -246,13 +247,16 @@ export type CheckboxProps = ControlBaseProps
 
 export const Checkbox = (props: CheckboxProps) => {
 	const state = compose({ variant: 'primary', type: 'checkbox' }, props)
-
 	return (
 		<label
 			{...state.labelProps}
 			class={['pp-control', 'pp-checkbox', `pp-control-${tone(state.variant)}`, state.el?.class]}
 		>
-			<input {...state} class={['pp-control-input', state.class]} />
+			<input
+				{...state as any}
+				checked={state.checked}
+				class={['pp-control-input', state.class]}
+			/>
 			<span class="pp-control-copy">
 				<span class="pp-control-label" if={state.label ?? state.children}>
 					{state.label ?? state.children}
@@ -275,7 +279,11 @@ export const Radio = (props: RadioProps) => {
 			{...state.labelProps}
 			class={['pp-control', 'pp-radio', `pp-control-${tone(state.variant)}`, state.el?.class]}
 		>
-			<input {...state} class={['pp-control-input', state.class]} />
+			<input
+				{...state as any}
+				checked={state.checked}
+				class={['pp-control-input', state.class]}
+			/>
 			<span class="pp-control-copy">
 				<span class="pp-control-label" if={state.label ?? state.children}>
 					{state.label ?? state.children}
@@ -308,9 +316,9 @@ export const Switch = (props: SwitchProps) => {
 		>
 			<input
 				role="switch"
-				{...state}
+				{...(state as any)}
 				class={['pp-control-input', 'pp-switch-input', state.class]}
-				aria-checked={state.checked}
+				aria-checked={state.checked as any}
 			/>
 			<span class="pp-switch-visual" aria-hidden="true" />
 			<span class="pp-control-copy" if={state.label || state.children || state.description}>

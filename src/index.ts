@@ -43,6 +43,8 @@ export type {
 export { AppShell, Container, Grid, Inline, Stack } from './components/layout'
 export type { RadioButtonProps } from './components/radiobutton'
 export { RadioButton } from './components/radiobutton'
+export type { MultiselectProps } from './components/multiselect'
+export { Multiselect } from './components/multiselect'
 export type { BadgeProps, ChipProps, PillProps } from './components/status'
 export { Badge, Chip, Pill } from './components/status'
 export type { ToastConfig, ToastContent, ToastOptions } from './components/toast'

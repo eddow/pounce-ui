@@ -186,20 +186,21 @@ export type HeadingProps = {
 }
 
 export const Heading = (props: HeadingProps) => {
+	const defaults = { level: 2, variant: 'primary', align: 'start' as HeadingAlign }
 	const state = compose(
-		{ level: 2, variant: 'primary', align: 'start' as HeadingAlign },
+		defaults,
 		props,
-		(state) => {
-			const resolvedLevel = () => Math.min(6, Math.max(1, state.level ?? 2))
+		() => {
+			const resolvedLevel = () => Math.min(6, Math.max(1, props.level ?? defaults.level))
 			return {
 				get level() {
-					return resolvedLevel()
+					return resolvedLevel() as 1 | 2 | 3 | 4 | 5 | 6
 				},
 				get tag() {
-					return state.tag ?? `h${resolvedLevel()}`
+					return props.tag ?? `h${resolvedLevel()}`
 				},
 				get align() {
-					return state.align ?? 'start'
+					return props.align ?? defaults.align
 				},
 			}
 		}

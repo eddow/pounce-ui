@@ -10,8 +10,12 @@ import {
 	SerializedDockview,
 } from 'dockview-core'
 import 'dockview-core/dist/styles/dockview.css'
-import { effect, isObject, reactive, ScopedCallback, unreactive, watch } from 'mutts'
+import { effect, reactive, ScopedCallback, unreactive, watch } from 'mutts'
 import { bindApp, compose, extend } from 'pounce-ts'
+
+function isObject(value: any): value is object {
+	return typeof value === 'object' && value !== null
+}
 
 // Scope passed to widgets always has api defined (set before widget is called)
 type DockviewScope = Record<string, any> & { api: DockviewApi }
@@ -32,7 +36,7 @@ export type DockviewHeaderActionProps = {
 	api: DockviewApi
 	group: DockviewGroupPanel
 }
-type DvHeaderAction = (props: DockviewHeaderActionProps) => JSX.Element
+type DvHeaderAction = (props: DockviewHeaderActionProps) => JSX.Element | null
 
 interface DockviewLinkProps {
 	params?: unknown
@@ -267,24 +271,48 @@ function resolveApi(api: DockviewApi | Binding<DockviewApi | undefined> | undefi
 	}
 	return api as DockviewApi | undefined
 }
-function headerActionRenderer(widget: DvHeaderAction, api: DockviewApi, group: DockviewGroupPanel) {
+function headerActionRenderer(
+	resolveWidget: (group: DockviewGroupPanel) => DvHeaderAction | undefined,
+	api: DockviewApi,
+	group: DockviewGroupPanel
+) {
 	const element = document.createElement('div')
 	element.style.height = '100%'
 	element.style.width = '100%'
 	let cleanup: ScopedCallback | undefined
+	let groupListeners: (() => void)[] = []
+
 	return {
 		element,
 		init(_params: any) {
+			// Signal to force update on group events
+			const signal = reactive({ version: 0 })
+			const update = () => { signal.version++ }
+
+			const disposable = group.api.onDidActivePanelChange(update)
+			groupListeners.push(() => disposable.dispose())
+
 			let jsx: JSX.Element | undefined
 			cleanup = effect(() => {
+				// Dependency on signal
+				const _ = signal.version
+
+				const widget = resolveWidget(group)
+
 				// Use h() to create proper component elements
-				jsx = h(widget, { api, group })
+				if (widget) {
+					jsx = h(widget, { api, group })
+				} else {
+					jsx = h('div', { style: 'display: none' })
+				}
 			})
 			const headerScope = extend({}, { api }) as DockviewScope
 			bindApp(jsx!, element, headerScope)
 		},
 		dispose() {
 			cleanup?.()
+			groupListeners.forEach(f => f())
+			groupListeners = []
 		},
 	}
 }
@@ -396,44 +424,49 @@ export const Dockview = (
 					return contentRenderer(widget, panelLink, metaById, schedulePersist)
 				},
 				createLeftHeaderActionComponent(group: DockviewGroupPanel) {
-					// Use 'default' key for now; component name lookup would come from group options
-					const widget = state.headerLeft?.default
-					if (!widget) {
-						const element = document.createElement('div')
-						return { element, init: () => { }, dispose: () => { } }
-					}
 					const api = resolveApi(props.api)
 					if (!api) {
 						const element = document.createElement('div')
 						return { element, init: () => { }, dispose: () => { } }
 					}
-					return headerActionRenderer(widget, api, group)
+					return headerActionRenderer(
+						(g) => {
+							const key = (g.activePanel?.params as any)?.headerLeft ?? 'default'
+							return state.headerLeft?.[key] ?? state.headerLeft?.['default']
+						},
+						api,
+						group
+					)
 				},
 				createRightHeaderActionComponent(group: DockviewGroupPanel) {
-					const widget = state.headerRight?.default
-					if (!widget) {
-						const element = document.createElement('div')
-						return { element, init: () => { }, dispose: () => { } }
-					}
 					const api = resolveApi(props.api)
 					if (!api) {
 						const element = document.createElement('div')
 						return { element, init: () => { }, dispose: () => { } }
 					}
-					return headerActionRenderer(widget, api, group)
+					return headerActionRenderer(
+						(g) => {
+							const key = (g.activePanel?.params as any)?.headerRight ?? 'default'
+							return state.headerRight?.[key] ?? state.headerRight?.['default']
+						},
+						api,
+						group
+					)
 				},
 				createPrefixHeaderActionComponent(group: DockviewGroupPanel) {
-					const widget = state.headerPrefix?.default
-					if (!widget) {
-						const element = document.createElement('div')
-						return { element, init: () => { }, dispose: () => { } }
-					}
 					const api = resolveApi(props.api)
 					if (!api) {
 						const element = document.createElement('div')
 						return { element, init: () => { }, dispose: () => { } }
 					}
-					return headerActionRenderer(widget, api, group)
+					return headerActionRenderer(
+						(g) => {
+							const key = (g.activePanel?.params as any)?.headerPrefix ?? 'default'
+							return state.headerPrefix?.[key] ?? state.headerPrefix?.['default']
+						},
+						api,
+						group
+					)
 				},
 				createTabComponent(options: CreateComponentOptions) {
 					const element = document.createElement('div')
