@@ -3,7 +3,7 @@ import Iconify from '@iconify/iconify'
 import { addBatchCleanup } from 'mutts'
 import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
-
+// TODO: a real plugin with unplugin icon vite, here, Icon's attribute cnnot be dynamical
 css`
 .iconify {
 	display: inline-block;

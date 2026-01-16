@@ -30,7 +30,8 @@
 	"include": [
 		"src/**/*",
 		"../pounce/src/types/**/*.d.ts",
-		"../mutts/**/*.ts"
+		"../mutts/**/*.ts",
+		"tests/dockview.test.tsx"
 	],
 	"references": [
 		{

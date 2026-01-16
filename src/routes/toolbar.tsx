@@ -132,16 +132,9 @@ export default () => {
 				<div>
 					<Heading level={3}>Vertical Toolbar</Heading>
 					<Toolbar orientation="vertical" style="width: fit-content;">
-						<CheckButton icon="mdi:format-bold" aria-label="Bold" checked={toolbarState.bold} />
-						<CheckButton
-							icon="mdi:format-italic"
-							aria-label="Italic"
-							checked={toolbarState.italic}
-						/>
-						<CheckButton
-							icon="mdi:format-underline"
-							aria-label="Underline"
-							checked={toolbarState.underline}
+						icon="mdi:format-underline"
+						aria-label="Underline"
+						checked={toolbarState.underline}
 						/>
 						<Toolbar.Spacer visible />
 						<Button icon="mdi:link" aria-label="Insert link" />

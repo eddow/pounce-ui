@@ -47,6 +47,8 @@ export type { MultiselectProps } from './components/multiselect'
 export { Multiselect } from './components/multiselect'
 export type { BadgeProps, ChipProps, PillProps } from './components/status'
 export { Badge, Chip, Pill } from './components/status'
+export type { StarsProps } from './components/stars'
+export { Stars } from './components/stars'
 export type { ToastConfig, ToastContent, ToastOptions } from './components/toast'
 export {
 	toast,

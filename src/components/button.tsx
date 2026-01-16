@@ -77,7 +77,7 @@ export const Button = (props: ButtonProps) => {
 		{
 			variant: 'primary',
 			iconPosition: 'start',
-			onClick: () => {},
+			onClick: () => { },
 			ariaLabel: undefined as string | undefined,
 		},
 		props,

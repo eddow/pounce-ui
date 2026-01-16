@@ -95,7 +95,7 @@ function assertJsonable(value: unknown, label: string) {
 	}
 }
 
-function contentRenderer(
+export function contentRenderer(
 	widget: DvWidget<any>,
 	link: { id: string; props?: DockviewLinkProps; scope: DockviewScope; component?: string },
 	metaById: DockviewSnapshot['panels'],
@@ -230,7 +230,18 @@ function contentRenderer(
 				)
 			)
 			// Use h() to create a proper component element that goes through the pounce lifecycle
-			const jsx = h(widget, link.props!)
+			// We map props to bindings { get, set } to ensure they are writable in the component
+			// and that writes propagate back to link.props (which triggers the watchers below)
+			const boundProps: Record<string, any> = {}
+			if (link.props) {
+				for (const key of Object.keys(link.props)) {
+					boundProps[key] = {
+						get: () => (link.props as any)[key],
+						set: (v: any) => ((link.props as any)[key] = v),
+					}
+				}
+			}
+			const jsx = h(widget, boundProps)
 			bindApp(jsx, element, link.scope)
 		},
 		layout: (width: number, height: number) => {
@@ -270,6 +281,35 @@ function resolveApi(api: DockviewApi | Binding<DockviewApi | undefined> | undefi
 		return (api as Binding<DockviewApi | undefined>).get()
 	}
 	return api as DockviewApi | undefined
+}
+
+const DefaultTab = (
+	props: DockviewWidgetProps,
+	scope: DockviewScope & { tabLeft?: any; tabRight?: any; tabPrefix?: any }
+) => {
+	const params = (props.params as any) || {}
+
+	const renderAction = (type: 'tabLeft' | 'tabRight' | 'tabPrefix') => {
+		const key = params[type]
+		if (!key) return null
+		const action = (scope[type] || {})[key] || (scope[type] || {})['default']
+		if (!action) return null
+		const group = (props.api as any).group
+		return h(action, { api: scope.api, group })
+	}
+
+	return (
+		<div style="display: flex; align-items: center; height: 100%; width: 100%; overflow: hidden; padding: 0 4px; gap: 2px;">
+			{renderAction('tabPrefix')}
+			{renderAction('tabLeft')}
+			<span
+				style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 0 4px;"
+			>
+				{props.title}
+			</span>
+			{renderAction('tabRight')}
+		</div>
+	)
 }
 function headerActionRenderer(
 	resolveWidget: (group: DockviewGroupPanel) => DvHeaderAction | undefined,
@@ -325,6 +365,9 @@ export const Dockview = (
 		headerLeft?: Record<string, DvHeaderAction>
 		headerRight?: Record<string, DvHeaderAction>
 		headerPrefix?: Record<string, DvHeaderAction>
+		tabLeft?: Record<string, DvHeaderAction>
+		tabRight?: Record<string, DvHeaderAction>
+		tabPrefix?: Record<string, DvHeaderAction>
 		options?: FreeDockviewOptions
 		layout?: DockviewSnapshot | Binding<DockviewSnapshot | undefined>
 		onApiChange?: (api: DockviewApi | undefined) => void
@@ -336,7 +379,7 @@ export const Dockview = (
 ) => {
 	const links = new Map<string, { id: string; props?: DockviewLinkProps; scope: DockviewScope; component?: string }>()
 	const metaById = reactive({}) as DockviewSnapshot['panels']
-	const state = compose({ options: {} }, props)
+	const state = compose({ options: {}, tabs: {}, tabLeft: {}, tabRight: {}, tabPrefix: {} }, props)
 	const options: FreeDockviewOptions = {}
 
 	effect(() => {
@@ -472,10 +515,16 @@ export const Dockview = (
 					const element = document.createElement('div')
 					element.style.height = '100%'
 					element.style.width = '100%'
-					const widget = state.tabs?.[options.name]
-					if (!widget) return { element, init: () => { }, dispose: () => { } }
+					const widget = state.tabs?.[options.name] ?? DefaultTab
 					const panelLink = links.get(options.id)
 					if (!panelLink) return { element, init: () => { }, dispose: () => { } }
+
+					const tabScope = extend(panelLink.scope, {
+						tabLeft: state.tabLeft,
+						tabRight: state.tabRight,
+						tabPrefix: state.tabPrefix,
+					})
+
 					let cleanup: ScopedCallback | undefined
 					return {
 						element,
@@ -485,7 +534,7 @@ export const Dockview = (
 								// Use h() to create proper component elements
 								jsx = h(widget, panelLink.props)
 							})
-							bindApp(jsx!, element, panelLink.scope as DockviewScope)
+							bindApp(jsx!, element, tabScope as DockviewScope)
 						},
 						dispose() {
 							cleanup?.()

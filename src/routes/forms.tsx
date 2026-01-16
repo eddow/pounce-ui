@@ -1,6 +1,7 @@
 import { reactive } from 'mutts'
 import { Button } from '../components/button'
 import { Checkbox, Combobox, Radio, Select, Switch } from '../components/forms'
+import { Stars } from '../components/stars'
 import { Multiselect } from '../components/multiselect'
 import { Container, Inline, Stack } from '../components/layout'
 import { Heading, Text } from '../components/typography'
@@ -23,6 +24,9 @@ export default function FormsRoute() {
 		selectedFruits: new Set<Fruit>(),
 		hideSelected: false,
 		closeOnSelect: false,
+		starsValue: 2,
+		starsLargeValue: 7,
+		starsRangeValue: [2, 4] as const,
 	})
 
 
@@ -300,6 +304,61 @@ export default function FormsRoute() {
 							Clear Selection
 						</Button>
 					</Stack>
+				</section>
+
+				<section>
+					<Heading level={3}>Stars Rating</Heading>
+					<Inline wrap gap="md">
+						<Stack gap="xs">
+							<Text muted>Interactive</Text>
+							<Stars
+								value={state.starsValue}
+							/>
+							<Text size="sm" muted>
+								Value: {state.starsValue}
+							</Text>
+						</Stack>
+						<Stack gap="xs">
+							<Text muted>Read-only (3/5)</Text>
+							<Stars value={3} readonly />
+						</Stack>
+						<Stack gap="xs">
+							<Text muted>Custom Size & Max</Text>
+							<Stars
+								value={state.starsLargeValue}
+								maximum={5}
+								size="2rem"
+								inside="mdi:heart"
+								outside="mdi:heart-outline"
+							/>
+							<Text size="sm" muted>
+								Value: {state.starsLargeValue} / 5 (Custom Icons)
+							</Text>
+						</Stack>
+						<Stack gap="xs">
+							<Text muted>Range</Text>
+							<Stars
+								value={state.starsRangeValue}
+								maximum={5}
+								onChange={(v) => (state.starsRangeValue = v)}
+							/>
+							<Text size="sm" muted>
+								Value: {state.starsRangeValue.join('-')}
+							</Text>
+						</Stack>
+						<Stack gap="xs">
+							<Text muted>Range with Before Icon</Text>
+							<Stars
+								value={state.starsRangeValue}
+								maximum={5}
+								before="mdi:minus-circle-outline"
+								onChange={(v) => (state.starsRangeValue = v)}
+							/>
+							<Text size="sm" muted>
+								Value: {state.starsRangeValue.join('-')}
+							</Text>
+						</Stack>
+					</Inline>
 				</section>
 			</Stack>
 		</Container>
