@@ -5,6 +5,7 @@ import { Stars } from '../components/stars'
 import { Multiselect } from '../components/multiselect'
 import { Container, Inline, Stack } from '../components/layout'
 import { Heading, Text } from '../components/typography'
+import { tablerOutlineChevronDown, tablerFilledHeart, tablerOutlineHeart, tablerOutlineCircleMinus, tablerOutlineCircleX } from 'pure-glyf/icons'
 
 type Fruit = { id: number; name: string; color: string }
 
@@ -27,6 +28,8 @@ export default function FormsRoute() {
 		starsValue: 2,
 		starsLargeValue: 7,
 		starsRangeValue: [2, 4] as const,
+		starsZeroValue: 0,
+		starsZeroRangeValue: [0, 3] as const,
 	})
 
 
@@ -274,7 +277,7 @@ export default function FormsRoute() {
 									)
 								}}
 							>
-								<Button icon="mdi:chevron-down">
+								<Button icon={tablerOutlineChevronDown}>
 									Select Fruits ({state.selectedFruits.size})
 								</Button>
 							</Multiselect>
@@ -328,8 +331,8 @@ export default function FormsRoute() {
 								value={state.starsLargeValue}
 								maximum={5}
 								size="2rem"
-								inside="mdi:heart"
-								outside="mdi:heart-outline"
+								before={tablerFilledHeart}
+								after={tablerOutlineHeart}
 							/>
 							<Text size="sm" muted>
 								Value: {state.starsLargeValue} / 5 (Custom Icons)
@@ -351,11 +354,35 @@ export default function FormsRoute() {
 							<Stars
 								value={state.starsRangeValue}
 								maximum={5}
-								before="mdi:minus-circle-outline"
+								before={tablerOutlineCircleMinus}
 								onChange={(v) => (state.starsRangeValue = v)}
 							/>
 							<Text size="sm" muted>
 								Value: {state.starsRangeValue.join('-')}
+							</Text>
+						</Stack>
+						<Stack gap="xs">
+							<Text muted>With Zero Element (Single)</Text>
+							<Stars
+								value={state.starsZeroValue}
+								maximum={5}
+								zeroElement={tablerOutlineCircleX}
+								onChange={(v) => (state.starsZeroValue = v)}
+							/>
+							<Text size="sm" muted>
+								Value: {state.starsZeroValue}
+							</Text>
+						</Stack>
+						<Stack gap="xs">
+							<Text muted>With Zero Element (Range)</Text>
+							<Stars
+								value={state.starsZeroRangeValue}
+								maximum={5}
+								zeroElement={tablerOutlineCircleX}
+								onChange={(v) => (state.starsZeroRangeValue = v)}
+							/>
+							<Text size="sm" muted>
+								Value: {Array.isArray(state.starsZeroRangeValue) ? state.starsZeroRangeValue.join('-') : state.starsZeroRangeValue}
 							</Text>
 						</Stack>
 					</Inline>

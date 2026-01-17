@@ -38,15 +38,52 @@
 // This is called by the transformed code from the Vite plugin
 const injectedStyles = new Set<string>()
 
+function getCallerId(): string {
+	try {
+		const stack = new Error().stack
+		if (!stack) return 'unknown'
+		
+		// Parse the stack trace to find the caller
+		const lines = stack.split('\n')
+		for (const line of lines) {
+			// Look for file paths, ignoring internal/library frames if possible
+			// In Vite dev, paths usually look like http://localhost:5173/src/components/icon.tsx
+			if (line.includes('/src/') && !line.includes('lib/css.ts')) {
+				const match = line.match(/(https?:\/\/[^\)]+)/) || line.match(/(\/[\w\.-]+\/[\w\.-]+)/)
+				if (match) {
+                    const url = match[1]
+                    // specific fix: extract relative path from /src/
+                    const srcIndex = url.indexOf('/src/')
+                    if (srcIndex !== -1) {
+                        // Return "/src/..." and strip query params (?) or line numbers (:)
+                        return url.substring(srcIndex).split('?')[0].split(':')[0]
+                    }
+					return url
+				}
+			}
+		}
+	} catch (e) {}
+	return 'default'
+}
+
 export function __injectCSS(css: string): void {
 	if (typeof document === 'undefined' || injectedStyles.has(css)) return
 
 	injectedStyles.add(css)
 
-	// Inject the CSS into the document
-	const style = document.createElement('style')
-	style.textContent = css
-	document.head.appendChild(style)
+    const callerId = getCallerId()
+    
+    // Find or create a style tag for this caller
+    let style = document.querySelector(`style[data-vite-css-id="${callerId}"]`) as HTMLStyleElement
+    if (!style) {
+        style = document.createElement('style')
+        style.setAttribute('data-vite-css-id', callerId)
+        document.head.appendChild(style)
+    }
+
+	// Append the CSS
+    // Using appendChild with a Text node is often faster than setting textContent for appending
+    style.appendChild(document.createTextNode(css + '\n'))
 }
 
 /**

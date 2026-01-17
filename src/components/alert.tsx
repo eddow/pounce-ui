@@ -2,6 +2,15 @@ import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
 import { Icon } from './icon'
 import type { Variant } from './variants'
+import {
+	tablerOutlineAlertCircle,
+	tablerOutlineAlertOctagon,
+	tablerOutlineBell,
+	tablerOutlineBrightness,
+	tablerOutlineCircleCheck,
+	tablerOutlineInfoCircle,
+	tablerOutlineX,
+} from 'pure-glyf/icons'
 
 css`
 .pp-alert {
@@ -102,12 +111,12 @@ css`
 `
 
 const alertIcons: Record<Variant, string> = {
-	primary: 'mdi:information-outline',
-	secondary: 'mdi:bell-outline',
-	contrast: 'mdi:brightness-7',
-	success: 'mdi:check-circle-outline',
-	warning: 'mdi:alert-circle-outline',
-	danger: 'mdi:alert-octagon-outline',
+	primary: tablerOutlineInfoCircle,
+	secondary: tablerOutlineBell,
+	contrast: tablerOutlineBrightness,
+	success: tablerOutlineCircleCheck,
+	warning: tablerOutlineAlertCircle,
+	danger: tablerOutlineAlertOctagon,
 }
 
 export type AlertProps = {
@@ -150,7 +159,7 @@ export const Alert = (props: AlertProps) => {
 		>
 			<span class="pp-alert-icon" if={state.chosenIcon} aria-hidden="true">
 				{typeof state.chosenIcon === 'string' ? (
-					<Icon name={state.chosenIcon} size="20px" />
+					<Icon icon={state.chosenIcon} size="20px" />
 				) : (
 					state.chosenIcon
 				)}
@@ -168,8 +177,9 @@ export const Alert = (props: AlertProps) => {
 				aria-label={state.dismissLabel ?? 'Dismiss'}
 				onClick={close}
 			>
-				<Icon name="mdi:close" size="18px" />
+				<Icon icon={tablerOutlineX} size="18px" />
 			</button>
+
 		</div>
 	)
 }

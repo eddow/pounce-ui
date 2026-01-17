@@ -3,6 +3,13 @@ import { array, bindApp, compose, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import { css } from '../lib/css'
 import type { Variant } from './variants'
+import {
+	tablerOutlineAlertCircle,
+	tablerOutlineAlertOctagon,
+	tablerOutlineCircleCheck,
+	tablerOutlineInfoCircle,
+	tablerOutlineX,
+} from 'pure-glyf/icons'
 
 css`
 .pp-toasts {
@@ -149,7 +156,7 @@ export const toastConfig: ToastConfig = {
 	template: (item: ToastItem) => (
 		<>
 			<aside class="pp-toast-icon" aria-hidden="true">
-				<Icon name={toastConfig.variantIcon[item.options.variant]} size="20px" />
+				<Icon icon={toastConfig.variantIcon[item.options.variant]} size="20px" />
 			</aside>
 			<div class="pp-toast-content">
 				{typeof item.options.content === 'string' ? (
@@ -164,17 +171,17 @@ export const toastConfig: ToastConfig = {
 				aria-label="Dismiss"
 				onClick={() => closeToast(item)}
 			>
-				<Icon name="mdi:close" />
+				<Icon icon={tablerOutlineX} />
 			</button>
 		</>
 	),
 	variantIcon: {
-		primary: 'mdi:information',
-		secondary: 'mdi:information',
-		contrast: 'mdi:information',
-		success: 'mdi:check-circle',
-		warning: 'mdi:alert',
-		danger: 'mdi:alert-octagon',
+		primary: tablerOutlineInfoCircle,
+		secondary: tablerOutlineInfoCircle,
+		contrast: tablerOutlineInfoCircle,
+		success: tablerOutlineCircleCheck,
+		warning: tablerOutlineAlertCircle,
+		danger: tablerOutlineAlertOctagon,
 	},
 }
 

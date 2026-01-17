@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite'
 import { transformSync } from '@babel/core'
 // Reuse the JSX reactive plugin directly from pounce sources
 import { babelPluginJsxReactive } from 'pounce-ts/plugin'
+import { pureGlyfPlugin } from 'pure-glyf/plugin'
 import { cssTagPlugin } from './vite-plugin-css-tag'
 
 export default defineConfig({
@@ -12,6 +13,11 @@ export default defineConfig({
 		}
 	},
 	plugins: [
+		pureGlyfPlugin({
+			icons: {
+				tabler: 'node_modules/@tabler/icons/icons',
+			},
+		}) as any,
 		cssTagPlugin(),
 		{
 			name: 'babel-jsx-transform',

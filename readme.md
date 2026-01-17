@@ -16,12 +16,16 @@ See the docs per topic in `/docs`:
 - [Icons and Variants](./docs/icons-variants.md)
 - [Layout](./docs/layout.md)
 - [Menu](./docs/menu.md)
+- [Stars](./docs/stars.md)
 - [Status](./docs/status.md)
 - [Toast](./docs/toast.md)
 - [Toolbar](./docs/toolbar.md)
 - [Typography](./docs/typography.md)
 
 ## TODOs
+
+- [ ] Make one plugin to rule them all.
+	Basically, the pounce-ui plugin should initialize and use al the pounce-ts, pure-glyf, pico, etc. plugins.
 
 - Form primitives
 	- Accessible `Field`, `Label`, `Description`, `Error` scaffolding

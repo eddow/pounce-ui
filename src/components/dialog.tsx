@@ -3,6 +3,7 @@ import { bindApp, compose, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import { css } from '../lib/css'
 import { Variant, variantClass } from './variants'
+import { tablerOutlineX } from 'pure-glyf/icons'
 
 css`
 .pp-size-sm {
@@ -306,7 +307,7 @@ const Host = () => {
 							style="float: right;"
 							onClick={() => closeCurrent(null)}
 						>
-							<Icon name="mdi:close" />
+							<Icon icon={tablerOutlineX} />
 						</button>
 						<h3 id={titleId}>{opts.title}</h3>
 					</header>
@@ -314,7 +315,7 @@ const Host = () => {
 				<main class="pp-body">
 					{opts?.stamp ? (
 						<aside class="pp-stamp" aria-hidden="true">
-							{typeof opts.stamp === 'string' ? <Icon name={opts.stamp} size="48px" /> : opts.stamp}
+							{typeof opts.stamp === 'string' ? <Icon icon={opts.stamp} size="48px" /> : opts.stamp}
 						</aside>
 					) : undefined}
 					<div class="pp-content">
@@ -422,7 +423,7 @@ function renderButtons<Buttons extends Record<string, UIContent | DialogButton>>
 		} else {
 			const icon = spec.icon ? (
 				<span class="pp-button-icon" aria-hidden={typeof spec.icon === 'string' ? true : undefined}>
-					{typeof spec.icon === 'string' ? <Icon name={spec.icon} /> : spec.icon}
+					{typeof spec.icon === 'string' ? <Icon icon={spec.icon} /> : spec.icon}
 				</span>
 			) : undefined
 			button = (

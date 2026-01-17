@@ -6,6 +6,30 @@ import { Container, Grid, Inline, Stack } from '../components/layout'
 import { Badge, Chip, Pill } from '../components/status'
 import { Heading, Link, Text } from '../components/typography'
 import { css, sass } from '../lib/css'
+import {
+	tablerOutlineArrowsHorizontal,
+	tablerOutlineBell,
+	tablerOutlineBolt,
+	tablerOutlineBrandGithub,
+	tablerOutlineCalendar,
+	tablerOutlineCheck,
+	tablerOutlineChevronRight,
+	tablerOutlineCircleLetterA,
+	tablerOutlineCircleLetterB,
+	tablerOutlineCircleLetterC,
+	tablerOutlineCircleLetterD,
+	tablerOutlineCircleLetterE,
+	tablerOutlineHome,
+	tablerOutlineInfoCircle,
+	tablerOutlineMail,
+	tablerOutlineMessage,
+	tablerOutlineRocket,
+	tablerOutlineShoppingCart,
+	tablerOutlineStar,
+	tablerOutlineTag,
+	tablerOutlineUser,
+	tablerOutlineUserCircle,
+} from 'pure-glyf/icons'
 
 // Test the css tag function
 css`.css-tag-test { 
@@ -59,9 +83,9 @@ export default () => (
 			<div>
 				<Heading level={3}>Icons</Heading>
 				<Inline gap="md">
-					<Icon name="mdi:home" />
-					<Icon name="mdi:account" size="24px" />
-					<Icon name="mdi:github" size="24px" />
+					<Icon icon={tablerOutlineHome} />
+					<Icon icon={tablerOutlineUser} size="24px" />
+					<Icon icon={tablerOutlineBrandGithub} size="24px" />
 				</Inline>
 			</div>
 			<div>
@@ -79,11 +103,11 @@ export default () => (
 			<div>
 				<Heading level={3}>Iconed Buttons</Heading>
 				<Inline role="group">
-					<Button icon="mdi:home">Home</Button>
-					<Button variant="secondary" icon="mdi:account">
+					<Button icon={tablerOutlineHome}>Home</Button>
+					<Button variant="secondary" icon={tablerOutlineUser}>
 						Account
 					</Button>
-					<Button variant="contrast" iconPosition="end" icon="mdi:github">
+					<Button variant="contrast" iconPosition="end" icon={tablerOutlineBrandGithub}>
 						GitHub
 					</Button>
 				</Inline>
@@ -95,21 +119,21 @@ export default () => (
 						Badges can be used to show notification counts, unread items, or other indicators.
 					</Text>
 					<Inline role="group" wrap gap="sm">
-						<Button icon="mdi:email" badge={5} ariaLabel="Inbox">
+						<Button icon={tablerOutlineMail} badge={5} ariaLabel="Inbox">
 							Inbox
 						</Button>
-						<Button icon="mdi:bell" badge={12} ariaLabel="Notifications" />
-						<Button icon="mdi:message" badge="99+" ariaLabel="Messages" />
-						<Button icon="mdi:cart" badge={3} ariaLabel="Shopping cart">
+						<Button icon={tablerOutlineBell} badge={12} ariaLabel="Notifications" />
+						<Button icon={tablerOutlineMessage} badge="99+" ariaLabel="Messages" />
+						<Button icon={tablerOutlineShoppingCart} badge={3} ariaLabel="Shopping cart">
 							Cart
 						</Button>
 						<Button
 							variant="secondary"
-							icon="mdi:account-circle"
+							icon={tablerOutlineUserCircle}
 							badge="New"
 							ariaLabel="Profile"
 						/>
-						<Badged badge={<Icon name="mdi:star" size="12px" />}>
+						<Badged badge={<Icon icon={tablerOutlineStar} size="12px" />}>
 							<Button variant="success" ariaLabel="Starred">
 								Starred
 							</Button>
@@ -121,7 +145,7 @@ export default () => (
 				<Heading level={3}>Badges</Heading>
 				<Inline wrap gap="sm">
 					<Badge variant="primary">Primary</Badge>
-					<Badge variant="secondary" icon="mdi:information-outline">
+					<Badge variant="secondary" icon={tablerOutlineInfoCircle}>
 						Info
 					</Badge>
 					<Badge variant="success">Live</Badge>
@@ -133,13 +157,13 @@ export default () => (
 			<div>
 				<Heading level={3}>Chips</Heading>
 				<Inline wrap gap="sm">
-					<Chip icon="mdi:tag" variant="secondary">
+					<Chip icon={tablerOutlineTag} variant="secondary">
 						Label
 					</Chip>
-					<Chip icon="mdi:account" variant="success">
+					<Chip icon={tablerOutlineUser} variant="success">
 						Assigned
 					</Chip>
-					<Chip icon="mdi:lightning-bolt" variant="warning" dismissible>
+					<Chip icon={tablerOutlineBolt} variant="warning" dismissible>
 						Fast track
 					</Chip>
 					<Chip variant="danger" dismissible>
@@ -150,11 +174,11 @@ export default () => (
 			<div>
 				<Heading level={3}>Pills</Heading>
 				<Inline wrap gap="sm">
-					<Pill icon="mdi:calendar">Upcoming</Pill>
-					<Pill variant="success" icon="mdi:check">
+					<Pill icon={tablerOutlineCalendar}>Upcoming</Pill>
+					<Pill variant="success" icon={tablerOutlineCheck}>
 						Confirmed
 					</Pill>
-					<Pill variant="contrast" trailingIcon="mdi:chevron-right">
+					<Pill variant="contrast" trailingIcon={tablerOutlineChevronRight}>
 						Navigate
 					</Pill>
 				</Inline>
@@ -168,11 +192,11 @@ export default () => (
 						<span>Gap defaults to 1.5× Pico spacing.</span>
 					</Stack>
 					<Inline wrap gap="sm" style={surfaceStyle}>
-						<Button icon="mdi:alpha-a-circle">Alpha</Button>
-						<Button icon="mdi:alpha-b-circle">Bravo</Button>
-						<Button icon="mdi:alpha-c-circle">Charlie</Button>
-						<Button icon="mdi:alpha-d-circle">Delta</Button>
-						<Button icon="mdi:alpha-e-circle">Echo</Button>
+						<Button icon={tablerOutlineCircleLetterA}>Alpha</Button>
+						<Button icon={tablerOutlineCircleLetterB}>Bravo</Button>
+						<Button icon={tablerOutlineCircleLetterC}>Charlie</Button>
+						<Button icon={tablerOutlineCircleLetterD}>Delta</Button>
+						<Button icon={tablerOutlineCircleLetterE}>Echo</Button>
 					</Inline>
 					<Grid minItemWidth="12rem" gap="sm">
 						<article style={surfaceStyle}>
@@ -197,7 +221,7 @@ export default () => (
 					<Container style={surfaceStyle}>
 						<Inline wrap gap="sm">
 							<span>Container without fluid width for media or dashboards.</span>
-							<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
+							<Button variant="secondary" icon={tablerOutlineArrowsHorizontal}>
 								Expand
 							</Button>
 						</Inline>
@@ -205,7 +229,7 @@ export default () => (
 					<Container fluid style={surfaceStyle}>
 						<Inline wrap gap="sm">
 							<span>Container with fluid width for media or dashboards.</span>
-							<Button variant="secondary" icon="mdi:arrow-expand-horizontal">
+							<Button variant="secondary" icon={tablerOutlineArrowsHorizontal}>
 								Expand
 							</Button>
 						</Inline>
@@ -218,7 +242,7 @@ export default () => (
 					<Alert title="Heads up" variant="primary">
 						You can use alerts for inline messaging and inline callouts.
 					</Alert>
-					<Alert title="Deployment ready" variant="success" icon="mdi:rocket-launch">
+					<Alert title="Deployment ready" variant="success" icon={tablerOutlineRocket}>
 						All checks passed. Prepare to deploy when ready.
 					</Alert>
 					<Alert title="Action required" variant="warning" dismissible>

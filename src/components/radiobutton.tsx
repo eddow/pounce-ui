@@ -102,7 +102,7 @@ export function RadioButton<Value = string>(props: RadioButtonProps<Value>) {
 					class="pp-radiobutton-icon"
 					aria-hidden={typeof state.icon === 'string' ? true : undefined}
 				>
-					{typeof state.icon === 'string' ? <Icon name={state.icon} size="18px" /> : state.icon}
+					{typeof state.icon === 'string' ? <Icon icon={state.icon} size="18px" /> : state.icon}
 				</span>
 			) : null
 		},

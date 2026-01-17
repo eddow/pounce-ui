@@ -31,7 +31,8 @@
 		"src/**/*",
 		"../pounce/src/types/**/*.d.ts",
 		"../mutts/**/*.ts",
-		"tests/dockview.test.tsx"
+		"tests/dockview.test.tsx",
+		"pure-glyf.d.ts"
 	],
 	"references": [
 		{

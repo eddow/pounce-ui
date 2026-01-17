@@ -3,6 +3,7 @@ import { Icon } from './icon'
 import type { Variant } from './variants'
 import { variantClass } from './variants'
 import { css } from '../lib/css'
+import { tablerOutlineX } from 'pure-glyf/icons'
 
 css`
 .pp-badge,
@@ -145,7 +146,7 @@ function renderIcon(icon: string | JSX.Element | undefined, size = '16px') {
 	if (icon === undefined) return null
 	return (
 		<span class="pp-token-icon" aria-hidden={typeof icon === 'string' ? true : undefined}>
-			{typeof icon === 'string' ? <Icon name={icon} size={size} /> : icon}
+			{typeof icon === 'string' ? <Icon icon={icon} size={size} /> : icon}
 		</span>
 	)
 }
@@ -245,7 +246,7 @@ export const Chip = (props: ChipProps) => {
 					close()
 				}}
 			>
-				<Icon name="mdi:close" size="14px" />
+				<Icon icon={tablerOutlineX} size="14px" />
 			</button>
 		</dynamic>
 	)

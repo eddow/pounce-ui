@@ -1,3 +1,21 @@
+import {
+	tablerOutlineAlignCenter,
+	tablerOutlineAlignJustified,
+	tablerOutlineAlignLeft,
+	tablerOutlineAlignRight,
+	tablerOutlineArrowBackUp,
+	tablerOutlineArrowForwardUp,
+	tablerOutlineBold,
+	tablerOutlineDeviceFloppy,
+	tablerOutlineEye,
+	tablerOutlineItalic,
+	tablerOutlineLayoutColumns,
+	tablerOutlineLink,
+	tablerOutlinePencil,
+	tablerOutlinePhoto,
+	tablerOutlineSettings,
+	tablerOutlineUnderline,
+} from 'pure-glyf/icons'
 import { Button } from '../components/button'
 import { ButtonGroup } from '../components/buttongroup'
 import { CheckButton } from '../components/checkbutton'
@@ -27,11 +45,11 @@ export default () => {
 				<div>
 					<Heading level={3}>Basic Toolbar</Heading>
 					<Toolbar>
-						<Button icon="mdi:content-save">Save</Button>
-						<Button icon="mdi:undo">Undo</Button>
-						<Button icon="mdi:redo">Redo</Button>
+						<Button icon={tablerOutlineDeviceFloppy}>Save</Button>
+						<Button icon={tablerOutlineArrowBackUp}>Undo</Button>
+						<Button icon={tablerOutlineArrowForwardUp}>Redo</Button>
 						<Toolbar.Spacer />
-						<Button icon="mdi:settings">Settings</Button>
+						<Button icon={tablerOutlineSettings}>Settings</Button>
 					</Toolbar>
 				</div>
 
@@ -39,7 +57,7 @@ export default () => {
 					<Heading level={3}>Toolbar with CheckButtons</Heading>
 					<Toolbar trapTab>
 						<CheckButton
-							icon="mdi:format-bold"
+							icon={tablerOutlineBold}
 							aria-label="Bold"
 							checked={toolbarState.bold}
 							onCheckedChange={(checked) => {
@@ -47,7 +65,7 @@ export default () => {
 							}}
 						/>
 						<CheckButton
-							icon="mdi:format-italic"
+							icon={tablerOutlineItalic}
 							aria-label="Italic"
 							checked={toolbarState.italic}
 							onCheckedChange={(checked) => {
@@ -55,7 +73,7 @@ export default () => {
 							}}
 						/>
 						<CheckButton
-							icon="mdi:format-underline"
+							icon={tablerOutlineUnderline}
 							aria-label="Underline"
 							checked={toolbarState.underline}
 							onCheckedChange={(checked) => {
@@ -64,44 +82,44 @@ export default () => {
 						/>
 						<Toolbar.Spacer visible />
 						<RadioButton
-							icon="mdi:format-align-left"
+							icon={tablerOutlineAlignLeft}
 							aria-label="Align left"
 							value="left"
 							group={toolbarState.align}
 						/>
 						<RadioButton
-							icon="mdi:format-align-center"
+							icon={tablerOutlineAlignCenter}
 							aria-label="Align center"
 							value="center"
 							group={toolbarState.align}
 						/>
 						<RadioButton
-							icon="mdi:format-align-right"
+							icon={tablerOutlineAlignRight}
 							aria-label="Align right"
 							value="right"
 							group={toolbarState.align}
 						/>
 						<RadioButton
-							icon="mdi:format-align-justify"
+							icon={tablerOutlineAlignJustified}
 							aria-label="Justify"
 							value="justify"
 							group={toolbarState.align}
 						/>
 						<Toolbar.Spacer />
 						<RadioButton
-							icon="mdi:pencil"
+							icon={tablerOutlinePencil}
 							aria-label="Edit"
 							value="edit"
 							group={toolbarState.viewMode}
 						/>
 						<RadioButton
-							icon="mdi:eye"
+							icon={tablerOutlineEye}
 							aria-label="Preview"
 							value="preview"
 							group={toolbarState.viewMode}
 						/>
 						<RadioButton
-							icon="mdi:view-split-horizontal"
+							icon={tablerOutlineLayoutColumns}
 							aria-label="Split"
 							value="split"
 							group={toolbarState.viewMode}
@@ -112,32 +130,33 @@ export default () => {
 				<div>
 					<Heading level={3}>Icon-only Toolbar</Heading>
 					<Toolbar>
-						<CheckButton icon="mdi:format-bold" aria-label="Bold" checked={toolbarState.bold} />
+						<CheckButton icon={tablerOutlineBold} aria-label="Bold" checked={toolbarState.bold} />
 						<CheckButton
-							icon="mdi:format-italic"
+							icon={tablerOutlineItalic}
 							aria-label="Italic"
 							checked={toolbarState.italic}
 						/>
 						<CheckButton
-							icon="mdi:format-underline"
+							icon={tablerOutlineUnderline}
 							aria-label="Underline"
 							checked={toolbarState.underline}
 						/>
 						<Toolbar.Spacer visible />
-						<Button icon="mdi:link" aria-label="Insert link" />
-						<Button icon="mdi:image" aria-label="Insert image" />
+						<Button icon={tablerOutlineLink} aria-label="Insert link" />
+						<Button icon={tablerOutlinePhoto} aria-label="Insert image" />
 					</Toolbar>
 				</div>
 
 				<div>
 					<Heading level={3}>Vertical Toolbar</Heading>
 					<Toolbar orientation="vertical" style="width: fit-content;">
-						icon="mdi:format-underline"
-						aria-label="Underline"
-						checked={toolbarState.underline}
+						<CheckButton
+							icon={tablerOutlineUnderline}
+							aria-label="Underline"
+							checked={toolbarState.underline}
 						/>
 						<Toolbar.Spacer visible />
-						<Button icon="mdi:link" aria-label="Insert link" />
+						<Button icon={tablerOutlineLink} aria-label="Insert link" />
 					</Toolbar>
 				</div>
 
@@ -146,19 +165,19 @@ export default () => {
 					<Toolbar>
 						<ButtonGroup>
 							<RadioButton
-								icon="mdi:format-align-left"
+								icon={tablerOutlineAlignLeft}
 								aria-label="Align left"
 								value="left"
 								group={toolbarState.align}
 							/>
 							<RadioButton
-								icon="mdi:format-align-center"
+								icon={tablerOutlineAlignCenter}
 								aria-label="Align center"
 								value="center"
 								group={toolbarState.align}
 							/>
 							<RadioButton
-								icon="mdi:format-align-right"
+								icon={tablerOutlineAlignRight}
 								aria-label="Align right"
 								value="right"
 								group={toolbarState.align}
@@ -166,14 +185,14 @@ export default () => {
 						</ButtonGroup>
 						<Toolbar.Spacer visible />
 						<ButtonGroup>
-							<CheckButton icon="mdi:format-bold" aria-label="Bold" checked={toolbarState.bold} />
+							<CheckButton icon={tablerOutlineBold} aria-label="Bold" checked={toolbarState.bold} />
 							<CheckButton
-								icon="mdi:format-italic"
+								icon={tablerOutlineItalic}
 								aria-label="Italic"
 								checked={toolbarState.italic}
 							/>
 							<CheckButton
-								icon="mdi:format-underline"
+								icon={tablerOutlineUnderline}
 								aria-label="Underline"
 								checked={toolbarState.underline}
 							/>

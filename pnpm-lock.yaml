@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@iconify/iconify':
-        specifier: 3.1.1
-        version: 3.1.1
       '@picocss/pico':
         specifier: ^2.0.6
         version: 2.1.1
@@ -26,6 +23,9 @@ importers:
       pounce-ts:
         specifier: link:../pounce-ts
         version: link:../pounce-ts
+      pure-glyf:
+        specifier: link:../pure-glyf
+        version: link:../pure-glyf
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.0
@@ -989,13 +989,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@iconify/iconify@3.1.1':
-    resolution: {integrity: sha512-1nemfyD/OJzh9ALepH7YfuuP8BdEB24Skhd8DXWh0hzcOxImbb1ZizSZkpCzAwSZSGcJFmscIBaBQu+yLyWaxQ==}
-    deprecated: no longer maintained, switch to modern iconify-icon web component
-
-  '@iconify/types@2.0.0':
-    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -3802,12 +3795,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.27.2':
     optional: true
-
-  '@iconify/iconify@3.1.1':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify/types@2.0.0': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
