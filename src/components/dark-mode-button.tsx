@@ -2,6 +2,7 @@ import { effect } from 'mutts'
 import { browser } from '../lib/browser'
 import { stored } from '../lib/storage'
 import { Button } from './button'
+import { tablerOutlineMoon, tablerOutlineSun } from 'pure-glyf/icons'
 
 export interface DarkModeButtonProps {
 	ariaLabel?: string
@@ -12,8 +13,8 @@ export interface DarkModeButtonProps {
 }
 
 const defaultIcons = {
-	dark: 'mdi:weather-sunny',
-	light: 'mdi:weather-night'
+	dark: tablerOutlineSun,
+	light: tablerOutlineMoon
 }
 const defaultChildren = {
 	dark: 'Light',

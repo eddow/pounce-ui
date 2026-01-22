@@ -1,6 +1,5 @@
 import '@picocss/pico/css/pico.min.css'
-import { reactive, effect } from 'mutts'
-import { bindApp, Scope } from 'pounce-ts'
+import { bindApp, type Scope } from 'pounce-ts'
 import './components/variants.scss'
 import { enableDevTools } from 'mutts'
 import { AppShell } from './components/layout'

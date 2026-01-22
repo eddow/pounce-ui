@@ -3,6 +3,7 @@ import { css } from '../lib/css'
 import { A } from '../lib/router'
 import { Button } from './button'
 import { Toolbar } from './toolbar'
+import { tablerOutlineMenu } from 'pure-glyf/icons'
 
 css`
 /* Responsive menu bar: desktop links vs mobile burger */
@@ -244,7 +245,7 @@ const MenuBar = (props: MenuBarProps) => {
 		<Toolbar>
 			<div class="pp-menu-bar-mobile">
 				<MenuComponent
-					summary={<Button icon="mdi:menu" ariaLabel="Open navigation" />}
+					summary={<Button icon={tablerOutlineMenu} ariaLabel="Open navigation" />}
 					class="dropdown"
 				>
 					<MenuList items={props.items} />

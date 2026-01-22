@@ -1,4 +1,4 @@
-import { cleanedBy, effect, reactive, ScopedCallback } from 'mutts'
+import { cleanedBy, effect, reactive, type ScopedCallback } from 'mutts'
 
 export const json = {
 	parse: <T>(value: string): T => JSON.parse(value),

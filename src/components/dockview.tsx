@@ -10,7 +10,7 @@ import {
 	SerializedDockview,
 } from 'dockview-core'
 import 'dockview-core/dist/styles/dockview.css'
-import { effect, reactive, ScopedCallback, unreactive, watch } from 'mutts'
+import { effect, reactive, type ScopedCallback, unreactive, watch } from 'mutts'
 import { bindApp, compose, extend } from 'pounce-ts'
 
 function isObject(value: any): value is object {

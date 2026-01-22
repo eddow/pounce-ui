@@ -1,5 +1,6 @@
 import { dialog } from '../components/dialog'
 import { toast } from '../components/toast'
+import { tablerOutlineAlertTriangle } from 'pure-glyf/icons'
 
 export default () => (
 	<>
@@ -21,7 +22,7 @@ export default () => (
 							title: 'Confirm action',
 							message: 'Are you sure you want to proceed? This action cannot be undone.',
 							default: 'proceed',
-							stamp: 'mdi:alert',
+							stamp: tablerOutlineAlertTriangle,
 							buttons: {
 								cancel: 'Cancel',
 								proceed: { text: 'Yes, proceed', variant: 'danger' },
