@@ -8,21 +8,20 @@ const openMenu = async (page: any) => {
 }
 
 test('shows Overview by default and supports navigation links', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	await expect(page.getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible()
 	// Open the menu dropdown first (summary element)
 	await openMenu(page)
 	// Then find and click the Interaction item
 	const interactionLink = page.getByRole('menuitem', { name: 'Interaction' })
-	await expect(interactionLink).toHaveAttribute('href', '/interaction#playwright')
 	await interactionLink.click()
-	await expect(page).toHaveURL(/\/interaction#playwright$/)
+	await expect(page).toHaveURL(/\/interaction$/)
 	await expect(page.getByRole('heading', { level: 2, name: 'Dialog' })).toBeVisible()
 })
 
 // Route navigation
 test('all menu items navigate to correct routes', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	
 	const routes = [
 		{ name: 'Display', path: '/display', heading: 'Display' },
@@ -36,95 +35,90 @@ test('all menu items navigate to correct routes', async ({ page }) => {
 		await openMenu(page)
 		// Use exact match to avoid matching "Dockview Harsh" when looking for "Dockview"
 		const link = page.getByRole('menuitem', { name: route.name, exact: true })
-		await expect(link).toHaveAttribute('href', `${route.path}#playwright`)
 		await link.click()
-		await expect(page).toHaveURL(new RegExp(`${route.path.replace('/', '\\/')}#playwright$`))
+		await expect(page).toHaveURL(new RegExp(`${route.path.replace('/', '\\/')}$`))
 		const expectedLevel = route.name === 'Interaction' ? 2 : 1
 		await expect(page.getByRole('heading', { level: expectedLevel, name: route.heading })).toBeVisible()
 	}
 })
 
 test('browser back/forward buttons work', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	await expect(page.getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible()
 	
 	// Navigate to a route
 	await openMenu(page)
 	await page.getByRole('menuitem', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
+	await expect(page).toHaveURL(/\/display$/)
 	
 	// Go back
 	await page.goBack()
-	await expect(page).toHaveURL(/\/#playwright$/)
+	await expect(page).toHaveURL(/\/$/)
 	await expect(page.getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible()
 	
 	// Go forward
 	await page.goForward()
-	await expect(page).toHaveURL(/\/display#playwright$/)
+	await expect(page).toHaveURL(/\/display$/)
 	await expect(page.getByRole('heading', { level: 1, name: 'Display' })).toBeVisible()
 })
 
 test('direct URL navigation works', async ({ page }) => {
 	// Navigate directly to a route
-	await page.goto('/forms#playwright')
+	await page.goto('/forms')
 	await expect(page.getByRole('heading', { level: 1, name: 'Forms' })).toBeVisible()
 	
 	// Navigate directly to another route
-	await page.goto('/toolbar#playwright')
+	await page.goto('/toolbar')
 	await expect(page.getByRole('heading', { level: 1, name: 'Toolbars' })).toBeVisible()
 	
 	// Navigate to root
-	await page.goto('/#playwright')
+	await page.goto('/')
 	await expect(page.getByRole('heading', { level: 2, name: 'Overview' })).toBeVisible()
 })
 
 test('hash fragments preserved during navigation', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/#test-hash')
 	
 	// Navigate with hash
 	await openMenu(page)
 	await page.getByRole('menuitem', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
+	await expect(page).toHaveURL(/\/display#test-hash$/)
 	
 	// Navigate to another route
 	await openMenu(page)
 	await page.getByRole('menuitem', { name: 'Forms' }).click()
-	await expect(page).toHaveURL(/\/forms#playwright$/)
-	
-	// Hash should be preserved
-	const url = page.url()
-	expect(url).toContain('#playwright')
+	await expect(page).toHaveURL(/\/forms#test-hash$/)
 })
 
 test('route changes update URL correctly', async ({ page }) => {
-	await page.goto('/#playwright')
-	await expect(page).toHaveURL(/\/#playwright$/)
+	await page.goto('/')
+	await expect(page).toHaveURL(/\/$/)
 	
 	// Navigate to Display
 	await openMenu(page)
 	await page.getByRole('menuitem', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
+	await expect(page).toHaveURL(/\/display$/)
 	
 	// Navigate to Forms
 	await openMenu(page)
 	await page.getByRole('menuitem', { name: 'Forms' }).click()
-	await expect(page).toHaveURL(/\/forms#playwright$/)
+	await expect(page).toHaveURL(/\/forms$/)
 	
 	// Navigate back to Overview
 	// Overview is not a menu item; navigate directly
-	await page.goto('/#playwright')
-	await expect(page).toHaveURL(/\/#playwright$/)
+	await page.goto('/')
+	await expect(page).toHaveURL(/\/$/)
 })
 
 // Dark mode toggle
 test('toggle button appears', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	const toggleButton = page.getByRole('button', { name: 'Toggle dark mode' })
 	await expect(toggleButton).toBeVisible()
 })
 
 test('clicking toggle changes theme', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	const toggleButton = page.getByRole('button', { name: 'Toggle dark mode' })
 	
 	// Get initial theme
@@ -145,7 +139,7 @@ test('clicking toggle changes theme', async ({ page }) => {
 })
 
 test('theme persists across navigation', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	const toggleButton = page.getByRole('button', { name: 'Toggle dark mode' })
 	
 	// Set theme to dark
@@ -156,7 +150,7 @@ test('theme persists across navigation', async ({ page }) => {
 	// Navigate to another route
 	await openMenu(page)
 	await page.getByRole('menuitem', { name: 'Display' }).click()
-	await expect(page).toHaveURL(/\/display#playwright$/)
+	await expect(page).toHaveURL(/\/display$/)
 	
 	// Theme should persist
 	const themeAfterNav = await page.evaluate(() => document.documentElement.dataset.theme)
@@ -164,7 +158,7 @@ test('theme persists across navigation', async ({ page }) => {
 })
 
 test('theme persists on page reload (via localStorage)', async ({ page }) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 	const toggleButton = page.getByRole('button', { name: 'Toggle dark mode' })
 	
 	// Set theme

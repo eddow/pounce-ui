@@ -1,3 +1,4 @@
+import { compose, h } from 'pounce-ts'
 import { css } from '../lib/css'
 import type { Variant } from './variants'
 import { variantClass } from './variants'
@@ -109,39 +110,43 @@ export type MultiselectProps<T> = {
 }
 
 export const Multiselect = <T,>(props: MultiselectProps<T>) => {
+	const state = compose(
+		{
+			closeOnSelect: true,
+			variant: 'primary' as Variant,
+		},
+		props
+	)
 	let detailsEl: HTMLDetailsElement | undefined
 
 	const handleItemClick = (item: T, event: MouseEvent) => {
 		event.preventDefault()
 		event.stopPropagation()
 
-		const currentlySelected = props.value.has(item)
+		const currentlySelected = state.value.has(item)
 
 		if (currentlySelected) {
-			props.value.delete(item)
+			state.value.delete(item)
 		} else {
-			props.value.add(item)
+			state.value.add(item)
 		}
 
 		// Close dropdown if closeOnSelect is true (default)
-		const shouldClose = props.closeOnSelect ?? true
+		const shouldClose = state.closeOnSelect
 		if (shouldClose && detailsEl) {
 			detailsEl.open = false
 			detailsEl.removeAttribute('open')
 		}
 	}
 
-	const variantClassName = props.variant ? variantClass(props.variant) : 'pp-multiselect-primary'
-
 	return (
 		<details
-			class={['pp-multiselect', variantClassName, props.class]}
-			{...props.el}
+			class={['pp-multiselect', variantClass(state.variant), state.class]}
+			{...state.el}
 			this={detailsEl}
 		>
 			<summary
 				aria-haspopup="menu"
-				aria-multiselectable="true"
 				onClick={(e) => {
 					// Ensure clicks on nested elements (like our Button) still toggle the menu
 					e.preventDefault()
@@ -151,18 +156,18 @@ export const Multiselect = <T,>(props: MultiselectProps<T>) => {
 					}
 				}}
 			>
-				{props.children}
+				{state.children}
 			</summary>
-			<ul role="menu" class="pp-multiselect-menu">
-				<for each={props.items}>
-					{(item) => {
-						const checked = props.value.has(item)
-						const rendered = props.renderItem(item, checked)
+			<ul role="listbox" aria-multiselectable="true" class="pp-multiselect-menu">
+				<for each={state.items}>
+					{(item: T) => {
+						const checked = state.value.has(item)
+						const rendered = state.renderItem(item, checked)
 						if (rendered === false) return null
 						return (
 							<li
-								role="menuitemcheckbox"
-								aria-checked={checked}
+								role="option"
+								aria-selected={checked}
 								onClick={(e: MouseEvent) => handleItemClick(item, e)}
 							>
 								{rendered}

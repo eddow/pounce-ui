@@ -12,8 +12,8 @@ test('icons render by name', async ({ page }) => {
 	await iconsHeading.scrollIntoViewIfNeeded()
 	const iconsSection = iconsHeading.locator('xpath=ancestor::div[1]')
 	
-	// Find iconify icons
-	const icons = iconsSection.locator('.iconify, [class*="iconify"]')
+	// Find pure-glyf icons
+	const icons = iconsSection.locator('.pure-glyf-icon, [class*="pure-glyf-icon"]')
 	const count = await icons.count()
 	expect(count).toBeGreaterThan(0)
 	
@@ -30,7 +30,7 @@ test('custom size works', async ({ page }) => {
 	await iconsHeading.scrollIntoViewIfNeeded()
 	const iconsSection = iconsHeading.locator('xpath=ancestor::div[1]')
 	
-	const icons = iconsSection.locator('.iconify, [class*="iconify"]')
+	const icons = iconsSection.locator('.pure-glyf-icon, [class*="pure-glyf-icon"]')
 	const count = await icons.count()
 	
 	// Find icons with custom size
@@ -52,7 +52,7 @@ test('icons are visible', async ({ page }) => {
 	await iconsHeading.scrollIntoViewIfNeeded()
 	const iconsSection = iconsHeading.locator('xpath=ancestor::div[1]')
 	
-	const icons = iconsSection.locator('.iconify, [class*="iconify"]')
+	const icons = iconsSection.locator('.pure-glyf-icon, [class*="pure-glyf-icon"]')
 	const count = await icons.count()
 	expect(count).toBeGreaterThan(0)
 	

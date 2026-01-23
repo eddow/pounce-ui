@@ -2,16 +2,17 @@
 
 ## Icon
 
-Thin wrapper around Iconify icons.
+Thin wrapper around [pure-glyf](https://github.com/eddow/pure-glyf) icons.
 
 ```tsx
 import { Icon } from 'pounce-ui'
+import { tablerOutlineHome, tablerOutlineAlertCircle } from 'pure-glyf/icons'
 
-<Icon name="mdi:home" />
-<Icon name="mdi:alert" size="24px" />
+<Icon icon={tablerOutlineHome} />
+<Icon icon={tablerOutlineAlertCircle} size="24px" />
 ```
 
-- `name` is the Iconify icon name.
+- `icon` is the pure-glyf icon class (imported from `pure-glyf/icons`).
 - `size` accepts any CSS size (e.g., `24px`, `1.5rem`).
 
 ## Variants

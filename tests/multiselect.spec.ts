@@ -3,13 +3,13 @@ import { expect, test, type Page } from '@playwright/test'
 test.use({ viewport: { width: 375, height: 667 } })
 
 const openFormsPage = async (page: Page) => {
-	await page.goto('/#forms')
+	await page.goto('/forms')
 }
 
 test('multiselect opens and closes', async ({ page }) => {
 	await openFormsPage(page)
 	
-	const summary = page.getByRole('button', { name: /Select Fruits/ })
+	const summary = page.locator('summary', { hasText: /Select Fruits/ })
 	const details = page.locator('details.pp-multiselect')
 	
 	// Initially closed
@@ -27,15 +27,16 @@ test('multiselect opens and closes', async ({ page }) => {
 test('multiselect toggles items', async ({ page }) => {
 	await openFormsPage(page)
 	
-	const summary = page.getByRole('button', { name: /Select Fruits/ })
+	const summary = page.locator('summary', { hasText: /Select Fruits/ })
 	await summary.click()
 	
-	const menu = page.locator('ul[role="menu"]')
+	const menu = page.locator('ul[role="listbox"]')
 	const apple = menu.getByText('Apple')
 	
-	// Initial state: not checked (text content only, or check logic if visual)
-	// Our demo renders "✓ " prefix if checked
-	await expect(apple).not.toContainText('✓')
+	// Initial state: not checked
+	// Check for the check icon (tabler:check) presence
+	const appleCheckIcon = apple.locator('.pounce-icon')
+	await expect(appleCheckIcon).not.toBeVisible()
 	
 	// Click Apple
 	await apple.click()
@@ -43,8 +44,8 @@ test('multiselect toggles items', async ({ page }) => {
 	// Should update button text (reactivity check)
 	await expect(summary).toContainText('Select Fruits (1)')
 	
-	// Should show checkmark
-	await expect(apple).toContainText('✓')
+	// Should show checkmark icon
+	await expect(appleCheckIcon).toBeVisible()
 	
 	// Stays open by default (closeOnSelect=true default, but demo might use different state?)
 	// In demo: `closeOnSelect: false` init state. So it stays open.
@@ -53,14 +54,14 @@ test('multiselect toggles items', async ({ page }) => {
 	
 	// Click again to deselect
 	await apple.click()
-	await expect(apple).not.toContainText('✓')
+	await expect(appleCheckIcon).not.toBeVisible()
 	await expect(summary).toContainText('Select Fruits (0)')
 })
 
 test('multiselect closeOnSelect behavior', async ({ page }) => {
 	await openFormsPage(page)
 	
-	const summary = page.getByRole('button', { name: /Select Fruits/ })
+	const summary = page.locator('summary', { hasText: /Select Fruits/ })
 	const details = page.locator('details.pp-multiselect')
 	
 	// Enable "Close on select" via checkbox

@@ -93,7 +93,7 @@ test('icon renders when provided', async ({ page }) => {
 	let hasIcon = false
 	for (let i = 0; i < count; i++) {
 		const checkbutton = checkbuttons.nth(i)
-		const icon = checkbutton.locator('.pp-checkbutton-icon, [class*="iconify"]')
+		const icon = checkbutton.locator('.pp-checkbutton-icon, [class*="pure-glyf-icon"]')
 		if (await icon.count() > 0) {
 			hasIcon = true
 			await expect(icon.first()).toBeVisible()

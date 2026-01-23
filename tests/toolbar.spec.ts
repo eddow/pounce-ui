@@ -141,7 +141,7 @@ test('Tab moves between button groups correctly', async ({ page }) => {
 })
 
 test('a11y - toolbar route passes axe checks', async ({ page }) => {
-	await page.goto('/toolbar#playwright')
+	await page.goto('/toolbar')
 	await runA11yCheck(page)
 })
 

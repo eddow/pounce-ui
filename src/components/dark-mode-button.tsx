@@ -1,4 +1,5 @@
 import { effect } from 'mutts'
+import { compose, h } from 'pounce-ts'
 import { browser } from '../lib/browser'
 import { stored } from '../lib/storage'
 import { Button } from './button'
@@ -6,59 +7,81 @@ import { tablerOutlineMoon, tablerOutlineSun } from 'pure-glyf/icons'
 
 export interface DarkModeButtonProps {
 	ariaLabel?: string
-	icon?: string
-	children?: JSX.Element | string
+	icon?: string | JSX.Element
+	children?: JSX.Children
 	theme?: 'light' | 'dark'
 	onThemeChange?: (theme: 'light' | 'dark') => void
 }
 
 const defaultIcons = {
 	dark: tablerOutlineSun,
-	light: tablerOutlineMoon
+	light: tablerOutlineMoon,
 }
 const defaultChildren = {
 	dark: 'Light',
-	light: 'Dark'
+	light: 'Dark',
 }
-const systemTheme = (browser as any).prefersDark?.() ? 'dark' : 'light' as 'light' | 'dark'
+const themeStorage = stored({
+	theme: (browser.prefersDark?.() ? 'dark' : 'light') as 'light' | 'dark'
+})
 
 export const DarkModeButton = (props: DarkModeButtonProps) => {
-	const themeStorage = stored({ theme: systemTheme })
+	const state = compose(
+		{
+			theme: undefined as 'light' | 'dark' | undefined,
+			ariaLabel: undefined as string | undefined,
+			icon: undefined as string | JSX.Element | undefined,
+			onThemeChange: undefined as ((theme: 'light' | 'dark') => void) | undefined,
+		},
+		props,
+		(state) => ({
+			get label() {
+				const theme = state.theme ?? themeStorage.theme
+				return state.children && !(Array.isArray(state.children) && state.children.length === 0)
+					? state.children
+					: defaultChildren[theme]
+			},
+			get currentIcon() {
+				const theme = state.theme ?? themeStorage.theme
+				return state.icon || defaultIcons[theme]
+			},
+		})
+	)
 
-	// Initialize theme from storage or system
-	if (props.theme === undefined) {
-		props.theme = themeStorage.theme
-	}
-
-	// Sync theme with document element and storage
+	// Sync state.theme with themeStorage.theme
 	effect(() => {
-		const theme = props.theme ?? systemTheme
-		themeStorage.theme = theme
-		document.documentElement.dataset.theme = theme
+		if (state.theme === undefined) {
+			state.theme = themeStorage.theme
+		} else {
+			themeStorage.theme = state.theme
+		}
+	})
+
+	// Sync theme with document element and notify changes
+	effect(() => {
+		const theme = themeStorage.theme
+		if (typeof document !== 'undefined') {
+			document.documentElement.dataset.theme = theme
+		}
 
 		// Notify parent of theme change
-		if (props.onThemeChange) {
-			props.onThemeChange(theme)
+		if (state.onThemeChange) {
+			state.onThemeChange(theme)
 		}
 	})
 
 	const handleToggle = () => {
-		const newTheme = props.theme === 'light' ? 'dark' : 'light'
-		if (props.onThemeChange) {
-			props.onThemeChange(newTheme)
-		} else {
-			// Direct mutation only if no callback provided (for standalone usage)
-			(props as any).theme = newTheme
-		}
+		const next = themeStorage.theme === 'light' ? 'dark' : 'light'
+		state.theme = next
 	}
 
 	return (
 		<Button
 			onClick={handleToggle}
-			ariaLabel={props.ariaLabel || 'Toggle dark mode'}
-			icon={props.icon || defaultIcons[props.theme ?? systemTheme]}
+			ariaLabel={state.ariaLabel || 'Toggle dark mode'}
+			icon={state.currentIcon}
 		>
-			{props.children || defaultChildren[props.theme ?? systemTheme]}
+			{state.label}
 		</Button>
 	)
 }

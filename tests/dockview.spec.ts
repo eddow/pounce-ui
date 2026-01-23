@@ -385,7 +385,7 @@ test('group header action shows reactive panel count', async ({ page }) => {
 
 // Harsh tests - reproducing App.tsx failure patterns
 test('dockview handles effects that depend on api before initialization', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// The page should load without errors even though effects depend on api before it's set
@@ -414,7 +414,7 @@ test('dockview handles effects that depend on api before initialization', async 
 })
 
 test('dockview theme syncs with page theme', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	await waitForDockviewReady(page)
 	
@@ -459,7 +459,7 @@ test('dockview theme syncs with page theme', async ({ page }) => {
 })
 
 test('dockview-harsh toast cleanup on route change', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	await waitForDockviewReady(page)
 	
@@ -482,12 +482,12 @@ test('dockview-harsh toast cleanup on route change', async ({ page }) => {
 	await page.waitForTimeout(1000)
 	
 	// Navigate back to check if page loads correctly
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 })
 
 test('dockview handles ensurePanel calls before api is ready', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// Wait for dockview to initialize
@@ -506,7 +506,7 @@ test('dockview handles ensurePanel calls before api is ready', async ({ page }) 
 })
 
 test('dockview handles race condition - panel added before api ready', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// Wait for race condition panel to potentially be added
@@ -535,7 +535,7 @@ test('dockview handles race condition - panel added before api ready', async ({ 
 })
 
 test('dockview handles onDidLayoutChange subscription in effect', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// Wait for dockview to initialize
@@ -557,7 +557,7 @@ test('dockview handles onDidLayoutChange subscription in effect', async ({ page 
 })
 
 test('dockview handles multiple rapid api-dependent operations', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// Wait for dockview to initialize
@@ -599,7 +599,7 @@ test('dockview handles multiple rapid api-dependent operations', async ({ page }
 })
 
 test('dockview api is properly initialized and accessible after mount', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// Wait for dockview to fully initialize
@@ -627,7 +627,7 @@ test('dockview api is properly initialized and accessible after mount', async ({
 })
 
 test('dockview api variable in parent component gets updated after initialization', async ({ page }) => {
-	await page.goto('/dockview-harsh#playwright')
+	await page.goto('/dockview-harsh')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()
 	
 	// Wait for dockview to fully initialize
@@ -653,7 +653,7 @@ test('dockview api variable in parent component gets updated after initializatio
 })
 
 test('dockview demo route - Save/Load/Clear layout buttons work and does not use localStorage', async ({ page }) => {
-	await page.goto('/dockview#playwright')
+	await page.goto('/dockview')
 	await expect(page.getByRole('heading', { level: 1, name: 'Dockview' })).toBeVisible()
 	await waitForDockviewReady(page)
 

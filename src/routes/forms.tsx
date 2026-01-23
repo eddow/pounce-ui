@@ -277,7 +277,7 @@ export default function FormsRoute() {
 									)
 								}}
 							>
-								<Button icon={tablerOutlineChevronDown}>
+								<Button icon={tablerOutlineChevronDown} tag="span">
 									Select Fruits ({state.selectedFruits.size})
 								</Button>
 							</Multiselect>

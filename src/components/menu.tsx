@@ -39,8 +39,8 @@ nav.pp-menu-nav .pp-menu-bar-desktop a[role='menuitem']:hover {
 
 nav.pp-menu-nav .pp-menu-bar-desktop a[role='menuitem'][aria-current='page'] {
 	opacity: 1;
-	color: var(--pico-primary, #3b82f6);
-	background: color-mix(in srgb, var(--pico-primary, #3b82f6) 18%, transparent);
+	color: color-mix(in srgb, var(--pico-primary, #3b82f6) 80%, black);
+	background: color-mix(in srgb, var(--pico-primary, #3b82f6) 12%, transparent);
 }
 
 .pp-menu-bar-mobile {

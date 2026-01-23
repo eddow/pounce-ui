@@ -1,5 +1,5 @@
-import { reactive } from 'mutts'
-import { bindApp, compose, isElement } from 'pounce-ts'
+import { effect, reactive } from 'mutts'
+import { bindApp, compose, h, isElement } from 'pounce-ts'
 import { Icon } from './icon'
 import { css } from '../lib/css'
 import { Variant, variantClass } from './variants'
@@ -61,7 +61,7 @@ footer > .pp-actions[role='group'] button .pp-button-label {
 	background: var(--pico-muted-border-color, #e5e7eb);
 }
 
-.pp-dialog-article .pp-body .pp-stamp .iconify {
+.pp-dialog-article .pp-body .pp-stamp .pure-glyf-icon {
 	width: 2.25rem;
 	height: 2.25rem;
 }
@@ -104,10 +104,15 @@ const okButton: DialogButton = { text: 'Ok', variant: 'primary' }
 const state = reactive({
 	pending: null as PendingDialog | null,
 	open: false,
-	dialogElement: undefined as HTMLDialogElement | undefined,
+	get dialogElement(): HTMLDialogElement | undefined {
+		return document.getElementById('pp-dialog-el') as HTMLDialogElement | undefined
+	},
 })
 
-let hostMounted = false
+if (typeof window !== 'undefined') {
+	; (window as any).__pounceDialogState = state
+}
+
 let lastActiveElement: HTMLElement | null = null
 let trapKeydownListener: ((e: KeyboardEvent) => void) | null = null
 let trapKeyupListener: ((e: KeyboardEvent) => void) | null = null
@@ -196,13 +201,6 @@ function detachGlobalTrap() {
 		trapKeyupListener = null
 	}
 }
-function ensureHostMounted() {
-	if (hostMounted) return
-	hostMounted = true
-	const host = document.createElement('div')
-	document.body.appendChild(host)
-	bindApp(<Host />, host)
-}
 
 function closeCurrent(value: PropertyKey | null) {
 	const current = state.pending
@@ -235,71 +233,17 @@ function closeCurrent(value: PropertyKey | null) {
 }
 
 const Host = () => {
-	const onDialogKeyDown = (ev: KeyboardEvent) => {
-		if (ev.key === 'Escape') {
-			ev.stopPropagation()
-			if (state.pending?.options.closeOnEscape !== false) {
-				ev.preventDefault()
-				closeCurrent(null)
-			}
-		} else if (ev.key === 'Enter') {
-			// Trigger default action, or fallback to first enabled button
-			ev.stopPropagation()
-			const opts = state.pending?.options
-			if (!opts) return
-			let chosenKey: PropertyKey | undefined
-			if (opts.default) {
-				const defaultBtn = state.pending?.defaultButton as HTMLButtonElement | undefined
-				if (!defaultBtn || defaultBtn.disabled !== true) {
-					chosenKey = opts.default
-				}
-			}
-			if (chosenKey === undefined) {
-				const first = firstEnabledButtonKey(opts)
-				if (first !== undefined) chosenKey = first
-			}
-			if (chosenKey !== undefined) {
-				ev.preventDefault()
-				closeCurrent(chosenKey)
-			}
-		} else if (ev.key === 'Tab') {
-			// Basic focus trap within the dialog
-			// Capture-phase handler already cycles focus; just block bubbling here
-			ev.preventDefault()
-			ev.stopPropagation()
-			const root = state.dialogElement
-			if (!root) return
-			// Do nothing else here; capture-phase trap handled cycling
-		}
-	}
-
-	const onBackdropClick = (ev: MouseEvent) => {
-		if (!state.pending?.options.closeOnBackdrop) return
-		const target = ev.target as HTMLElement
-		if (target instanceof HTMLDialogElement) closeCurrent(null)
-	}
-
-	const opts = state.pending?.options
-	const sizeClass =
-		opts?.size === 'sm' ? 'pp-size-sm' : opts?.size === 'lg' ? 'pp-size-lg' : 'pp-size-md'
-
-	const hasTitle = Boolean(opts?.title)
 	const titleId = 'pp-dialog-title'
 
-	return state.pending ? (
-		<dialog
-			this={state.dialogElement as HTMLDialogElement}
-			open={state.open}
-			onClick={onBackdropClick}
-			onKeydown={onDialogKeyDown}
-			class={[sizeClass, opts?.class]}
-			aria-modal={true}
-			aria-labelledby={hasTitle ? titleId : undefined}
-			aria-label={!hasTitle ? opts?.ariaLabel : undefined}
-			tabIndex={-1}
-		>
+	// Inner content renderer
+	const content = () => {
+		const pending = state.pending
+		if (!pending) return null
+		const opts = pending.options
+
+		return (
 			<article class="pp-dialog-article">
-				{opts?.title ? (
+				{opts.title ? (
 					<header>
 						<button
 							aria-label="Close"
@@ -313,13 +257,17 @@ const Host = () => {
 					</header>
 				) : undefined}
 				<main class="pp-body">
-					{opts?.stamp ? (
+					{opts.stamp ? (
 						<aside class="pp-stamp" aria-hidden="true">
-							{typeof opts.stamp === 'string' ? <Icon icon={opts.stamp} size="48px" /> : opts.stamp}
+							{typeof opts.stamp === 'string'
+								? <Icon icon={opts.stamp} size="48px" />
+								: opts.stamp}
 						</aside>
 					) : undefined}
 					<div class="pp-content">
-						{typeof opts?.message === 'string' ? <p>{opts.message}</p> : opts?.message}
+						{typeof opts.message === 'string'
+							? <p>{opts.message}</p>
+							: opts.message}
 					</div>
 				</main>
 				<footer>
@@ -328,8 +276,89 @@ const Host = () => {
 					</div>
 				</footer>
 			</article>
+		)
+	}
+
+	return (
+		<dialog
+			id="pp-dialog-el"
+			onClick={(ev) => {
+				if (!state.pending?.options.closeOnBackdrop) return
+				if (ev.target instanceof HTMLDialogElement) closeCurrent(null)
+			}}
+			onKeydown={(ev) => {
+				if (ev.key === 'Escape') {
+					ev.stopPropagation()
+					if (state.pending?.options.closeOnEscape !== false) {
+						ev.preventDefault()
+						closeCurrent(null)
+					}
+				} else if (ev.key === 'Enter') {
+					ev.stopPropagation()
+					const opts = state.pending?.options
+					if (!opts) return
+					let chosenKey: PropertyKey | undefined
+					if (opts.default) {
+						const defaultBtn = state.pending?.defaultButton as HTMLButtonElement | undefined
+						if (!defaultBtn || defaultBtn.disabled !== true) {
+							chosenKey = opts.default
+						}
+					}
+					if (chosenKey === undefined) {
+						const first = firstEnabledButtonKey(opts)
+						if (first !== undefined) chosenKey = first
+					}
+					if (chosenKey === undefined) return
+					ev.preventDefault()
+					closeCurrent(chosenKey)
+				}
+			}}
+			aria-modal={true}
+			tabIndex={-1}
+			use={(el: HTMLDialogElement) => effect(() => {
+				const isOpen = state.open
+				const pending = state.pending
+
+				if (isOpen && pending) {
+					if (!el.open) {
+						try {
+							el.showModal()
+							// Initial focus
+							const ordered = getOrderedTabstops(el)
+							const initial = ordered[0] ?? el
+							initial.focus({ preventScroll: true })
+						} catch (e) {
+							console.error('Failed to show modal:', e)
+						}
+					}
+				} else {
+					if (el.open) el.close()
+				}
+
+				const opts = pending?.options
+				const sizeClass = opts?.size === 'sm' ? 'pp-size-sm' : opts?.size === 'lg' ? 'pp-size-lg' : 'pp-size-md'
+				el.className = ['pp-dialog', sizeClass, opts?.class].filter(Boolean).join(' ')
+
+				if (opts?.title) {
+					el.setAttribute('aria-labelledby', titleId)
+					el.removeAttribute('aria-label')
+				} else {
+					el.removeAttribute('aria-labelledby')
+					if (opts?.ariaLabel) el.setAttribute('aria-label', opts.ariaLabel)
+				}
+			})}
+		>
+			{content}
 		</dialog>
-	) : null
+	)
+}
+
+function ensureHostMounted() {
+	if (document.getElementById('pp-dialog-host')) return
+	const host = document.createElement('div')
+	host.id = 'pp-dialog-host'
+	document.body.appendChild(host)
+	bindApp(<Host />, host)
 }
 
 function isUIContent(value: unknown): value is UIContent {
@@ -340,7 +369,7 @@ function isUIContent(value: unknown): value is UIContent {
 export function dialog<
 	Buttons extends Record<string, UIContent | DialogButton> = { ok: DialogButton },
 >(options: DialogOptions<Buttons> | UIContent): Promise<keyof Buttons | null> {
-	ensureHostMounted()
+	console.log('[DEBUG] dialog() called with:', typeof options === 'string' ? options : '[options object]')
 	return new Promise<PropertyKey | null>((resolve) => {
 		const normalized: DialogOptions<Buttons> = isUIContent(options)
 			? { message: options }
@@ -357,53 +386,37 @@ export function dialog<
 			defaultButton: undefined,
 			resolve,
 		}
-		// mark as open immediately so the global trap can intercept early Tabs
+		// mark as open immediately for state tracking
 		state.open = true
 		attachGlobalTrap()
-		queueMicrotask(() => {
-			// remember the element that had focus before opening
-			lastActiveElement =
-				(document.activeElement as HTMLElement | null) ?? (document.body as HTMLElement)
-			document.documentElement.classList.add('modal-is-open')
-			document.documentElement.classList.add('modal-is-opening')
-			// disable app interactions while modal is open
-			document.querySelector('.demo-app')?.setAttribute('inert', '')
-			// prefer native modal behavior for focus trapping
-			try {
-				if (state.dialogElement && typeof state.dialogElement.showModal === 'function') {
-					if (!state.dialogElement.open) state.dialogElement.showModal()
-				}
-			} catch (error) {
-				console.error('Failed to show native modal:', error)
-			}
-			// Deterministic initial focus (header close → footer actions → content → dialog)
-			// If dialogElement isn't available yet, defer focus to next tick
-			if (state.dialogElement) {
-				const ordered = getOrderedTabstops(state.dialogElement)
-				const initial = ordered[0] ?? state.dialogElement
-				try {
-					initial.focus({ preventScroll: true })
-				} catch (error) {
-					console.error('Failed to set initial focus:', error)
-				}
-			} else {
-				// Element not yet mounted; defer focusing to next tick
-				setTimeout(() => {
-					if (state.dialogElement) {
-						const ordered = getOrderedTabstops(state.dialogElement)
-						const initial = ordered[0] ?? state.dialogElement
-						try {
-							initial.focus({ preventScroll: true })
-						} catch (error) {
-							console.error('Failed to set deferred focus:', error)
-						}
-					}
-				}, 0)
-			}
-			setTimeout(() => {
-				document.documentElement.classList.remove('modal-is-opening')
-			}, 150)
-		})
+
+		state.pending = {
+			options: compose(
+				{
+					closeOnBackdrop: true,
+					closeOnEscape: true,
+				},
+				normalized
+			) as DialogOptions<any>,
+			defaultButton: undefined,
+			resolve,
+		}
+
+		// Update state to trigger reactivity
+		state.open = true
+		attachGlobalTrap()
+
+		// remember the element that had focus before opening
+		lastActiveElement = (document.activeElement as HTMLElement | null) ?? (document.body as HTMLElement)
+		document.documentElement.classList.add('modal-is-open')
+		document.documentElement.classList.add('modal-is-opening')
+
+		// disable app interactions while modal is open
+		document.querySelector('.app-shell-root, body > #app')?.setAttribute('inert', '')
+
+		setTimeout(() => {
+			document.documentElement.classList.remove('modal-is-opening')
+		}, 150)
 	}) as Promise<keyof Buttons | null>
 }
 
@@ -492,3 +505,8 @@ export async function confirm(params: {
 }
 
 // Width helpers are defined in dialog.scss
+
+// Auto-mount on browser load
+if (typeof document !== 'undefined') {
+	ensureHostMounted()
+}

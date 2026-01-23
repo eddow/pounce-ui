@@ -75,6 +75,7 @@ const state = reactive<MutableBrowser>({
 	},
 	reload,
 	dispose,
+	// TODO: react when system preferences change?
 	prefersDark: () => {
 		if (!isBrowserEnvironment || typeof window === 'undefined') {
 			return false

@@ -62,7 +62,7 @@ test.describe('ErrorBoundary', () => {
 	})
 
 	test('should handle dockview initialization errors', async ({ page }) => {
-		await page.goto('/dockview-harsh#playwright')
+		await page.goto('/dockview-harsh')
 		
 		// Should handle dockview initialization gracefully
 		await expect(page.getByRole('heading', { level: 1, name: 'Dockview Harsh Tests' })).toBeVisible()

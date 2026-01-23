@@ -96,7 +96,7 @@ test('alignment works', async ({ page }) => {
 })
 
 test('a11y - display route passes axe checks', async ({ page }) => {
-	await page.goto('/display#playwright')
+	await page.goto('/display')
 	await runA11yCheck(page)
 })
 

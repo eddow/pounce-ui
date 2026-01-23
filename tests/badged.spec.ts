@@ -254,7 +254,7 @@ test('badge accepts JSX.Element as content', async ({ page }) => {
 	await expect(badge).toBeVisible()
 	
 	// Check that badge contains the icon (JSX.Element was rendered, not stringified)
-	const hasIcon = await badge.locator('.iconify, svg').count()
+	const hasIcon = await badge.locator('.pure-glyf-icon, svg').count()
 	expect(hasIcon).toBeGreaterThan(0)
 	
 	// Check that badge content is rendered (not [object Object] or similar)

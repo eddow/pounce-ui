@@ -516,28 +516,40 @@ export const Dockview = (
 					element.style.height = '100%'
 					element.style.width = '100%'
 					const widget = state.tabs?.[options.name] ?? DefaultTab
-					const panelLink = links.get(options.id)
-					if (!panelLink) return { element, init: () => { }, dispose: () => { } }
 
-					const tabScope = extend(panelLink.scope, {
-						tabLeft: state.tabLeft,
-						tabRight: state.tabRight,
-						tabPrefix: state.tabPrefix,
-					})
-
+					// Deferred initialization because createTabComponent might be called before createComponent
 					let cleanup: ScopedCallback | undefined
 					return {
 						element,
-						init(_params: GroupPanelPartInitParameters) {
-							let jsx: JSX.Element | undefined
-							cleanup = effect(() => {
-								// Use h() to create proper component elements
-								jsx = h(widget, panelLink.props)
-							})
-							bindApp(jsx!, element, tabScope as DockviewScope)
+						init(params: GroupPanelPartInitParameters) {
+							// Return early if already disposed (best effort)
+							const setup = () => {
+								const panelLink = links.get(options.id)
+								if (!panelLink) {
+									// Retry in next microtask if not yet available
+									queueMicrotask(() => {
+										if (cleanup === undefined) setup()
+									})
+									return
+								}
+
+								const tabScope = extend(panelLink.scope, {
+									tabLeft: state.tabLeft,
+									tabRight: state.tabRight,
+									tabPrefix: state.tabPrefix,
+								})
+
+								cleanup = effect(() => {
+									// Use h() to create proper component elements
+									const jsx = h(widget, panelLink.props)
+									bindApp(jsx, element, tabScope as DockviewScope)
+								})
+							}
+							setup()
 						},
 						dispose() {
-							cleanup?.()
+							if (cleanup) cleanup()
+							cleanup = () => { } // Mark as disposed
 						},
 					}
 				},
@@ -563,13 +575,14 @@ export const Dockview = (
 
 		// Theme sync effect - watches scope.theme and updates dockview theme
 		effect(() => {
+			const theme = props.theme ?? (scope as any).theme ?? 'light'
 			// Find dockview theme elements within this dockview container
-			const htmlElement = element.querySelectorAll('[class*="dockview-theme-"]')[0] as HTMLElement
-			if (htmlElement) {
+			const htmlElements = element.querySelectorAll('[class*="dockview-theme-"]')
+			for (const htmlElement of Array.from(htmlElements) as HTMLElement[]) {
 				// Remove existing dockview theme classes
-				htmlElement.className = htmlElement.className.replace(/dockview-theme-\w+/g, '')
+				htmlElement.className = htmlElement.className.replace(/dockview-theme-\w+/g, '').trim()
 				// Add the appropriate theme class
-				htmlElement.classList.add(`dockview-theme-${props.theme ?? 'light'}`)
+				htmlElement.classList.add(`dockview-theme-${theme}`)
 			}
 		})
 

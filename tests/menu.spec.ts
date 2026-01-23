@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test'
 test.use({ viewport: { width: 375, height: 667 } })
 
 const openPage = async (page: Page) => {
-	await page.goto('/#playwright')
+	await page.goto('/')
 }
 
 // Menu behavior

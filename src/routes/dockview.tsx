@@ -1,5 +1,5 @@
 import type { DockviewApi, DockviewGroupPanel, DockviewPanelApi } from 'dockview-core'
-import { reactive, watch } from 'mutts'
+import { effect, reactive, watch } from 'mutts'
 import { dialog } from '../components/dialog'
 import { Dockview, type DockviewSnapshot } from '../components/dockview'
 import { toast } from '../components/toast'
@@ -11,7 +11,7 @@ export default (_props: {}, scope: Record<string, any>) => {
 		savedLayout: undefined as DockviewSnapshot | undefined,
 	})
 	// Expose state for Playwright tests
-	if (typeof window !== 'undefined' && window.location.hash.includes('playwright')) {
+	if (typeof window !== 'undefined' && (window.location.hash.includes('playwright') || (navigator as any).webdriver)) {
 		; (window as any).__dockviewApiState = state
 			; (window as any).__dockviewLayoutState = layoutState
 	}
@@ -29,7 +29,7 @@ export default (_props: {}, scope: Record<string, any>) => {
 			<p>
 				Size: {props.size?.width ?? 0} x {props.size?.height ?? 0}
 			</p>
-			<p>Clicks: {scope.state?.clicks ?? 0}</p>
+			<p>Clicks: <span use={(el: HTMLElement) => effect(() => { el.innerText = String(scope.state?.clicks ?? 0) })}></span></p>
 			<div role="group">
 				<button onClick={() => toast.info('Button 1 clicked!')}>Test Button 1</button>
 				<button class="success" onClick={() => toast.success('Success from panel 1')}>

@@ -258,7 +258,7 @@ test('multiple toasts stack in correct order', async ({ page }) => {
 })
 
 test('a11y - interaction route passes axe checks', async ({ page }) => {
-	await page.goto('/interaction#playwright')
+	await page.goto('/interaction')
 	await runA11yCheck(page)
 })
 

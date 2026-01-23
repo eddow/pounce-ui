@@ -43,8 +43,8 @@ test.describe('DarkModeButton', () => {
 		await page.waitForTimeout(200)
 		
 		// Text should have changed
-		const newText = await darkModeButton.textContent()
-		expect(newText).not.toBe(initialText)
+		const newText = (await darkModeButton.textContent())?.trim()
+		expect(newText).not.toBe(initialText?.trim())
 		expect(['Light', 'Dark']).toContain(newText)
 	})
 
@@ -58,7 +58,10 @@ test.describe('DarkModeButton', () => {
 		await page.waitForTimeout(200)
 		
 		// Check localStorage
-		const storedTheme = await page.evaluate(() => localStorage.getItem('theme'))
+		const storedTheme = await page.evaluate(() => {
+			const val = localStorage.getItem('theme')
+			try { return JSON.parse(val || '') } catch { return val }
+		})
 		expect(storedTheme).toBe('dark')
 		
 		// Toggle to light mode
@@ -66,7 +69,10 @@ test.describe('DarkModeButton', () => {
 		await page.waitForTimeout(200)
 		
 		// Check localStorage again
-		const storedTheme2 = await page.evaluate(() => localStorage.getItem('theme'))
+		const storedTheme2 = await page.evaluate(() => {
+			const val = localStorage.getItem('theme')
+			try { return JSON.parse(val || '') } catch { return val }
+		})
 		expect(storedTheme2).toBe('light')
 	})
 

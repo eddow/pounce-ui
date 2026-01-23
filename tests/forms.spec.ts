@@ -491,7 +491,7 @@ test('Switch - checked state persists', async ({ page }) => {
 })
 
 test('a11y - forms route passes axe checks', async ({ page }) => {
-	await page.goto('/forms#playwright')
+	await page.goto('/forms')
 	await runA11yCheck(page)
 })
 

@@ -22,7 +22,7 @@ test('button with icon renders', async ({ page }) => {
 	await expect(homeButton).toBeVisible()
 	
 	// Check for icon element
-	const icon = homeButton.locator('.pp-button-icon, [class*="iconify"]')
+	const icon = homeButton.locator('.pp-button-icon, [class*="pure-glyf-icon"]')
 	await expect(icon.first()).toBeVisible()
 })
 
@@ -32,7 +32,7 @@ test('button with icon at end renders', async ({ page }) => {
 	await expect(githubButton).toBeVisible()
 	
 	// Check for icon element
-	const icon = githubButton.locator('.pp-button-icon, [class*="iconify"]')
+	const icon = githubButton.locator('.pp-button-icon, [class*="pure-glyf-icon"]')
 	await expect(icon.first()).toBeVisible()
 })
 

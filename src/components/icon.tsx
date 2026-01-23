@@ -45,7 +45,7 @@ export const Icon = (props: IconProps) => {
 	return (
 		<span
 			{...state.el}
-			class={[props.icon, state.el?.class]}
+			class={['pounce-icon', props.icon, state.el?.class]}
 			title={props.title}
 			style={[{ width: props.size, height: props.size, verticalAlign: state.inline ? 'middle' : undefined }, state.el?.style]}
 		/>

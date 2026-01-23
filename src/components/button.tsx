@@ -42,7 +42,7 @@ css`
 	flex-shrink: 1;
 }
 
-.pp-button-icon-only .pp-button-icon .iconify {
+.pp-button-icon-only .pp-button-icon .pure-glyf-icon {
 	max-width: 1.5rem;
 	max-height: 1.5rem;
 }
@@ -56,6 +56,7 @@ export type ButtonProps = {
 	ariaLabel?: string
 	children?: JSX.Children
 	onClick?: (event: MouseEvent) => void
+	tag?: 'button' | 'span' | 'div'
 	/**
 	 * Badge to display on the button (e.g., notification count).
 	 * Can be a number, string, or JSX element.
@@ -66,7 +67,7 @@ export type ButtonProps = {
 	 * ```tsx
 	 * <Button badge={5}>Inbox</Button>
 	 * <Button badge="99+">Messages</Button>
-	 * <Button badge={<Icon name="mdi:star" />}>Favorite</Button>
+	 * <Button badge={<Icon icon={tablerOutlineStar} />}>Favorite</Button>
 	 * ```
 	 */
 	badge?: number | string | JSX.Element
@@ -79,6 +80,7 @@ export const Button = (props: ButtonProps) => {
 			iconPosition: 'start',
 			onClick: () => { },
 			ariaLabel: undefined as string | undefined,
+			tag: 'button' as const,
 		},
 		props,
 		(state) => ({
@@ -102,7 +104,8 @@ export const Button = (props: ButtonProps) => {
 	)
 
 	const buttonElement = (
-		<button
+		<dynamic
+			tag={state.tag}
 			{...state.el}
 			onClick={state.onClick}
 			aria-label={
@@ -120,7 +123,7 @@ export const Button = (props: ButtonProps) => {
 			{state.iconPosition === 'start' ? state.iconElement : null}
 			{state.hasLabel ? <span class="pp-button-label">{state.children}</span> : state.children}
 			{state.iconPosition === 'end' ? state.iconElement : null}
-		</button>
+		</dynamic>
 	)
 
 	// Use Badged wrapper when badge is provided

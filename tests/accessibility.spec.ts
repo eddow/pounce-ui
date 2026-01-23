@@ -2,12 +2,12 @@ import { test, expect } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
 
 const routes = [
-	{ path: '/#playwright', name: 'Overview' },
-	{ path: '/interaction#playwright', name: 'Interaction' },
-	{ path: '/forms#playwright', name: 'Forms' },
-	{ path: '/dockview#playwright', name: 'Dockview' },
-	{ path: '/toolbar#playwright', name: 'Toolbars' },
-	{ path: '/display#playwright', name: 'Display' },
+	{ path: '/', name: 'Overview' },
+	{ path: '/interaction', name: 'Interaction' },
+	{ path: '/forms', name: 'Forms' },
+	{ path: '/dockview', name: 'Dockview' },
+	{ path: '/toolbar', name: 'Toolbars' },
+	{ path: '/display', name: 'Display' },
 ]
 
 test.describe('Accessibility - axe-core smoke', () => {
