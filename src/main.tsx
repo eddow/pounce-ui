@@ -13,6 +13,10 @@ import DockviewHarshRoute from './routes/dockview-harsh'
 import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
 import ToolbarRoute from './routes/toolbar'
+import InfiniteScrollRoute from './routes/infinite-scroll'
+import DebugResizeRoute from './routes/debug-resize'
+import DebugScrollRoute from './routes/debug-scroll'
+import DebugIntersectRoute from './routes/debug-intersect'
 
 enableDevTools()
 // Stabilize contains() across realms in Playwright evaluations
@@ -55,13 +59,17 @@ type DemoSection = {
 }
 
 const sections: DemoSection[] = [
-	{ path: '/', label: 'Overview', view: OverviewSection },
 	{ path: '/display', label: 'Display', view: DisplayRoute },
 	{ path: '/forms', label: 'Forms', view: FormsRoute },
 	{ path: '/interaction', label: 'Interaction', view: InteractionRoute },
+	{ path: '/infinite-scroll', label: 'Infinite Scroll', view: InfiniteScrollRoute },
 	{ path: '/dockview', label: 'Dockview', view: DockviewRoute },
 	{ path: '/dockview-harsh', label: 'Dockview Harsh', view: DockviewHarshRoute },
 	{ path: '/toolbar', label: 'Toolbar', view: ToolbarRoute },
+	{ path: '/debug-resize', label: 'Resize', view: DebugResizeRoute },
+	{ path: '/debug-scroll', label: 'Scroll', view: DebugScrollRoute },
+	{ path: '/debug-intersect', label: 'Intersect', view: DebugIntersectRoute },
+	{ path: '/', label: 'Overview', view: OverviewSection },
 ]
 
 const renderNotFound = (props: { url: string }) => (
@@ -73,7 +81,15 @@ const renderNotFound = (props: { url: string }) => (
 	</section>
 )
 
+import { resize } from './actions/resize'
+import { scroll } from './actions/scroll'
+import { intersect } from './actions/intersect'
+
+
 const App = (_props: {}, scope: Scope) => {
+	scope.resize = resize
+	scope.scroll = scroll
+	scope.intersect = intersect
 	return (
 		<AppShell
 			header={
@@ -98,5 +114,6 @@ const App = (_props: {}, scope: Scope) => {
 		</AppShell>
 	)
 }
+
 
 bindApp(<App />, '#app')

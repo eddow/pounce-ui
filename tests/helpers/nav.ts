@@ -9,8 +9,8 @@ export const openMenu = async (page: Page) => {
 }
 
 type OpenSectionArgs = {
-	readonly menuName: 'Display' | 'Forms' | 'Interaction' | 'Dockview' | 'Toolbar'
-	readonly expectedUrlPath: '/display' | '/forms' | '/interaction' | '/dockview' | '/toolbar'
+	readonly menuName: 'Display' | 'Forms' | 'Interaction' | 'Dockview' | 'Toolbar' | 'Infinite Scroll'
+	readonly expectedUrlPath: '/display' | '/forms' | '/interaction' | '/dockview' | '/toolbar' | '/infinite-scroll'
 	readonly expectedHeading: string
 	readonly headingLevel: 1 | 2
 }
