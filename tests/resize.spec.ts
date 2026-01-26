@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Resize Directive', () => {
     test('should support bidirectional resizing', async ({ page }) => {
-        await page.goto('http://localhost:4183/debug-resize')
+        await page.goto('http://localhost:4183/debug-actions')
         
         // Wait for element
         const box = page.locator('[use\\:resize]'); // Playwright selector might need escaping for colon or use text/css

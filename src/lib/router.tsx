@@ -1,4 +1,4 @@
-import { cleanedBy, effect, reactive } from 'mutts'
+import { effect, reactive } from 'mutts'
 import {
 	buildRoute as coreBuildRoute,
 	matchRoute as coreMatchRoute,
@@ -121,20 +121,50 @@ export const Router = <
 		}
 	}
 
-	const cleanup = effect(() => {
-		const match = matcher(state.url)
-		if (match) {
-			if (oldMatch?.definition !== match.definition) {
-				setResult(match.definition.view(match, scope))
-				oldMatch = match
-			} else copyObject(oldMatch, match)
-		} else {
-			setResult(state.notFound({ routes: state.routes, url: state.url }, scope))
-			oldMatch = null
+	effect(() => {
+		try {
+			const match = matcher(state.url)
+			if (match) {
+				if (oldMatch?.definition !== match.definition) {
+					try {
+						setResult(match.definition.view(match, scope))
+						oldMatch = match
+					} catch (err) {
+						// If view() throws, we want to show an error message.
+						// Since ErrorBoundary doesn't catch async/reactive updates in this architecture,
+						// Router must handle its own render errors.
+						console.error('Router view error:', err)
+						setResult(
+							<div style="padding: 20px; border: 1px solid #ff6b6b; background-color: #ffe0e0; color: #d63031; margin: 20px;">
+								<h2 style="margin-top: 0">Something went wrong</h2>
+								<p>Error loading route.</p>
+								<details>
+									<summary>Error details</summary>
+									<pre style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; overflow: auto; font-size: 12px; margin-top: 10px;">
+										{err instanceof Error ? err.stack : String(err)}
+									</pre>
+								</details>
+							</div>
+						)
+						oldMatch = match
+					}
+				} else copyObject(oldMatch, match)
+			} else {
+				setResult(state.notFound({ routes: state.routes, url: state.url }, scope))
+				oldMatch = null
+			}
+		} catch (err) {
+			console.error('Router matching error:', err)
+			setResult(
+				<div style="padding: 20px; border: 1px solid #ff6b6b; background-color: #ffe0e0; color: #d63031; margin: 20px;">
+					<h2>Something went wrong</h2>
+					<p>Router error.</p>
+				</div>
+			)
 		}
 	})
 
-	return <>{cleanedBy(result, cleanup)}</>
+	return <>{() => result}</>
 }
 
 export function A(props: JSX.IntrinsicElements['a']) {

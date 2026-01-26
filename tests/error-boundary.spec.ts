@@ -4,11 +4,11 @@ test.describe('ErrorBoundary', () => {
 	test('should catch and display errors in development', async ({ page }) => {
 		await page.goto('/')
 		
-		// Navigate to a page that might have errors
-		await page.goto('/non-existent-route')
+		// Navigate to a page that throws
+		await page.goto('/debug-error')
 		
-		// Should show the not found page (handled by router, not error boundary)
-		await expect(page.getByRole('heading', { name: 'Not found' })).toBeVisible()
+		// Should show the error boundary fallback
+		await expect(page.getByRole('heading', { name: 'Something went wrong' })).toBeVisible()
 	})
 
 	test('should handle DarkModeButton errors gracefully', async ({ page }) => {

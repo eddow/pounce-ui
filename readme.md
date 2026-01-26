@@ -21,6 +21,7 @@ See the docs per topic in `/docs`:
 - [Toast](./docs/toast.md)
 - [Toolbar](./docs/toolbar.md)
 - [Typography](./docs/typography.md)
+- [Actions (Directives)](./docs/actions.md)
 
 ## TODOs
 

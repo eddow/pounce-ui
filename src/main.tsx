@@ -14,9 +14,8 @@ import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
 import ToolbarRoute from './routes/toolbar'
 import InfiniteScrollRoute from './routes/infinite-scroll'
-import DebugResizeRoute from './routes/debug-resize'
-import DebugScrollRoute from './routes/debug-scroll'
-import DebugIntersectRoute from './routes/debug-intersect'
+import DebugActionsRoute from './routes/debug-actions'
+import DebugErrorRoute from './routes/debug-error'
 
 enableDevTools()
 // Stabilize contains() across realms in Playwright evaluations
@@ -66,10 +65,9 @@ const sections: DemoSection[] = [
 	{ path: '/dockview', label: 'Dockview', view: DockviewRoute },
 	{ path: '/dockview-harsh', label: 'Dockview Harsh', view: DockviewHarshRoute },
 	{ path: '/toolbar', label: 'Toolbar', view: ToolbarRoute },
-	{ path: '/debug-resize', label: 'Resize', view: DebugResizeRoute },
-	{ path: '/debug-scroll', label: 'Scroll', view: DebugScrollRoute },
-	{ path: '/debug-intersect', label: 'Intersect', view: DebugIntersectRoute },
-	{ path: '/', label: 'Overview', view: OverviewSection },
+	{ path: '/debug-actions', label: 'Actions (All)', view: DebugActionsRoute },
+	{ path: '/debug-error', label: 'Debug Error', view: DebugErrorRoute },
+	{ path: '/$', label: 'Overview', view: OverviewSection },
 ]
 
 const renderNotFound = (props: { url: string }) => (
@@ -84,12 +82,15 @@ const renderNotFound = (props: { url: string }) => (
 import { resize } from './actions/resize'
 import { scroll } from './actions/scroll'
 import { intersect } from './actions/intersect'
+import { pointer } from './actions/pointer'
+import { ErrorBoundary } from './components/error-boundary'
 
 
 const App = (_props: {}, scope: Scope) => {
 	scope.resize = resize
 	scope.scroll = scroll
 	scope.intersect = intersect
+	scope.pointer = pointer
 	return (
 		<AppShell
 			header={
@@ -109,7 +110,9 @@ const App = (_props: {}, scope: Scope) => {
 			}
 		>
 			<main class="container">
-				<Router routes={sections} notFound={renderNotFound} />
+				<ErrorBoundary>
+					<Router routes={sections} notFound={renderNotFound} />
+				</ErrorBoundary>
 			</main>
 		</AppShell>
 	)

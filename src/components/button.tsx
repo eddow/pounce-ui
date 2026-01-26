@@ -95,7 +95,7 @@ export const Button = (props: ButtonProps) => {
 				) : null
 			},
 			get hasLabel() {
-				return state.children && !(Array.isArray(state.children) && state.children.length === 0)
+				return state.children && !(Array.isArray(state.children) && state.children.every(e => !!e))
 			},
 			get isIconOnly() {
 				return state.icon && !this.hasLabel

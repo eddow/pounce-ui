@@ -1,4 +1,5 @@
-import { Component, JSX } from 'pounce-ts'
+import { reactive } from 'mutts'
+import { h, type JSX } from 'pounce-ts'
 
 export interface ErrorBoundaryProps {
 	children: JSX.Element | JSX.Element[]
@@ -6,125 +7,66 @@ export interface ErrorBoundaryProps {
 	onError?: (error: Error, errorInfo: { componentStack: string }) => void
 }
 
-interface ErrorBoundaryState {
-	hasError: boolean
-	error?: Error
-	errorInfo?: { componentStack: string }
+export const ErrorBoundary = (props: ErrorBoundaryProps) => {
+	const state = reactive({
+		hasError: false,
+		error: undefined as Error | undefined,
+		errorInfo: undefined as { componentStack: string } | undefined,
+	})
+
+	const content = () => {
+		if (state.hasError && state.error) {
+			if (props.fallback) {
+				return props.fallback(state.error, state.errorInfo || { componentStack: '' })
+			}
+			return (
+				<div style="padding: 20px; border: 1px solid #ff6b6b; background-color: #ffe0e0; color: #d63031; margin: 20px;">
+					<h3>Something went wrong</h3>
+					<details>
+						<summary>Error details</summary>
+						<pre style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; overflow: auto; font-size: 12px;">
+							{state.error.stack}
+						</pre>
+					</details>
+				</div>
+			)
+		}
+
+		try {
+			// If children is a function, call it. If it's a mountable, pounce-ts will handle it.
+			// The key is that we are calling it inside this reactive function context.
+			return props.children
+		} catch (e) {
+			console.error('ErrorBoundary caught error:', e)
+			state.hasError = true
+			state.error = e as Error
+			return null
+		}
+	}
+
+	return <div class="pp-error-boundary">{content}</div>
 }
 
-export const ErrorBoundary = Component<ErrorBoundaryProps, ErrorBoundaryState>((props) => {
-	return {
-		hasError: false,
-		error: undefined,
-		errorInfo: undefined,
-		
-		getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-			return {
-				hasError: true,
-				error
-			}
-		},
-		
-		componentDidCatch(error: Error, errorInfo: { componentStack: string }) {
-			// Log error to console in development
-			console.error('ErrorBoundary caught an error:', error, errorInfo)
-			
-			// Call custom error handler if provided
-			if (props.onError) {
-				props.onError(error, errorInfo)
-			}
-			
-			// Update state with error info
-			return {
-				hasError: true,
-				error,
-				errorInfo
-			}
-		},
-		
-		render() {
-			if (this.hasError && this.error) {
-				// Render custom fallback if provided
-				if (props.fallback) {
-					return props.fallback(this.error, this.errorInfo || { componentStack: '' })
-				}
-				
-				// Default error fallback
-				return (
-					<div style={{
-						padding: '20px',
-						border: '1px solid #ff6b6b',
-						borderRadius: '4px',
-						backgroundColor: '#ffe0e0',
-						color: '#d63031',
-						margin: '20px'
-					}}>
-						<h2>Something went wrong</h2>
-						<details>
-							<summary>Error details</summary>
-							<pre style={{
-								backgroundColor: '#f8f9fa',
-								padding: '10px',
-								borderRadius: '4px',
-								overflow: 'auto',
-								fontSize: '12px'
-							}}>
-								{this.error.stack}
-							</pre>
-							{this.errorInfo && (
-								<pre style={{
-									backgroundColor: '#f8f9fa',
-									padding: '10px',
-									borderRadius: '4px',
-									overflow: 'auto',
-									fontSize: '12px',
-									marginTop: '10px'
-								}}>
-									{this.errorInfo.componentStack}
-								</pre>
-							)}
-						</details>
-					</div>
-				)
-			}
-			
-			return props.children
-		}
-	}
-})
+export const ProductionErrorBoundary = (props: { children: JSX.Element | JSX.Element[] }) => {
+	const state = reactive({ hasError: false })
 
-// Production-ready error boundary that doesn't expose error details
-export const ProductionErrorBoundary = Component<{ children: JSX.Element | JSX.Element[] }>((props) => {
-	return {
-		hasError: false,
-		
-		getDerivedStateFromError(): { hasError: boolean } {
-			return { hasError: true }
-		},
-		
-		componentDidCatch(error: Error, errorInfo: { componentStack: string }) {
-			// Log error for debugging but don't expose to users
-			console.error('ProductionErrorBoundary caught an error:', error, errorInfo)
-			
-			// Here you could send error to reporting service
-			// reportError(error, errorInfo)
-		},
-		
-		render() {
-			if (this.hasError) {
-				return (
-					<div style={{
-						padding: '20px',
-						textAlign: 'center',
-						color: '#666'
-					}}>
-						<h2>Something went wrong</h2>
-						<p>Please refresh the page and try again.</p>
-					</div>
-				)
-			}
-			
+	const content = () => {
+		if (state.hasError) {
+			return (
+				<div style="padding: 20px; text-align: center; color: #666;">
+					<h2>Something went wrong</h2>
+					<p>Please refresh the page and try again.</p>
+				</div>
+			)
+		}
+		try {
 			return props.children
+		} catch (e) {
+			console.error('ProductionErrorBoundary caught error:', e)
+			state.hasError = true
+			return null
 		}
 	}
-})
+
+	return <div class="pp-error-boundary-prod">{content}</div>
+}

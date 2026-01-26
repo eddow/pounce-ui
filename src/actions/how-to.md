@@ -27,8 +27,8 @@ export function myAction(
 
 ### 1. Scope Injection
 To use a custom action like `use:resize`, the action function **must be present in the scope**.
-- **Global**: Add it to the root scope passed to `bindApp`.
-- **Local**: Add it to a component's scope (e.g. `scope.resize = resize`).
+- **Global**: Pass them to `bindApp` (e.g. `bindApp(<App />, '#app', actions)`).
+- **Manual**: Add it to a component's scope or the root scope (e.g. `scope.resize = resize`).
 
 ### 2. Bi-Directional Binding (`biDi`)
 If your action updates a reactive value based on DOM events (e.g. element resize) AND updates the DOM based on that reactive value, you risk **infinite loops**.

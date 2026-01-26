@@ -17,8 +17,12 @@ function isObject(value: any): value is object {
 	return typeof value === 'object' && value !== null
 }
 
-// Scope passed to widgets always has api defined (set before widget is called)
-type DockviewScope = Record<string, any> & { api: DockviewApi }
+// Scope passed to widgets always has dockviewApi defined (set before widget is called)
+// and panelApi defined if within a panel context
+type DockviewScope = Record<string, any> & {
+	dockviewApi: DockviewApi
+	panelApi?: DockviewPanelApi
+}
 export type DockviewWidgetProps<T extends Record<string, any> = Record<string, unknown>> = T & {
 	title: string
 	api: DockviewPanelApi
@@ -242,6 +246,7 @@ export function contentRenderer(
 				}
 			}
 			const jsx = h(widget, boundProps)
+			link.scope.panelApi = exposedApi
 			bindApp(jsx, element, link.scope)
 		},
 		layout: (width: number, height: number) => {
@@ -295,7 +300,7 @@ const DefaultTab = (
 		const action = (scope[type] || {})[key] || (scope[type] || {})['default']
 		if (!action) return null
 		const group = (props.api as any).group
-		return h(action, { api: scope.api, group })
+		return h(action, { api: scope.dockviewApi, group })
 	}
 
 	return (
@@ -314,7 +319,8 @@ const DefaultTab = (
 function headerActionRenderer(
 	resolveWidget: (group: DockviewGroupPanel) => DvHeaderAction | undefined,
 	api: DockviewApi,
-	group: DockviewGroupPanel
+	group: DockviewGroupPanel,
+	scope: Record<string, any>
 ) {
 	const element = document.createElement('div')
 	element.style.height = '100%'
@@ -335,7 +341,7 @@ function headerActionRenderer(
 			let jsx: JSX.Element | undefined
 			cleanup = effect(() => {
 				// Dependency on signal
-				const _ = signal.version
+				signal.version
 
 				const widget = resolveWidget(group)
 
@@ -346,7 +352,7 @@ function headerActionRenderer(
 					jsx = h('div', { style: 'display: none' })
 				}
 			})
-			const headerScope = extend({}, { api }) as DockviewScope
+			const headerScope = extend(scope, { dockviewApi: api }) as DockviewScope
 			bindApp(jsx!, element, headerScope)
 		},
 		dispose() {
@@ -455,7 +461,7 @@ export const Dockview = (
 				...options,
 				createComponent(options: CreateComponentOptions) {
 					layoutSyncMode = 'idle'
-					const panelLink = { id: options.id, scope: extend({}, scope as DockviewScope), component: options.name }
+					const panelLink = { id: options.id, scope: extend(scope, {}) as DockviewScope, component: options.name }
 					links.set(options.id, panelLink)
 					const widget = state.widgets[options.name]
 					if (!widget) throw new Error(`Widget ${options.name} not found`)
@@ -478,7 +484,8 @@ export const Dockview = (
 							return state.headerLeft?.[key] ?? state.headerLeft?.['default']
 						},
 						api,
-						group
+						group,
+						scope
 					)
 				},
 				createRightHeaderActionComponent(group: DockviewGroupPanel) {
@@ -493,7 +500,8 @@ export const Dockview = (
 							return state.headerRight?.[key] ?? state.headerRight?.['default']
 						},
 						api,
-						group
+						group,
+						scope
 					)
 				},
 				createPrefixHeaderActionComponent(group: DockviewGroupPanel) {
@@ -508,7 +516,8 @@ export const Dockview = (
 							return state.headerPrefix?.[key] ?? state.headerPrefix?.['default']
 						},
 						api,
-						group
+						group,
+						scope
 					)
 				},
 				createTabComponent(options: CreateComponentOptions) {
@@ -521,7 +530,7 @@ export const Dockview = (
 					let cleanup: ScopedCallback | undefined
 					return {
 						element,
-						init(params: GroupPanelPartInitParameters) {
+						init(_params: GroupPanelPartInitParameters) {
 							// Return early if already disposed (best effort)
 							const setup = () => {
 								const panelLink = links.get(options.id)
@@ -556,7 +565,7 @@ export const Dockview = (
 			})
 		)
 		// Set api on props, scope, and call callback to update parent
-		scope.api = createdApi
+		scope.dockviewApi = createdApi
 		const apiProp = (props as any).api
 		if (isObject(apiProp) && apiProp !== null && 'get' in apiProp && 'set' in apiProp) {
 			; (apiProp as Binding<DockviewApi | undefined>).set(createdApi)

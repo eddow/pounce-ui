@@ -34,8 +34,7 @@ test('multiselect toggles items', async ({ page }) => {
 	const apple = menu.getByText('Apple')
 	
 	// Initial state: not checked
-	// Check for the check icon (tabler:check) presence
-	const appleCheckIcon = apple.locator('.pounce-icon')
+	const appleCheckIcon = apple.getByText('✓')
 	await expect(appleCheckIcon).not.toBeVisible()
 	
 	// Click Apple

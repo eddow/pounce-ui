@@ -9,6 +9,7 @@ export interface DarkModeButtonProps {
 	ariaLabel?: string
 	icon?: string | JSX.Element
 	children?: JSX.Children
+	label?: boolean
 	theme?: 'light' | 'dark'
 	onThemeChange?: (theme: 'light' | 'dark') => void
 }
@@ -36,6 +37,7 @@ export const DarkModeButton = (props: DarkModeButtonProps) => {
 		props,
 		(state) => ({
 			get label() {
+				if (!state.label) return
 				const theme = state.theme ?? themeStorage.theme
 				return state.children && !(Array.isArray(state.children) && state.children.length === 0)
 					? state.children

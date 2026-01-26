@@ -4,11 +4,6 @@ type ScrollAxis = number | { value: number; max: number }
 type ScrollOptions = { 
 	x?: ScrollAxis
 	y?: ScrollAxis
-	/**
-	 * If true, uses ResizeObserver on the first child of the element to detect content size changes.
-	 * Required when the scrollable content grows but the container size remains fixed (e.g. infinite scroll).
-	 */
-	observeContent?: boolean 
 }
 
 function isObject(value: any): value is Record<PropertyKey, any> {
@@ -88,7 +83,13 @@ export function scroll(target: Node | Node[], value: ScrollOptions, _scope: Reco
 	})
 	resizeObserver.observe(element)
 
-	if (value.observeContent) {
+	// If we are tracking 'max', we must observe content size changes to keep it accurate.
+	// We assume the content is the first child.
+	const shouldObserveContent = 
+		(isObject(value.x) && 'max' in value.x) || 
+		(isObject(value.y) && 'max' in value.y)
+
+	if (shouldObserveContent) {
 		const content = element.firstElementChild
 		if (content) {
 			resizeObserver.observe(content)

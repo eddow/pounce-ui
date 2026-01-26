@@ -36,7 +36,24 @@
 
 // Runtime CSS injection function
 // This is called by the transformed code from the Vite plugin
-const injectedStyles = new Set<string>()
+// SSR Collection State
+const ssrStyles = new Map<string, string>() // hash -> css
+
+// Runtime CSS injection function
+// This is called by the transformed code from the Vite plugin
+const injectedStyles = new Set<string>() // hashes that are already in the DOM
+
+/**
+ * Simple string hash function for identifying CSS chunks
+ * DJB2 variant
+ */
+function hashStrings(str: string): string {
+    let h = 5381
+    for (let i = 0; i < str.length; i++) {
+        h = (h * 33) ^ str.charCodeAt(i)
+    }
+    return (h >>> 0).toString(36)
+}
 
 function getCallerId(): string {
 	try {
@@ -66,10 +83,35 @@ function getCallerId(): string {
 	return 'default'
 }
 
-export function __injectCSS(css: string): void {
-	if (typeof document === 'undefined' || injectedStyles.has(css)) return
+let hydrationCheckerArg: undefined | { id: string } = undefined
 
-	injectedStyles.add(css)
+export function __injectCSS(css: string): void {
+    const hash = hashStrings(css)
+
+    // Server-side: Collect styles
+	if (typeof document === 'undefined') {
+        if (!ssrStyles.has(hash)) {
+            ssrStyles.set(hash, css)
+        }
+        return
+    }
+
+    // Client-side: Hydration check
+    // If this is the FIRST time we run in the browser, check for pre-hydrated styles
+    if (hydrationCheckerArg === undefined) {
+         // We use an object identity check or similar to ensure we only do this once conceptually,
+         // but strictly speaking, checking if the DOM has the attribute is enough.
+         // However, we want to populate `injectedStyles` from the DOM if present.
+         const hydrationStyle = document.querySelector('style[data-hydrated-hashes]')
+         if (hydrationStyle) {
+             const hashes = hydrationStyle.getAttribute('data-hydrated-hashes')?.split(',') || []
+             hashes.forEach(h => injectedStyles.add(h))
+         }
+         hydrationCheckerArg = { id: 'checked' } 
+    }
+
+    if (injectedStyles.has(hash)) return
+	injectedStyles.add(hash)
 
     const callerId = getCallerId()
     
@@ -84,6 +126,19 @@ export function __injectCSS(css: string): void {
 	// Append the CSS
     // Using appendChild with a Text node is often faster than setting textContent for appending
     style.appendChild(document.createTextNode(css + '\n'))
+}
+
+/**
+ * Returns the HTML string for style tags collected during SSR.
+ * This should be injected into the <head> of the HTML page.
+ */
+export function getSSRStyles(): string {
+    if (ssrStyles.size === 0) return ''
+    
+    const hashes = Array.from(ssrStyles.keys())
+    const cssContent = Array.from(ssrStyles.values()).join('\n')
+    
+    return `<style data-hydrated-hashes="${hashes.join(',')}">${cssContent}</style>`
 }
 
 /**

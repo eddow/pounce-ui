@@ -149,7 +149,7 @@ export const InfiniteScroll = <T,>(props: InfiniteScrollProps<T>, scope: any) =>
 				state.size.width = w
 				state.size.height = h
 			}}
-			use:scroll={{ y: state.scroll, observeContent: true }}
+			use:scroll={{ y: state.scroll }}
 		>
 			<div
 				class="pp-infinite-scroll-content"
