@@ -2,8 +2,6 @@ import './variants.scss'
 import './buttongroup' // Initialize global keyboard handler
 export type { AlertProps } from './alert'
 export { Alert } from './alert'
-export type { BadgedProps } from './badged'
-export { Badged } from './badged'
 export type { ButtonProps } from './button'
 export { Button } from './button'
 export type { ButtonGroupProps } from './buttongroup'

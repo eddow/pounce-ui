@@ -51,13 +51,69 @@ button.success:hover,
 input[type='submit'].success:hover {
 	filter: brightness(0.95);
 }
+
 button.warning:hover,
 input[type='submit'].warning:hover {
 	filter: brightness(0.95);
 }
+
 button.danger:hover,
 input[type='submit'].danger:hover {
 	filter: brightness(0.95);
 }
 
 
+
+// Floating Badge styles (applied to the indicator created by the directive)
+.pp-badge-floating {
+	position: absolute;
+	min-width: 1.25rem;
+	height: 1.25rem;
+	padding: 0 0.35rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.70rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	border-radius: 999px;
+	background-color: var(--pico-del-color, #d32f2f);
+	color: var(--pico-color-inverse, #fff);
+	box-shadow: 0 0 0 2px var(--pico-background-color, #fff);
+	z-index: 10;
+	pointer-events: none;
+}
+
+// Host element style
+.pp-badged {
+	position: relative !important;
+	overflow: visible !important;
+}
+
+// Position variations applied to the host
+.pp-badged-top-right>.pp-badge-floating {
+	top: -0.5rem;
+	right: -0.4rem;
+}
+
+.pp-badged-top-left>.pp-badge-floating {
+	top: -0.5rem;
+	left: -0.4rem;
+}
+
+.pp-badged-bottom-right>.pp-badge-floating {
+	bottom: -0.5rem;
+	right: -0.4rem;
+}
+
+.pp-badged-bottom-left>.pp-badge-floating {
+	bottom: -0.5rem;
+	left: -0.4rem;
+}
+
+// Adjustments for icon-only buttons to center the badge better
+.pp-button-icon-only.pp-badged>.pp-badge-floating {
+	top: -0.35rem;
+	right: -0.3rem;
+}

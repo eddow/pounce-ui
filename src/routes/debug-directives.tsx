@@ -1,6 +1,6 @@
 
 import { biDi, reactive } from 'mutts'
-import { type PointerState } from '../actions/pointer'
+import { type PointerState } from '../directives/pointer'
 
 export default function DebugActions() {
 	// --- Resize State ---
@@ -40,7 +40,7 @@ export default function DebugActions() {
 
 	return (
 		<div style="padding: 20px; display: flex; flex-direction: column; gap: 4rem;">
-			<h1>Actions Debug</h1>
+			<h1>Directives Debug</h1>
 
 			{/* Resize Section */}
 			<section>

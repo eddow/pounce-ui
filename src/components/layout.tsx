@@ -15,11 +15,12 @@ css`
 	display: flex;
 	align-items: center;
 	gap: calc(var(--pico-spacing) * 0.75);
+	/* By default allow badges/decorations to overflow */
+	overflow: visible;
+}
+
+.pp-inline--scrollable {
 	overflow-x: auto;
-	/* Allow badges on buttons to overflow in all directions */
-	overflow-y: visible;
-	/* Ensure badges aren't clipped by this container */
-	contain: none;
 }
 
 .pp-grid {
@@ -162,6 +163,7 @@ export type InlineProps = JSX.IntrinsicElements['div'] & {
 	align?: keyof typeof alignItemsMap
 	justify?: keyof typeof justifyMap
 	wrap?: boolean
+	scrollable?: boolean
 }
 
 export const Inline = (props: InlineProps) => {
@@ -170,7 +172,7 @@ export const Inline = (props: InlineProps) => {
 	return (
 		<div
 			{...state}
-			class={['pp-inline', state.class]}
+			class={['pp-inline', state.scrollable ? 'pp-inline--scrollable' : undefined, state.class]}
 			style={[
 				state.style,
 				state.gap ? { gap: spacingValue(state.gap) } : undefined,

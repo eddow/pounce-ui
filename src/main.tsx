@@ -14,7 +14,7 @@ import FormsRoute from './routes/forms'
 import InteractionRoute from './routes/interaction'
 import ToolbarRoute from './routes/toolbar'
 import InfiniteScrollRoute from './routes/infinite-scroll'
-import DebugActionsRoute from './routes/debug-actions'
+import DebugActionsRoute from './routes/debug-directives'
 import DebugErrorRoute from './routes/debug-error'
 
 enableDevTools()
@@ -65,7 +65,7 @@ const sections: DemoSection[] = [
 	{ path: '/dockview', label: 'Dockview', view: DockviewRoute },
 	{ path: '/dockview-harsh', label: 'Dockview Harsh', view: DockviewHarshRoute },
 	{ path: '/toolbar', label: 'Toolbar', view: ToolbarRoute },
-	{ path: '/debug-actions', label: 'Actions (All)', view: DebugActionsRoute },
+	{ path: '/debug-directives', label: 'Directives (All)', view: DebugActionsRoute },
 	{ path: '/debug-error', label: 'Debug Error', view: DebugErrorRoute },
 	{ path: '/$', label: 'Overview', view: OverviewSection },
 ]
@@ -79,10 +79,7 @@ const renderNotFound = (props: { url: string }) => (
 	</section>
 )
 
-import { resize } from './actions/resize'
-import { scroll } from './actions/scroll'
-import { intersect } from './actions/intersect'
-import { pointer } from './actions/pointer'
+import { resize, scroll, intersect, pointer, badge } from './directives'
 import { ErrorBoundary } from './components/error-boundary'
 
 
@@ -91,6 +88,7 @@ const App = (_props: {}, scope: Scope) => {
 	scope.scroll = scroll
 	scope.intersect = intersect
 	scope.pointer = pointer
+	scope.badge = badge
 	return (
 		<AppShell
 			header={

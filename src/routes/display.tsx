@@ -1,5 +1,4 @@
 import { Alert } from '../components/alert'
-import { Badged } from '../components/badged'
 import { Button } from '../components/button'
 import { Icon } from '../components/icon'
 import { Container, Grid, Inline, Stack } from '../components/layout'
@@ -119,25 +118,27 @@ export default () => (
 						Badges can be used to show notification counts, unread items, or other indicators.
 					</Text>
 					<Inline role="group" wrap gap="sm">
-						<Button icon={tablerOutlineMail} badge={5} ariaLabel="Inbox">
+						<Button icon={tablerOutlineMail} use:badge={5} ariaLabel="Inbox">
 							Inbox
 						</Button>
-						<Button icon={tablerOutlineBell} badge={12} ariaLabel="Notifications" />
-						<Button icon={tablerOutlineMessage} badge="99+" ariaLabel="Messages" />
-						<Button icon={tablerOutlineShoppingCart} badge={3} ariaLabel="Shopping cart">
+						<Button icon={tablerOutlineBell} use:badge={12} ariaLabel="Notifications" />
+						<Button icon={tablerOutlineMessage} use:badge="99+" ariaLabel="Messages" />
+						<Button icon={tablerOutlineShoppingCart} use:badge={3} ariaLabel="Shopping cart">
 							Cart
 						</Button>
 						<Button
 							variant="secondary"
 							icon={tablerOutlineUserCircle}
-							badge="New"
+							use:badge="New"
 							ariaLabel="Profile"
 						/>
-						<Badged badge={<Icon icon={tablerOutlineStar} size="12px" />}>
-							<Button variant="success" ariaLabel="Starred">
-								Starred
-							</Button>
-						</Badged>
+						<Button
+							variant="success"
+							ariaLabel="Starred"
+							use:badge={{ value: <Icon icon={tablerOutlineStar} size="12px" />, position: 'top-right' }}
+						>
+							Starred
+						</Button>
 					</Inline>
 				</Stack>
 			</div>

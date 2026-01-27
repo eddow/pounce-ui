@@ -1,10 +1,10 @@
-# Writing Actions in Pounce
+# Writing Directives in Pounce
 
-Actions (or directives) in Pounce are functions that attach behavior to DOM elements. They are invoked via the `use:` syntax in JSX.
+Directives in Pounce are functions that attach behavior to DOM elements. They are invoked via the `use:` syntax in JSX.
 
 ## Signature
 
-An action function has the following signature:
+An directive function has the following signature:
 
 ```typescript
 export function myAction(
@@ -19,19 +19,19 @@ export function myAction(
 }
 ```
 
-- **target**: The DOM element(s) the action is applied to. Usually an `HTMLElement`.
+- **target**: The DOM element(s) the directive is applied to. Usually an `HTMLElement`.
 - **value**: The value passed to the directive (e.g. `use:myAction={value}`).
 - **scope**: The current reactive scope.
 
 ## Key Considerations
 
 ### 1. Scope Injection
-To use a custom action like `use:resize`, the action function **must be present in the scope**.
-- **Global**: Pass them to `bindApp` (e.g. `bindApp(<App />, '#app', actions)`).
+To use a custom directive like `use:resize`, the directive function **must be present in the scope**.
+- **Global**: Pass them to `bindApp` (e.g. `bindApp(<App />, '#app', directives)`).
 - **Manual**: Add it to a component's scope or the root scope (e.g. `scope.resize = resize`).
 
 ### 2. Bi-Directional Binding (`biDi`)
-If your action updates a reactive value based on DOM events (e.g. element resize) AND updates the DOM based on that reactive value, you risk **infinite loops**.
+If your directive updates a reactive value based on DOM events (e.g. element resize) AND updates the DOM based on that reactive value, you risk **infinite loops**.
 
 Use `biDi` from `mutts` to manage this safely:
 
@@ -69,3 +69,22 @@ const observer = new ResizeObserver(...)
 observer.observe(element)
 return () => observer.disconnect()
 ```
+### 5. Badge Directive (`use:badge`)
+The `badge` directive adds a floating notification indicator to an element.
+
+```tsx
+// Simple
+<Button use:badge={5}>Inbox</Button>
+
+// Advanced
+<div use:badge={{ value: 'New', position: 'top-left', variant: 'danger' }}>
+  Content
+</div>
+```
+
+- **value**: Internal content (string, number, or JSX).
+- **position**: `top-right` (default), `top-left`, `bottom-right`, `bottom-left`.
+- **variant**: Status variant (`primary`, `success`, `warning`, `danger`, etc.).
+- **class**: Extra classes for the badge element.
+
+**Note**: The directive sets `overflow: visible` and `position: relative` on the host element via the `.pp-badged` class.

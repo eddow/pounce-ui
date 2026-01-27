@@ -2,8 +2,8 @@
 import { compose, h } from 'pounce-ts'
 import { css } from '../lib/css'
 import { effect, reactive } from 'mutts'
-import { resize } from '../actions/resize'
-import { scroll } from '../actions/scroll'
+import { resize } from '../directives/resize'
+import { scroll } from '../directives/scroll'
 
 css`
 .pp-infinite-scroll {
@@ -54,7 +54,7 @@ export type InfiniteScrollProps<T> = {
 
 export const InfiniteScroll = <T,>(props: InfiniteScrollProps<T>, scope: any) => {
 	// console.log('[InfiniteScroll Debug] Initializing', props)
-	// Inject actions into scope
+	// Inject directives into scope
 	scope.resize = resize
 	scope.scroll = scroll
 

@@ -1,4 +1,4 @@
-# Actions and Directives
+# Directives
 
 - [ ] `use:clickOutside`
 - [ ] `use:mutate`

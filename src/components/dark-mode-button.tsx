@@ -77,13 +77,21 @@ export const DarkModeButton = (props: DarkModeButtonProps) => {
 		state.theme = next
 	}
 
-	return (
+	return (<>
 		<Button
+			if={state.label}
 			onClick={handleToggle}
 			ariaLabel={state.ariaLabel || 'Toggle dark mode'}
 			icon={state.currentIcon}
 		>
 			{state.label}
 		</Button>
+		<Button
+			else
+			onClick={handleToggle}
+			ariaLabel={state.ariaLabel || 'Toggle dark mode'}
+			icon={state.currentIcon}
+		/>
+	</>
 	)
 }

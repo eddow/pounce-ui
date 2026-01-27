@@ -1,15 +1,17 @@
 import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
-import { Badged } from './badged'
 import { Icon } from './icon'
 import { Variant, variantClass } from './variants'
 
 css`
 .pp-button {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: 0.5rem;
 	margin: 0;
+	overflow: visible;
 }
 
 .pp-button .pp-button-icon {
@@ -57,20 +59,6 @@ export type ButtonProps = {
 	children?: JSX.Children
 	onClick?: (event: MouseEvent) => void
 	tag?: 'button' | 'span' | 'div'
-	/**
-	 * Badge to display on the button (e.g., notification count).
-	 * Can be a number, string, or JSX element.
-	 *
-	 * The badge is positioned at the top-right corner of the button using the Badged component.
-	 *
-	 * @example
-	 * ```tsx
-	 * <Button badge={5}>Inbox</Button>
-	 * <Button badge="99+">Messages</Button>
-	 * <Button badge={<Icon icon={tablerOutlineStar} />}>Favorite</Button>
-	 * ```
-	 */
-	badge?: number | string | JSX.Element
 }
 
 export const Button = (props: ButtonProps) => {
@@ -95,7 +83,7 @@ export const Button = (props: ButtonProps) => {
 				) : null
 			},
 			get hasLabel() {
-				return state.children && !(Array.isArray(state.children) && state.children.every(e => !!e))
+				return !!state.children && (!Array.isArray(state.children) || state.children.some(e => !!e))
 			},
 			get isIconOnly() {
 				return state.icon && !this.hasLabel
@@ -103,7 +91,7 @@ export const Button = (props: ButtonProps) => {
 		})
 	)
 
-	const buttonElement = (
+	return (
 		<dynamic
 			tag={state.tag}
 			{...state.el}
@@ -120,16 +108,12 @@ export const Button = (props: ButtonProps) => {
 				state.el?.class,
 			]}
 		>
-			{state.iconPosition === 'start' ? state.iconElement : null}
-			{state.hasLabel ? <span class="pp-button-label">{state.children}</span> : state.children}
-			{state.iconPosition === 'end' ? state.iconElement : null}
+			<span if={state.iconPosition === 'start'} class="pp-button-icon">{state.iconElement}</span>
+			<fragment>
+				<span if={state.hasLabel} class="pp-button-label">{state.children}</span>
+				<fragment else>{state.children}</fragment>
+			</fragment>
+			<span if={state.iconPosition === 'end'} class="pp-button-icon">{state.iconElement}</span>
 		</dynamic>
 	)
-
-	// Use Badged wrapper when badge is provided
-	if (state.badge !== undefined && state.badge !== null) {
-		return <Badged badge={state.badge}>{buttonElement}</Badged>
-	}
-
-	return buttonElement
 }
