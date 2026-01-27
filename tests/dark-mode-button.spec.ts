@@ -35,17 +35,16 @@ test.describe('DarkModeButton', () => {
 		
 		const darkModeButton = page.getByRole('button', { name: /Toggle dark mode/i })
 		
-		// Get initial button text
-		const initialText = await darkModeButton.textContent()
+		// Get initial button content (icon)
+		const initialHTML = await darkModeButton.innerHTML()
 		
 		// Toggle theme
 		await darkModeButton.click()
 		await page.waitForTimeout(200)
 		
-		// Text should have changed
-		const newText = (await darkModeButton.textContent())?.trim()
-		expect(newText).not.toBe(initialText?.trim())
-		expect(['Light', 'Dark']).toContain(newText)
+		// Icon should have changed (HTML change)
+		const newHTML = await darkModeButton.innerHTML()
+		expect(newHTML).not.toBe(initialHTML)
 	})
 
 	test('should persist theme to localStorage', async ({ page }) => {

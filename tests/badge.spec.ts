@@ -50,7 +50,7 @@ test('badge is not clipped on labeled buttons', async ({ page }) => {
 	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
 	
 	const inboxButton = page.getByRole('button', { name: 'Inbox' })
-	const badge = inboxButton.locator('.pp-badge')
+	const badge = inboxButton.locator('.pp-badge-floating')
 	
 	await expect(badge).toBeVisible()
 	const badgeBox = await badge.boundingBox()
@@ -88,7 +88,7 @@ test('badge is not clipped on icon-only buttons', async ({ page }) => {
 	const notificationsButton = page.getByRole('button', { name: 'Notifications' })
 	await expect(notificationsButton).toBeVisible({ timeout: 5000 })
 	
-	const badge = notificationsButton.locator('.pp-badge')
+	const badge = notificationsButton.locator('.pp-badge-floating')
 	await expect(badge).toBeVisible({ timeout: 5000 })
 	await expect(badge).toHaveText('12')
 	
@@ -118,7 +118,7 @@ test('badge positioning is correct for different button types', async ({ page })
 	
 	// Test labeled button
 	const inboxButton = page.getByRole('button', { name: 'Inbox' })
-	const inboxBadge = inboxButton.locator('.pp-badge')
+	const inboxBadge = inboxButton.locator('.pp-badge-floating')
 	const inboxButtonBox = await inboxButton.boundingBox()
 	const inboxBadgeBox = await inboxBadge.boundingBox()
 	
@@ -129,7 +129,7 @@ test('badge positioning is correct for different button types', async ({ page })
 	
 	// Test icon-only button
 	const notificationsButton = page.getByRole('button', { name: 'Notifications' })
-	const notificationsBadge = notificationsButton.locator('.pp-badge')
+	const notificationsBadge = notificationsButton.locator('.pp-badge-floating')
 	const notificationsButtonBox = await notificationsButton.boundingBox()
 	const notificationsBadgeBox = await notificationsBadge.boundingBox()
 	
@@ -144,7 +144,7 @@ test('badge does not affect button clickability', async ({ page }) => {
 	
 	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
 	const inboxButton = page.getByRole('button', { name: 'Inbox' })
-	const badge = inboxButton.locator('.pp-badge')
+	const badge = inboxButton.locator('.pp-badge-floating')
 	
 	const pointerEvents = await badge.evaluate((el) => {
 		return window.getComputedStyle(el).pointerEvents
@@ -159,13 +159,13 @@ test('badge renders different content types correctly', async ({ page }) => {
 	await page.getByRole('heading', { level: 3, name: 'Buttons with Badges' }).scrollIntoViewIfNeeded()
 	
 	const notificationsButton = page.getByRole('button', { name: 'Notifications' })
-	await expect(notificationsButton.locator('.pp-badge')).toHaveText('12')
+	await expect(notificationsButton.locator('.pp-badge-floating')).toHaveText('12')
 	
 	const messagesButton = page.getByRole('button', { name: 'Messages' })
-	await expect(messagesButton.locator('.pp-badge')).toHaveText('99+')
+	await expect(messagesButton.locator('.pp-badge-floating')).toHaveText('99+')
 	
 	const profileButton = page.getByRole('button', { name: 'Profile' })
-	await expect(profileButton.locator('.pp-badge')).toHaveText('New')
+	await expect(profileButton.locator('.pp-badge-floating')).toHaveText('New')
 })
 
 test('badge accepts JSX.Element as content', async ({ page }) => {
@@ -198,7 +198,7 @@ test('badge sizing and cropping - comprehensive check', async ({ page }) => {
 	for (const { name, expectedText } of buttons) {
 		const button = page.getByRole('button', { name })
 		await expect(button).toBeVisible({ timeout: 5000 })
-		const badge = button.locator('.pp-badge')
+		const badge = button.locator('.pp-badge-floating')
 		
 		await expect(badge).toBeVisible()
 		await expect(badge).toHaveText(expectedText)

@@ -5,11 +5,17 @@ const openDockviewSection = (page: Page) =>
 	openSection(page, { menuName: 'Dockview', expectedUrlPath: '/dockview', expectedHeading: 'Dockview', headingLevel: 1 })
 
 const waitForDockviewReady = async (page: Page) => {
+	console.log('Waiting for dockview ready...')
 	const dockview = page.locator('[class*="dockview"], [class*="Dockview"]').first()
 	await expect(dockview).toBeVisible({ timeout: 10000 })
+	console.log('Dockview container visible.')
 	const addPanel1 = page.getByRole('button', { name: /^Add Panel 1$/i })
 	if (await addPanel1.count()) {
+		console.log('Add Panel 1 button found, waiting for it to be enabled...')
 		await expect(addPanel1).toBeEnabled({ timeout: 10000 })
+		console.log('Add Panel 1 button enabled.')
+	} else {
+		console.log('Add Panel 1 button not found in initial search.')
 	}
 }
 
@@ -29,28 +35,36 @@ test('dockview container renders', async ({ page }) => {
 })
 
 test('panels can be created', async ({ page }) => {
+	console.log('Starting "panels can be created" test...')
 	await openDockviewSection(page)
 	await waitForDockviewReady(page)
 	// Find button to add panel
+	console.log('Looking for Add Panel button...')
 	const addPanelButton = page.getByRole('button', { name: /Add Panel/i })
 	const count = await addPanelButton.count()
+	console.log(`Found ${count} Add Panel buttons.`)
 	
 	if (count > 0) {
+		console.log('Waiting for first Add Panel button to be enabled...')
 		await expect(addPanelButton.first()).toBeEnabled({ timeout: 10000 })
 		// Click to add panel
+		console.log('Clicking Add Panel button...')
 		await addPanelButton.first().click()
 		
 		// Wait for panel to appear
+		console.log('Waiting for panel to appear...')
 		await page.waitForTimeout(500)
 		
 		// Check for a tab (panel created implies a tab exists)
 		const tabs = page.locator('[role="tab"], [class*="tab"]')
 		const panelCount = await tabs.count()
+		console.log(`Found ${panelCount} tabs.`)
 		
 		// Panel should be created
 		expect(panelCount).toBeGreaterThan(0)
 	} else {
 		// Test structure
+		console.log('No Add Panel button found, skipping click.')
 		expect(count).toBeGreaterThanOrEqual(0)
 	}
 })

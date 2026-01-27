@@ -67,7 +67,7 @@ const sections: DemoSection[] = [
 	{ path: '/toolbar', label: 'Toolbar', view: ToolbarRoute },
 	{ path: '/debug-directives', label: 'Directives (All)', view: DebugActionsRoute },
 	{ path: '/debug-error', label: 'Debug Error', view: DebugErrorRoute },
-	{ path: '/$', label: 'Overview', view: OverviewSection },
+	{ path: '/', label: 'Overview', view: OverviewSection },
 ]
 
 const renderNotFound = (props: { url: string }) => (

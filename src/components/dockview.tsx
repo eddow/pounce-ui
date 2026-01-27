@@ -12,6 +12,7 @@ import {
 import 'dockview-core/dist/styles/dockview.css'
 import { effect, reactive, type ScopedCallback, unreactive, watch } from 'mutts'
 import { bindApp, compose, extend } from 'pounce-ts'
+import { api } from 'pounce-ts/src/lib/http/client.js'
 
 function isObject(value: any): value is object {
 	return typeof value === 'object' && value !== null
@@ -383,7 +384,11 @@ export const Dockview = (
 	},
 	scope: Record<string, any>
 ) => {
-	const links = new Map<string, { id: string; props?: DockviewLinkProps; scope: DockviewScope; component?: string }>()
+	console.log('[Dockview] Component function called')
+	const links = new Map<
+		string,
+		{ id: string; props?: DockviewLinkProps; scope: DockviewScope; component?: string }
+	>()
 	const metaById = reactive({}) as DockviewSnapshot['panels']
 	const state = compose({ options: {}, tabs: {}, tabLeft: {}, tabRight: {}, tabPrefix: {} }, props)
 	const options: FreeDockviewOptions = {}
@@ -394,6 +399,7 @@ export const Dockview = (
 		else Object.assign(options, state.options)
 	})
 	const initDockview = (element: HTMLElement) => {
+		console.log('[Dockview] initDockview called with element:', element);
 		type LayoutSyncMode = 'idle' | 'ignore_next_external' | 'restoring' | 'cleared'
 		let layoutSyncMode: LayoutSyncMode = 'idle'
 		const persistSnapshot = (api: DockviewApi) => {

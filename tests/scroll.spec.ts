@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Scroll Directive', () => {
     test('should support bidirectional scrolling', async ({ page }) => {
-        await page.goto('http://localhost:4183/debug-actions')
+        await page.goto('http://localhost:4183/debug-directives')
         
         const container = page.locator('#scroll-container')
         await expect(container).toBeVisible()

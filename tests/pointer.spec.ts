@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 test.describe('Pointer Directive', () => {
     test('should support pointer tracking and buttons', async ({ page }) => {
-        await page.goto('http://localhost:4183/debug-actions')
+        await page.goto('http://localhost:4183/debug-directives')
         page.on('console', msg => console.log('BROWSER:', msg.text()))
         
         const pointerSection = page.locator('h2', { hasText: 'Pointer' }).locator('..')
