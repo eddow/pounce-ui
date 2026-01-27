@@ -1,7 +1,6 @@
 import { reactiveOptions } from 'mutts';
 
-reactiveOptions.onMemoizationDiscrepancy = (cached: any, fresh: any, fn: Function, args: any[]) => {
-    const isNode = (val: any) => typeof Node !== 'undefined' && val instanceof Node;
+reactiveOptions.onMemoizationDiscrepancy = (cached, fresh, fn, args, cause) => {
     const stringify = (val: any): string => {
         if (typeof val === 'object' && val !== null && 'outerHTML' in val) return (val as any).outerHTML || `[Empty ${val.tagName || 'Node'}]`;
         if (Array.isArray(val)) return `[${val.map((v) => stringify(v)).join(', ')}]`;
@@ -22,7 +21,8 @@ reactiveOptions.onMemoizationDiscrepancy = (cached: any, fresh: any, fn: Functio
     const error = new Error(`Memoization discrepancy detected in ${fnName}!
 Cached: ${cachedStr}
 Fresh:  ${freshStr}
-Args:   ${stringify(args)}`);
+Args:   ${stringify(args)}
+Cause:  ${cause}`);
     
     console.error(error);
     throw error;

@@ -1,5 +1,5 @@
 
-import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { __injectCSS, getSSRStyles } from './css'
 
 // Mock the CSS module to access internal state if needed, 
@@ -59,13 +59,13 @@ describe('CSS Injection', () => {
            // Restore document mock
            // @ts-ignore
            global.document = originalDocument || {
-               head: { appendChild: jest.fn() },
-               createElement: jest.fn(() => ({ 
-                   setAttribute: jest.fn(), 
-                   appendChild: jest.fn() 
+               head: { appendChild: vi.fn() },
+               createElement: vi.fn(() => ({ 
+                   setAttribute: vi.fn(), 
+                   appendChild: vi.fn() 
                })),
-               querySelector: jest.fn(),
-               createTextNode: jest.fn()
+               querySelector: vi.fn(),
+               createTextNode: vi.fn()
            } as any
        })
 

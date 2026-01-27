@@ -1,25 +1,22 @@
-/**
- * @jest-environment jsdom
- */
-import { jest } from '@jest/globals'
+import { vi, describe, it, expect } from 'vitest'
 
 // Mock pounce-ts to avoid rendering runtime errors and provide global h
-jest.unstable_mockModule('pounce-ts', () => {
-	const h = jest.fn((tag: any, props: any) => ({ tag, props }));
+vi.mock('pounce-ts', async () => {
+	const actual = await vi.importActual('pounce-ts') as any
+	const h = vi.fn((tag: any, props: any) => ({ tag, props }));
 	return {
-		__esModule: true,
-		bindApp: jest.fn(),
+		...actual,
+		bindApp: vi.fn(),
 		h: h,
-		compose: jest.fn((def: any, props: any) => Object.assign({}, def, props)),
-		extend: jest.fn((a: any, b: any) => Object.assign(a, b))
+		compose: vi.fn((def: any, props: any) => Object.assign({}, def, props)),
+		extend: vi.fn((a: any, b: any) => Object.assign(a, b))
 	}
 })
 
 // Mock dockview-core
-jest.unstable_mockModule('dockview-core', () => ({
-	__esModule: true,
-	createDockview: jest.fn(),
-	DockviewApi: jest.fn(),
+vi.mock('dockview-core', () => ({
+	createDockview: vi.fn(),
+	DockviewApi: vi.fn(),
 }))
 
 // Import SUT after mocks
@@ -34,22 +31,22 @@ global.h = h
 
 describe('contentRenderer Title Sync', () => {
 	it('should forward props.title changes to api (Forward Sync)', async () => {
-		const widget = jest.fn()
+		const widget = vi.fn()
 		const link: any = {
 			id: 'test-panel',
 			scope: { api: {} },
 			component: 'test-component'
 		}
 		const metaById: any = {}
-		const schedulePersist = jest.fn()
+		const schedulePersist = vi.fn()
 
 		const renderer = contentRenderer(widget, link, metaById, schedulePersist)
 
 		const panelApiMock = {
-			setTitle: jest.fn(),
-			updateParameters: jest.fn(),
-			onDidTitleChange: jest.fn(() => () => { }),
-			onDidParametersChange: jest.fn(() => () => { })
+			setTitle: vi.fn(),
+			updateParameters: vi.fn(),
+			onDidTitleChange: vi.fn(() => () => { }),
+			onDidParametersChange: vi.fn(() => () => { })
 		}
 
 		const initParams = {
@@ -74,26 +71,26 @@ describe('contentRenderer Title Sync', () => {
 	})
 
 	it('should update props.title on API change (Reverse Sync)', async () => {
-		const widget = jest.fn()
+		const widget = vi.fn()
 		const link: any = {
 			id: 'test-panel',
 			scope: { api: {} },
 			component: 'test-component'
 		}
 		const metaById: any = {}
-		const schedulePersist = jest.fn()
+		const schedulePersist = vi.fn()
 
 		const renderer = contentRenderer(widget, link, metaById, schedulePersist)
 
 		let fireTitleChange: any
 		const panelApiMock = {
-			setTitle: jest.fn(),
-			updateParameters: jest.fn(),
-			onDidTitleChange: jest.fn((cb: any) => {
+			setTitle: vi.fn(),
+			updateParameters: vi.fn(),
+			onDidTitleChange: vi.fn((cb: any) => {
 				fireTitleChange = cb
 				return () => { }
 			}),
-			onDidParametersChange: jest.fn(() => () => { })
+			onDidParametersChange: vi.fn(() => () => { })
 		}
 
 		renderer.init({ api: panelApiMock, params: {}, title: 'Initial' } as any)

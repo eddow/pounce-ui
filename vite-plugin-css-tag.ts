@@ -1,4 +1,17 @@
-import { createHash } from 'crypto'
+/**
+ * Vite plugin for Pounce-UI that transforms `css`, `sass`, and `scss` template literals
+ * into processed CSS injections via `__injectCSS`.
+ * 
+ * Key Features:
+ * 1. **Build-time Pre-processing**: Compiles SASS/SCSS to CSS during the build, 
+ *    removing the need for a runtime compiler in the browser.
+ * 2. **SSR Support**: Enables style collection on the server by transforming tags
+ *    into function calls that can track used styles for initial HTML injection.
+ * 3. **Deduplication**: Works with a runtime (`lib/css.ts`) that hashes CSS
+ *    content to ensure each style block is injected into the DOM exactly once.
+ * 4. **PostCSS Integration**: Ensures inline styles are processed through Vite's
+ *    standard PostCSS pipeline (autoprefixer, etc.).
+ */
 import { dirname, relative } from 'path'
 import { compileString } from 'sass'
 import type { Plugin } from 'vite'

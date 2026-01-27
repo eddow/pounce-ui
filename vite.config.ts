@@ -1,8 +1,14 @@
 import { defineConfig, type Plugin } from 'vite'
 import { transformSync } from '@babel/core'
-// Reuse the JSX reactive plugin directly from pounce sources
-import { babelPluginJsxReactive } from 'pounce-ts/plugin'
-import { pureGlyfPlugin } from 'pure-glyf/plugin'
+import { dirname, resolve as resolvePath } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const projectRootDir = dirname(fileURLToPath(import.meta.url))
+
+// @TEMPORARY: Using relative paths for build-time plugins to ensure they are loaded from source.
+// This avoids ERR_UNKNOWN_FILE_EXTENSION that occurs when Node loads .ts files via package resolution.
+import { babelPluginJsxReactive } from '../pounce-ts/src/babel-plugin-jsx-reactive'
+import { pureGlyfPlugin } from '../pure-glyf/src/plugin'
 import { cssTagPlugin } from './vite-plugin-css-tag'
 
 export default defineConfig({
@@ -43,11 +49,22 @@ export default defineConfig({
 			},
 		} as Plugin,
 	],
+	resolve: {
+		alias: [
+			{ find: 'mutts', replacement: resolvePath(projectRootDir, '../mutts/src') },
+			{ find: 'pounce-ts', replacement: resolvePath(projectRootDir, '../pounce-ts/src') },
+			{ find: /^pure-glyf$/, replacement: resolvePath(projectRootDir, '../pure-glyf/src') },
+			{ find: /^pure-glyf\/(?!(icons|icons\.css))/, replacement: resolvePath(projectRootDir, '../pure-glyf/src/$1') },
+			{ find: 'npc-script', replacement: resolvePath(projectRootDir, '../npcs/src') },
+			{ find: 'omni18n', replacement: resolvePath(projectRootDir, '../omni18n/src') },
+		],
+	},
 	esbuild: false,
 	build: {
 		outDir: 'dist',
 		target: 'esnext',
 		minify: false,
+		sourcemap: true,
 		lib: {
 			entry: 'src/index.ts',
 			formats: ['es'],

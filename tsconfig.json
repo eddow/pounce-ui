@@ -20,12 +20,40 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
+		"sourceMap": true,
 		"experimentalDecorators": true,
 		"emitDecoratorMetadata": true,
 		"useDefineForClassFields": true,
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"paths": {
+			"mutts": [
+				"mutts/src/index.ts"
+			],
+			"mutts/*": [
+				"mutts/src/*"
+			],
+			"pounce-ts": [
+				"pounce-ts/src/lib/index.ts"
+			],
+			"pounce-ts/*": [
+				"pounce-ts/*"
+			],
+			"pure-glyf": [
+				"pure-glyf/src/index.ts"
+			],
+			"pure-glyf/*": [
+				"pure-glyf/src/*"
+			],
+			"npc-script": [
+				"../npcs/src/index.ts"
+			],
+			"omni18n": [
+				"../omni18n/src/client.ts"
+			]
+		}
 	},
 	"include": [
 		"src/**/*",
