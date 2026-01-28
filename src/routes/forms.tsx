@@ -1,11 +1,17 @@
 import { reactive } from 'mutts'
+import {
+	tablerFilledHeart,
+	tablerOutlineChevronDown,
+	tablerOutlineCircleMinus,
+	tablerOutlineCircleX,
+	tablerOutlineHeart,
+} from 'pure-glyf/icons'
 import { Button } from '../components/button'
 import { Checkbox, Combobox, Radio, Select, Switch } from '../components/forms'
-import { Stars } from '../components/stars'
-import { Multiselect } from '../components/multiselect'
 import { Container, Inline, Stack } from '../components/layout'
+import { Multiselect } from '../components/multiselect'
+import { Stars } from '../components/stars'
 import { Heading, Text } from '../components/typography'
-import { tablerOutlineChevronDown, tablerFilledHeart, tablerOutlineHeart, tablerOutlineCircleMinus, tablerOutlineCircleX } from 'pure-glyf/icons'
 
 type Fruit = { id: number; name: string; color: string }
 
@@ -31,7 +37,6 @@ export default function FormsRoute() {
 		starsZeroValue: 0,
 		starsZeroRangeValue: [0, 3] as const,
 	})
-
 
 	const checkboxState = reactive({
 		notifications: true,
@@ -137,9 +142,7 @@ export default function FormsRoute() {
 					<Heading level={3}>Checkboxes</Heading>
 					<Inline wrap gap="md">
 						<Stack gap="xs">
-							<Checkbox checked={checkboxState.notifications}>
-								Notifications
-							</Checkbox>
+							<Checkbox checked={checkboxState.notifications}>Notifications</Checkbox>
 							<Text size="sm" muted>
 								Value: {String(checkboxState.notifications)}
 							</Text>
@@ -169,11 +172,7 @@ export default function FormsRoute() {
 							</Text>
 						</Stack>
 						<Stack gap="xs">
-							<Checkbox
-								variant="danger"
-								disabled
-								checked={checkboxState.disabled}
-							>
+							<Checkbox variant="danger" disabled checked={checkboxState.disabled}>
 								Disabled
 							</Checkbox>
 							<Text size="sm" muted>
@@ -257,8 +256,8 @@ export default function FormsRoute() {
 				<section>
 					<Heading level={3}>Multiselect</Heading>
 					<Text muted>
-						A dropdown component for selecting multiple items with a customizable trigger
-						and item renderer.
+						A dropdown component for selecting multiple items with a customizable trigger and item
+						renderer.
 					</Text>
 					<Stack gap="md">
 						<div>
@@ -268,9 +267,7 @@ export default function FormsRoute() {
 								closeOnSelect={state.closeOnSelect}
 								renderItem={(fruit, checked) => {
 									return (
-										<span
-											style={{ color: fruit.color, fontWeight: checked ? 'bold' : 'normal' }}
-										>
+										<span style={{ color: fruit.color, fontWeight: checked ? 'bold' : 'normal' }}>
 											{checked ? '✓ ' : ''}
 											{fruit.name}
 										</span>
@@ -284,18 +281,15 @@ export default function FormsRoute() {
 						</div>
 
 						<Inline gap="md">
-							<Checkbox
-								checked={state.closeOnSelect}
-								label="Close on select"
-							/>
+							<Checkbox checked={state.closeOnSelect} label="Close on select" />
 						</Inline>
 
 						<div>
 							<strong>Selected:</strong>{' '}
 							{state.selectedFruits.size > 0
 								? Array.from(state.selectedFruits)
-									.map((f) => f.name)
-									.join(', ')
+										.map((f) => f.name)
+										.join(', ')
 								: 'None'}
 						</div>
 
@@ -314,9 +308,7 @@ export default function FormsRoute() {
 					<Inline wrap gap="md">
 						<Stack gap="xs">
 							<Text muted>Interactive</Text>
-							<Stars
-								value={state.starsValue}
-							/>
+							<Stars value={state.starsValue} />
 							<Text size="sm" muted>
 								Value: {state.starsValue}
 							</Text>
@@ -382,7 +374,10 @@ export default function FormsRoute() {
 								onChange={(v) => (state.starsZeroRangeValue = v)}
 							/>
 							<Text size="sm" muted>
-								Value: {Array.isArray(state.starsZeroRangeValue) ? state.starsZeroRangeValue.join('-') : state.starsZeroRangeValue}
+								Value:{' '}
+								{Array.isArray(state.starsZeroRangeValue)
+									? state.starsZeroRangeValue.join('-')
+									: state.starsZeroRangeValue}
 							</Text>
 						</Stack>
 					</Inline>

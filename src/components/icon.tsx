@@ -47,7 +47,14 @@ export const Icon = (props: IconProps) => {
 			{...state.el}
 			class={['pounce-icon', props.icon, state.el?.class]}
 			title={props.title}
-			style={[{ width: props.size, height: props.size, verticalAlign: state.inline ? 'middle' : undefined }, state.el?.style]}
+			style={[
+				{
+					width: props.size,
+					height: props.size,
+					verticalAlign: state.inline ? 'middle' : undefined,
+				},
+				state.el?.style,
+			]}
 		/>
 	)
 }

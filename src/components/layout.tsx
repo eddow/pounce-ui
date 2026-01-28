@@ -1,5 +1,5 @@
-import { compose } from 'pounce-ts'
 import { effect, reactive } from 'mutts'
+import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
 
 css`

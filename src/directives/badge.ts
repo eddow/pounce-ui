@@ -26,9 +26,7 @@ export function badge(target: Node | Node[], input: BadgeInput) {
 	if (!(element instanceof HTMLElement)) return
 
 	// Parse input
-	const options: BadgeOptions = isBadgeOptions(input)
-		? input
-		: { value: input }
+	const options: BadgeOptions = isBadgeOptions(input) ? input : { value: input }
 
 	const position = options.position ?? 'top-right'
 	const variant = options.variant

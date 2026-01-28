@@ -1,4 +1,4 @@
-import { compose, h } from 'pounce-ts'
+import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
 import type { Variant } from './variants'
 import { variantClass } from './variants'

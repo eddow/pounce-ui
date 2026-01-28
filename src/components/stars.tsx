@@ -1,8 +1,8 @@
+import { mapped } from 'mutts'
 import { compose } from 'pounce-ts'
+import { tablerFilledStar, tablerOutlineStar } from 'pure-glyf/icons'
 import { css } from '../lib/css'
 import { Icon } from './icon'
-import { mapped } from 'mutts'
-import { tablerFilledStar, tablerOutlineStar } from 'pure-glyf/icons'
 
 css`
 .pp-stars {
@@ -78,10 +78,16 @@ export const Stars = (props: StarsProps) => {
 	)
 
 	const internal = compose({
-		draggingEnd: null as 'min' | 'max' | null
+		draggingEnd: null as 'min' | 'max' | null,
 	})
 	function set(val: number | readonly [number, number]) {
-		if (state.value !== val && (typeof val === 'number' || typeof state.value === 'number' || val[0] !== state.value[0] || val[1] !== state.value[1])) {
+		if (
+			state.value !== val &&
+			(typeof val === 'number' ||
+				typeof state.value === 'number' ||
+				val[0] !== state.value[0] ||
+				val[1] !== state.value[1])
+		) {
 			state.value = val
 			state.onChange?.(val)
 		}
@@ -165,7 +171,7 @@ export const Stars = (props: StarsProps) => {
 						index === -1
 							? state.zeroElement!
 							: status() === 'inside'
-								? state.inside ?? state.before
+								? (state.inside ?? state.before)
 								: status() === 'before'
 									? state.before
 									: state.after

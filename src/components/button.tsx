@@ -66,7 +66,7 @@ export const Button = (props: ButtonProps) => {
 		{
 			variant: 'primary',
 			iconPosition: 'start',
-			onClick: () => { },
+			onClick: () => {},
 			ariaLabel: undefined as string | undefined,
 			tag: 'button' as const,
 		},
@@ -83,7 +83,9 @@ export const Button = (props: ButtonProps) => {
 				) : null
 			},
 			get hasLabel() {
-				return !!state.children && (!Array.isArray(state.children) || state.children.some(e => !!e))
+				return (
+					!!state.children && (!Array.isArray(state.children) || state.children.some((e) => !!e))
+				)
 			},
 			get isIconOnly() {
 				return state.icon && !this.hasLabel
@@ -108,12 +110,18 @@ export const Button = (props: ButtonProps) => {
 				state.el?.class,
 			]}
 		>
-			<span if={state.iconPosition === 'start'} class="pp-button-icon">{state.iconElement}</span>
+			<span if={state.iconPosition === 'start'} class="pp-button-icon">
+				{state.iconElement}
+			</span>
 			<fragment>
-				<span if={state.hasLabel} class="pp-button-label">{state.children}</span>
+				<span if={state.hasLabel} class="pp-button-label">
+					{state.children}
+				</span>
 				<fragment else>{state.children}</fragment>
 			</fragment>
-			<span if={state.iconPosition === 'end'} class="pp-button-icon">{state.iconElement}</span>
+			<span if={state.iconPosition === 'end'} class="pp-button-icon">
+				{state.iconElement}
+			</span>
 		</dynamic>
 	)
 }

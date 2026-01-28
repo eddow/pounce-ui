@@ -1,7 +1,4 @@
 import { compose } from 'pounce-ts'
-import { css } from '../lib/css'
-import { Icon } from './icon'
-import type { Variant } from './variants'
 import {
 	tablerOutlineAlertCircle,
 	tablerOutlineAlertOctagon,
@@ -11,6 +8,9 @@ import {
 	tablerOutlineInfoCircle,
 	tablerOutlineX,
 } from 'pure-glyf/icons'
+import { css } from '../lib/css'
+import { Icon } from './icon'
+import type { Variant } from './variants'
 
 css`
 .pp-alert {
@@ -179,7 +179,6 @@ export const Alert = (props: AlertProps) => {
 			>
 				<Icon icon={tablerOutlineX} size="18px" />
 			</button>
-
 		</div>
 	)
 }

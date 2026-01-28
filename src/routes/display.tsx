@@ -1,10 +1,3 @@
-import { Alert } from '../components/alert'
-import { Button } from '../components/button'
-import { Icon } from '../components/icon'
-import { Container, Grid, Inline, Stack } from '../components/layout'
-import { Badge, Chip, Pill } from '../components/status'
-import { Heading, Link, Text } from '../components/typography'
-import { css, sass } from '../lib/css'
 import {
 	tablerOutlineArrowsHorizontal,
 	tablerOutlineBell,
@@ -29,6 +22,13 @@ import {
 	tablerOutlineUser,
 	tablerOutlineUserCircle,
 } from 'pure-glyf/icons'
+import { Alert } from '../components/alert'
+import { Button } from '../components/button'
+import { Icon } from '../components/icon'
+import { Container, Grid, Inline, Stack } from '../components/layout'
+import { Badge, Chip, Pill } from '../components/status'
+import { Heading, Link, Text } from '../components/typography'
+import { css, sass } from '../lib/css'
 
 // Test the css tag function
 css`.css-tag-test { 
@@ -135,7 +135,10 @@ export default () => (
 						<Button
 							variant="success"
 							ariaLabel="Starred"
-							use:badge={{ value: <Icon icon={tablerOutlineStar} size="12px" />, position: 'top-right' }}
+							use:badge={{
+								value: <Icon icon={tablerOutlineStar} size="12px" />,
+								position: 'top-right',
+							}}
 						>
 							Starred
 						</Button>
@@ -260,9 +263,7 @@ export default () => (
 					<Text size="sm" muted>
 						Testing the css and sass template tag functions.
 					</Text>
-					<div class="css-tag-test">
-						This div uses the css tag function (red text, blue border)
-					</div>
+					<div class="css-tag-test">This div uses the css tag function (red text, blue border)</div>
 					<div class="sass-tag-test">
 						This div uses the sass tag function (green text, hover effect)
 					</div>

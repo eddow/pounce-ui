@@ -2,8 +2,7 @@
 
 import '@picocss/pico/css/pico.min.css'
 
+export type { DockviewApi, DockviewPanelApi } from 'dockview-core'
 export * from './components'
-export * from './lib'
 export * from './directives'
-
-export { type DockviewApi, type DockviewPanelApi } from 'dockview-core'
+export * from './lib'

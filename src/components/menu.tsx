@@ -1,9 +1,9 @@
 import { effect, reactive } from 'mutts'
+import { tablerOutlineMenu } from 'pure-glyf/icons'
 import { css } from '../lib/css'
 import { A } from '../lib/router'
 import { Button } from './button'
 import { Toolbar } from './toolbar'
-import { tablerOutlineMenu } from 'pure-glyf/icons'
 
 css`
 /* Responsive menu bar: desktop links vs mobile burger */
@@ -175,9 +175,7 @@ function checkMenuStructure(detailsEl: HTMLDetailsElement) {
 
 const MenuList = ({ items }: { items: JSX.Element[] }) => (
 	<ul role="menu">
-		<for each={items}>
-			{(item) => <li role="none">{item}</li>}
-		</for>
+		<for each={items}>{(item) => <li role="none">{item}</li>}</for>
 	</ul>
 )
 
@@ -199,7 +197,7 @@ const MenuComponent = (props: MenuProps) => {
 			onClick={(e) => {
 				const target = e.target as HTMLElement
 				if (target.closest('a')) {
-					; (e.currentTarget as HTMLDetailsElement).removeAttribute('open')
+					;(e.currentTarget as HTMLDetailsElement).removeAttribute('open')
 				}
 			}}
 			onToggle={(e) => {

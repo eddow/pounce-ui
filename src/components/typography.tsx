@@ -187,24 +187,20 @@ export type HeadingProps = {
 
 export const Heading = (props: HeadingProps) => {
 	const defaults = { level: 2, variant: 'primary', align: 'start' as HeadingAlign }
-	const state = compose(
-		defaults,
-		props,
-		() => {
-			const resolvedLevel = () => Math.min(6, Math.max(1, props.level ?? defaults.level))
-			return {
-				get level() {
-					return resolvedLevel() as 1 | 2 | 3 | 4 | 5 | 6
-				},
-				get tag() {
-					return props.tag ?? `h${resolvedLevel()}`
-				},
-				get align() {
-					return props.align ?? defaults.align
-				},
-			}
+	const state = compose(defaults, props, () => {
+		const resolvedLevel = () => Math.min(6, Math.max(1, props.level ?? defaults.level))
+		return {
+			get level() {
+				return resolvedLevel() as 1 | 2 | 3 | 4 | 5 | 6
+			},
+			get tag() {
+				return props.tag ?? `h${resolvedLevel()}`
+			},
+			get align() {
+				return props.align ?? defaults.align
+			},
 		}
-	)
+	})
 
 	return (
 		<dynamic

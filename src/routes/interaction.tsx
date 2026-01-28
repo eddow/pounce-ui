@@ -1,6 +1,6 @@
+import { tablerOutlineAlertTriangle } from 'pure-glyf/icons'
 import { dialog } from '../components/dialog'
 import { toast } from '../components/toast'
-import { tablerOutlineAlertTriangle } from 'pure-glyf/icons'
 
 export default () => (
 	<>
@@ -60,5 +60,3 @@ export default () => (
 		</section>
 	</>
 )
-
-

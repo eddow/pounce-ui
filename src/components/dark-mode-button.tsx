@@ -1,9 +1,9 @@
 import { effect } from 'mutts'
-import { compose, h } from 'pounce-ts'
+import { compose } from 'pounce-ts'
+import { tablerOutlineMoon, tablerOutlineSun } from 'pure-glyf/icons'
 import { browser } from '../lib/browser'
 import { stored } from '../lib/storage'
 import { Button } from './button'
-import { tablerOutlineMoon, tablerOutlineSun } from 'pure-glyf/icons'
 
 export interface DarkModeButtonProps {
 	ariaLabel?: string
@@ -23,7 +23,7 @@ const defaultChildren = {
 	light: 'Dark',
 }
 const themeStorage = stored({
-	theme: (browser.prefersDark?.() ? 'dark' : 'light') as 'light' | 'dark'
+	theme: (browser.prefersDark?.() ? 'dark' : 'light') as 'light' | 'dark',
 })
 
 export const DarkModeButton = (props: DarkModeButtonProps) => {
@@ -77,21 +77,22 @@ export const DarkModeButton = (props: DarkModeButtonProps) => {
 		state.theme = next
 	}
 
-	return (<>
-		<Button
-			if={state.label}
-			onClick={handleToggle}
-			ariaLabel={state.ariaLabel || 'Toggle dark mode'}
-			icon={state.currentIcon}
-		>
-			{state.label}
-		</Button>
-		<Button
-			else
-			onClick={handleToggle}
-			ariaLabel={state.ariaLabel || 'Toggle dark mode'}
-			icon={state.currentIcon}
-		/>
-	</>
+	return (
+		<>
+			<Button
+				if={state.label}
+				onClick={handleToggle}
+				ariaLabel={state.ariaLabel || 'Toggle dark mode'}
+				icon={state.currentIcon}
+			>
+				{state.label}
+			</Button>
+			<Button
+				else
+				onClick={handleToggle}
+				ariaLabel={state.ariaLabel || 'Toggle dark mode'}
+				icon={state.currentIcon}
+			/>
+		</>
 	)
 }

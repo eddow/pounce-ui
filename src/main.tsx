@@ -2,20 +2,20 @@ import '@picocss/pico/css/pico.min.css'
 import { bindApp, type Scope } from 'pounce-ts'
 import './components/variants.scss'
 import { enableDevTools } from 'mutts'
+import { DarkModeButton } from './components/dark-mode-button'
 import { AppShell } from './components/layout'
 import { Menu } from './components/menu'
-import { DarkModeButton } from './components/dark-mode-button'
 import { browser } from './lib/browser'
 import { Router, type RouteWildcard } from './lib/router'
+import DebugActionsRoute from './routes/debug-directives'
+import DebugErrorRoute from './routes/debug-error'
 import DisplayRoute from './routes/display'
 import DockviewRoute from './routes/dockview'
 import DockviewHarshRoute from './routes/dockview-harsh'
 import FormsRoute from './routes/forms'
+import InfiniteScrollRoute from './routes/infinite-scroll'
 import InteractionRoute from './routes/interaction'
 import ToolbarRoute from './routes/toolbar'
-import InfiniteScrollRoute from './routes/infinite-scroll'
-import DebugActionsRoute from './routes/debug-directives'
-import DebugErrorRoute from './routes/debug-error'
 
 enableDevTools()
 // Stabilize contains() across realms in Playwright evaluations
@@ -79,9 +79,8 @@ const renderNotFound = (props: { url: string }) => (
 	</section>
 )
 
-import { resize, scroll, intersect, pointer, badge } from './directives'
 import { ErrorBoundary } from './components/error-boundary'
-
+import { badge, intersect, pointer, resize, scroll } from './directives'
 
 const App = (_props: {}, scope: Scope) => {
 	scope.resize = resize
@@ -98,9 +97,7 @@ const App = (_props: {}, scope: Scope) => {
 							brand="Pounce UI"
 							trailing={<DarkModeButton theme={scope.theme} />}
 							items={sections.map(({ path, label }) => (
-								<Menu.Item href={`${path}${browser.url.hash ?? ''}`}>
-									{label}
-								</Menu.Item>
+								<Menu.Item href={`${path}${browser.url.hash ?? ''}`}>{label}</Menu.Item>
 							))}
 						/>
 					</nav>
@@ -115,6 +112,5 @@ const App = (_props: {}, scope: Scope) => {
 		</AppShell>
 	)
 }
-
 
 bindApp(<App />, '#app')

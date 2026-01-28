@@ -1,2 +1,2 @@
-export { css, sass, scss, getSSRStyles } from './css'
+export { css, getSSRStyles, sass, scss } from './css'
 export { stored } from './storage'

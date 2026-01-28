@@ -19,13 +19,13 @@ const getStorage = () => {
 // MUtTs localStorage wrapper
 /**
  * Idea: state allows direct access to localStorage values and is reactive (allows inter-tab communication)
- * 
+ *
  * @example const state = stored({ key: 'value' })
  * @example state.key = 'new value'
  * @example effect(() => { console.log(state.key) })
- * 
+ *
  * @param initial - initial values for the state
- * @returns 
+ * @returns
  */
 export function stored<T extends Record<string, any>>(initial: T): T {
 	const rv: Partial<T> = reactive({})

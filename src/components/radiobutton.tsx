@@ -1,7 +1,7 @@
-import { Icon } from './icon'
-import { Variant, variantClass } from './variants'
 import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
+import { Icon } from './icon'
+import { Variant, variantClass } from './variants'
 
 css`
 .pp-radiobutton {
@@ -131,7 +131,11 @@ export function RadioButton<Value = string>(props: RadioButtonProps<Value>) {
 			type="button"
 			role="radio"
 			aria-checked={`${state.checked}`}
-			aria-label={state.isIconOnly ? (props['aria-label'] ?? (typeof state.value === 'string' ? state.value : 'Option')) : props['aria-label']}
+			aria-label={
+				state.isIconOnly
+					? (props['aria-label'] ?? (typeof state.value === 'string' ? state.value : 'Option'))
+					: props['aria-label']
+			}
 			class={[
 				'pp-radiobutton',
 				variantClass(state.variant),

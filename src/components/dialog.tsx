@@ -1,9 +1,9 @@
 import { effect, reactive } from 'mutts'
-import { bindApp, compose, h, isElement } from 'pounce-ts'
-import { Icon } from './icon'
-import { css } from '../lib/css'
-import { Variant, variantClass } from './variants'
+import { bindApp, compose, isElement } from 'pounce-ts'
 import { tablerOutlineX } from 'pure-glyf/icons'
+import { css } from '../lib/css'
+import { Icon } from './icon'
+import { Variant, variantClass } from './variants'
 
 css`
 .pp-size-sm {
@@ -110,7 +110,7 @@ const state = reactive({
 })
 
 if (typeof window !== 'undefined') {
-	; (window as any).__pounceDialogState = state
+	;(window as any).__pounceDialogState = state
 }
 
 let lastActiveElement: HTMLElement | null = null
@@ -258,15 +258,11 @@ const Host = () => {
 				<main class="pp-body">
 					{opts.stamp ? (
 						<aside class="pp-stamp" aria-hidden="true">
-							{typeof opts.stamp === 'string'
-								? <Icon icon={opts.stamp} size="48px" />
-								: opts.stamp}
+							{typeof opts.stamp === 'string' ? <Icon icon={opts.stamp} size="48px" /> : opts.stamp}
 						</aside>
 					) : undefined}
 					<div class="pp-content">
-						{typeof opts.message === 'string'
-							? <p>{opts.message}</p>
-							: opts.message}
+						{typeof opts.message === 'string' ? <p>{opts.message}</p> : opts.message}
 					</div>
 				</main>
 				<footer>
@@ -340,7 +336,8 @@ const Host = () => {
 						show()
 						const pending = state.pending
 						const opts = pending?.options
-						const sizeClass = opts?.size === 'sm' ? 'pp-size-sm' : opts?.size === 'lg' ? 'pp-size-lg' : 'pp-size-md'
+						const sizeClass =
+							opts?.size === 'sm' ? 'pp-size-sm' : opts?.size === 'lg' ? 'pp-size-lg' : 'pp-size-md'
 						el.className = ['pp-dialog', sizeClass, opts?.class].filter(Boolean).join(' ')
 
 						if (opts?.title) {
@@ -375,7 +372,10 @@ function isUIContent(value: unknown): value is UIContent {
 export function dialog<
 	Buttons extends Record<string, UIContent | DialogButton> = { ok: DialogButton },
 >(options: DialogOptions<Buttons> | UIContent): Promise<keyof Buttons | null> {
-	console.log('[DEBUG] dialog() called with:', typeof options === 'string' ? options : '[options object]')
+	console.log(
+		'[DEBUG] dialog() called with:',
+		typeof options === 'string' ? options : '[options object]'
+	)
 	return new Promise<PropertyKey | null>((resolve) => {
 		const normalized: DialogOptions<Buttons> = isUIContent(options)
 			? { message: options }
@@ -396,7 +396,8 @@ export function dialog<
 		state.open = true
 		attachGlobalTrap()
 		// remember the element that had focus before opening
-		lastActiveElement = (document.activeElement as HTMLElement | null) ?? (document.body as HTMLElement)
+		lastActiveElement =
+			(document.activeElement as HTMLElement | null) ?? (document.body as HTMLElement)
 		document.documentElement.classList.add('modal-is-open')
 		document.documentElement.classList.add('modal-is-opening')
 

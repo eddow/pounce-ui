@@ -1,5 +1,7 @@
 import { effect, reactive } from 'mutts'
 import {
+	compose,
+	copyObject,
 	buildRoute as coreBuildRoute,
 	matchRoute as coreMatchRoute,
 	routeMatcher as coreRouteMatcher,
@@ -9,13 +11,18 @@ import {
 	type RouteParamFormat,
 	type RouteParams,
 	type RouteWildcard,
-	compose,
-	copyObject,
 } from 'pounce-ts'
 import { browser } from './browser'
 
 // Re-export core types and functions
-export type { ParsedPathSegment, ParsedQueryParam, ParsedRoute, RouteParamFormat, RouteParams, RouteWildcard }
+export type {
+	ParsedPathSegment,
+	ParsedQueryParam,
+	ParsedRoute,
+	RouteParamFormat,
+	RouteParams,
+	RouteWildcard,
+}
 export { coreBuildRoute as buildRoute }
 
 // === pounce-ui SPECIFIC TYPES ===

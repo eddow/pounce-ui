@@ -164,7 +164,7 @@ effect(() => {
 
 The API is also available in widget scope:
 
-```ts
+```tsx
 const widget = (props, scope: DockviewScope) => {
 	// scope.api is the global DockviewApi
 	return (
@@ -181,7 +181,7 @@ const widget = (props, scope: DockviewScope) => {
 
 Panel titles sync bidirectionally between props and the dockview API.
 
-```ts
+```tsx
 const widget = (props: DockviewWidgetProps) => {
 	// Update title via props (forward sync)
 	const updateTitle = () => {
@@ -202,7 +202,7 @@ const widget = (props: DockviewWidgetProps) => {
 
 Panel parameters sync bidirectionally with loop suppression.
 
-```ts
+```tsx
 const widget = (props: DockviewWidgetProps) => {
 	// Update params via props
 	const updateParams = () => {
@@ -227,7 +227,7 @@ const widget = (props: DockviewWidgetProps) => {
 
 Pass dockview-core options (excluding component factories):
 
-```ts
+```tsx
 <Dockview
 	widgets={widgets}
 	options={{

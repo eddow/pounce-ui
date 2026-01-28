@@ -1,5 +1,5 @@
-import type { DockviewApi } from 'dockview-core'
-import { reactive, effect, cleanedBy } from 'mutts'
+import { themeDracula, themeReplit, type DockviewApi } from 'dockview-core'
+import { cleanedBy, effect, reactive } from 'mutts'
 import { Dockview, DockviewWidgetProps } from '../components/dockview'
 import { toast } from '../components/toast'
 /**
@@ -15,14 +15,17 @@ export default () => {
 
 	// Store api in reactive state so effects can track changes
 	const state = reactive({ api: undefined as DockviewApi | undefined })
-	const pendingPanels = new Map<string, { component: string; id: string; params?: Record<string, any> }>()
+	const pendingPanels = new Map<
+		string,
+		{ component: string; id: string; params?: Record<string, any> }
+	>()
 
 	// Track if api was set (to test if parent's api variable gets updated)
 	const apiSetState = reactive({ wasSet: false, setCount: 0 })
 
 	// Simulate theme state that effects depend on
 	const themeState = reactive({
-		darkMode: document.documentElement.dataset.theme === 'dark'
+		darkMode: document.documentElement.dataset.theme === 'dark',
 	})
 
 	// PROBLEM 1: Effect that uses api before it's initialized
@@ -140,10 +143,7 @@ export default () => {
 		})
 	})
 
-	const testWidget1 = (
-		props: DockviewWidgetProps,
-		_scope: Record<string, any>
-	) => (
+	const testWidget1 = (props: DockviewWidgetProps, _scope: Record<string, any>) => (
 		<div style="padding: 1rem;">
 			<h3>Test Panel</h3>
 			<p>
@@ -216,24 +216,16 @@ export default () => {
 			<Dockview
 				el:style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
 				widgets={widgets}
-				api={{
-					get: () => state.api,
-					set: (value) => {
-						state.api = value
-					},
-				}}
+				theme={themeState.darkMode ? themeDracula : themeReplit}
+				api={state.api}
 			/>
 		</section>
 	)
 
-	return (
-		<>
-			{cleanedBy(view, () => {
-				for (const fn of cleanupFns) fn()
-				// toastCleanup() // Temporarily disabled for debugging
-				if (previousTheme === undefined) document.documentElement.removeAttribute('data-theme')
-				else document.documentElement.dataset.theme = previousTheme
-			})}
-		</>
-	)
+	return cleanedBy(view, () => {
+		for (const fn of cleanupFns) fn()
+		// toastCleanup() // Temporarily disabled for debugging
+		if (previousTheme === undefined) document.documentElement.removeAttribute('data-theme')
+		else document.documentElement.dataset.theme = previousTheme
+	})
 }

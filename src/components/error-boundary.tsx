@@ -1,5 +1,5 @@
 import { reactive } from 'mutts'
-import { h, type JSX } from 'pounce-ts'
+import { type JSX } from 'pounce-ts'
 
 export interface ErrorBoundaryProps {
 	children: JSX.Element | JSX.Element[]

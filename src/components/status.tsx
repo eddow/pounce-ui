@@ -1,9 +1,9 @@
 import { compose } from 'pounce-ts'
+import { tablerOutlineX } from 'pure-glyf/icons'
+import { css } from '../lib/css'
 import { Icon } from './icon'
 import type { Variant } from './variants'
 import { variantClass } from './variants'
-import { css } from '../lib/css'
-import { tablerOutlineX } from 'pure-glyf/icons'
 
 css`
 .pp-badge,

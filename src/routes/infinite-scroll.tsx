@@ -1,6 +1,6 @@
-import { compose, h } from 'pounce-ts'
-import { InfiniteScroll } from '../components/infinite-scroll'
+import { compose } from 'pounce-ts'
 import { Button } from '../components/button'
+import { InfiniteScroll } from '../components/infinite-scroll'
 import { Inline, Stack } from '../components/layout'
 import { Heading } from '../components/typography'
 
@@ -10,7 +10,7 @@ const InfiniteScrollDemo = () => {
 		items: Array.from({ length: 50 }, (_, i) => `Item ${i}`),
 		stickyLast: true,
 		autoAdd: false,
-		intervalId: 0
+		intervalId: 0,
 	})
 
 	const addItem = () => {
@@ -22,13 +22,15 @@ const InfiniteScrollDemo = () => {
 			<Heading level={2}>Infinite Scroll</Heading>
 
 			<Inline gap="1rem" align="center">
-				<Button onClick={addItem} variant="primary">Add Item</Button>
+				<Button onClick={addItem} variant="primary">
+					Add Item
+				</Button>
 				<span>Count: {state.items.length}</span>
 				<label>
 					<input
 						type="checkbox"
 						checked={state.stickyLast}
-						onInput={(e) => state.stickyLast = (e.target as HTMLInputElement).checked}
+						onInput={(e) => (state.stickyLast = (e.target as HTMLInputElement).checked)}
 					/>
 					Sticky Bottom
 				</label>
@@ -39,7 +41,7 @@ const InfiniteScrollDemo = () => {
 					items={state.items}
 					itemHeight={30}
 					stickyLast={state.stickyLast}
-					el={{ style: "height: 100%;" }}
+					el={{ style: 'height: 100%;' }}
 				>
 					{(item, index) => (
 						<div style="padding: 0 1rem; line-height: 30px; border-bottom: 1px solid #eee;">

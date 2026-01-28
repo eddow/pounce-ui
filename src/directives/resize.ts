@@ -24,7 +24,7 @@ export function resize(target: Node | Node[], value: any, _scope: Record<Propert
 				() => value.width,
 				(w) => {
 					value.width = w
-				},
+				}
 			)
 		}
 		// Setup biDi for height
@@ -36,7 +36,7 @@ export function resize(target: Node | Node[], value: any, _scope: Record<Propert
 				() => value.height,
 				(h) => {
 					value.height = h
-				},
+				}
 			)
 		}
 	}

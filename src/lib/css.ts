@@ -48,33 +48,33 @@ const injectedStyles = new Set<string>() // hashes that are already in the DOM
  * DJB2 variant
  */
 function hashStrings(str: string): string {
-    let h = 5381
-    for (let i = 0; i < str.length; i++) {
-        h = (h * 33) ^ str.charCodeAt(i)
-    }
-    return (h >>> 0).toString(36)
+	let h = 5381
+	for (let i = 0; i < str.length; i++) {
+		h = (h * 33) ^ str.charCodeAt(i)
+	}
+	return (h >>> 0).toString(36)
 }
 
 function getCallerId(): string {
 	try {
 		const stack = new Error().stack
 		if (!stack) return 'unknown'
-		
+
 		// Parse the stack trace to find the caller
 		const lines = stack.split('\n')
 		for (const line of lines) {
 			// Look for file paths, ignoring internal/library frames if possible
 			// In Vite dev, paths usually look like http://localhost:5173/src/components/icon.tsx
 			if (line.includes('/src/') && !line.includes('lib/css.ts')) {
-				const match = line.match(/(https?:\/\/[^\)]+)/) || line.match(/(\/[\w\.-]+\/[\w\.-]+)/)
+				const match = line.match(/(https?:\/\/[^)]+)/) || line.match(/(\/[\w.-]+\/[\w.-]+)/)
 				if (match) {
-                    const url = match[1]
-                    // specific fix: extract relative path from /src/
-                    const srcIndex = url.indexOf('/src/')
-                    if (srcIndex !== -1) {
-                        // Return "/src/..." and strip query params (?) or line numbers (:)
-                        return url.substring(srcIndex).split('?')[0].split(':')[0]
-                    }
+					const url = match[1]
+					// specific fix: extract relative path from /src/
+					const srcIndex = url.indexOf('/src/')
+					if (srcIndex !== -1) {
+						// Return "/src/..." and strip query params (?) or line numbers (:)
+						return url.substring(srcIndex).split('?')[0].split(':')[0]
+					}
 					return url
 				}
 			}
@@ -83,49 +83,49 @@ function getCallerId(): string {
 	return 'default'
 }
 
-let hydrationCheckerArg: undefined | { id: string } = undefined
+let hydrationCheckerArg: undefined | { id: string }
 
 export function __injectCSS(css: string): void {
-    const hash = hashStrings(css)
+	const hash = hashStrings(css)
 
-    // Server-side: Collect styles
+	// Server-side: Collect styles
 	if (typeof document === 'undefined') {
-        if (!ssrStyles.has(hash)) {
-            ssrStyles.set(hash, css)
-        }
-        return
-    }
+		if (!ssrStyles.has(hash)) {
+			ssrStyles.set(hash, css)
+		}
+		return
+	}
 
-    // Client-side: Hydration check
-    // If this is the FIRST time we run in the browser, check for pre-hydrated styles
-    if (hydrationCheckerArg === undefined) {
-         // We use an object identity check or similar to ensure we only do this once conceptually,
-         // but strictly speaking, checking if the DOM has the attribute is enough.
-         // However, we want to populate `injectedStyles` from the DOM if present.
-         const hydrationStyle = document.querySelector('style[data-hydrated-hashes]')
-         if (hydrationStyle) {
-             const hashes = hydrationStyle.getAttribute('data-hydrated-hashes')?.split(',') || []
-             hashes.forEach(h => injectedStyles.add(h))
-         }
-         hydrationCheckerArg = { id: 'checked' } 
-    }
+	// Client-side: Hydration check
+	// If this is the FIRST time we run in the browser, check for pre-hydrated styles
+	if (hydrationCheckerArg === undefined) {
+		// We use an object identity check or similar to ensure we only do this once conceptually,
+		// but strictly speaking, checking if the DOM has the attribute is enough.
+		// However, we want to populate `injectedStyles` from the DOM if present.
+		const hydrationStyle = document.querySelector('style[data-hydrated-hashes]')
+		if (hydrationStyle) {
+			const hashes = hydrationStyle.getAttribute('data-hydrated-hashes')?.split(',') || []
+			hashes.forEach((h) => injectedStyles.add(h))
+		}
+		hydrationCheckerArg = { id: 'checked' }
+	}
 
-    if (injectedStyles.has(hash)) return
+	if (injectedStyles.has(hash)) return
 	injectedStyles.add(hash)
 
-    const callerId = getCallerId()
-    
-    // Find or create a style tag for this caller
-    let style = document.querySelector(`style[data-vite-css-id="${callerId}"]`) as HTMLStyleElement
-    if (!style) {
-        style = document.createElement('style')
-        style.setAttribute('data-vite-css-id', callerId)
-        document.head.appendChild(style)
-    }
+	const callerId = getCallerId()
+
+	// Find or create a style tag for this caller
+	let style = document.querySelector(`style[data-vite-css-id="${callerId}"]`) as HTMLStyleElement
+	if (!style) {
+		style = document.createElement('style')
+		style.setAttribute('data-vite-css-id', callerId)
+		document.head.appendChild(style)
+	}
 
 	// Append the CSS
-    // Using appendChild with a Text node is often faster than setting textContent for appending
-    style.appendChild(document.createTextNode(css + '\n'))
+	// Using appendChild with a Text node is often faster than setting textContent for appending
+	style.appendChild(document.createTextNode(`${css}\n`))
 }
 
 /**
@@ -133,12 +133,12 @@ export function __injectCSS(css: string): void {
  * This should be injected into the <head> of the HTML page.
  */
 export function getSSRStyles(): string {
-    if (ssrStyles.size === 0) return ''
-    
-    const hashes = Array.from(ssrStyles.keys())
-    const cssContent = Array.from(ssrStyles.values()).join('\n')
-    
-    return `<style data-hydrated-hashes="${hashes.join(',')}">${cssContent}</style>`
+	if (ssrStyles.size === 0) return ''
+
+	const hashes = Array.from(ssrStyles.keys())
+	const cssContent = Array.from(ssrStyles.values()).join('\n')
+
+	return `<style data-hydrated-hashes="${hashes.join(',')}">${cssContent}</style>`
 }
 
 /**

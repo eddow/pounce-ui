@@ -1,8 +1,5 @@
 import { reactive } from 'mutts'
 import { array, bindApp, compose, isElement } from 'pounce-ts'
-import { Icon } from './icon'
-import { css } from '../lib/css'
-import type { Variant } from './variants'
 import {
 	tablerOutlineAlertCircle,
 	tablerOutlineAlertOctagon,
@@ -10,6 +7,9 @@ import {
 	tablerOutlineInfoCircle,
 	tablerOutlineX,
 } from 'pure-glyf/icons'
+import { css } from '../lib/css'
+import { Icon } from './icon'
+import type { Variant } from './variants'
 
 css`
 .pp-toasts {
@@ -208,7 +208,7 @@ function closeToast(item: ToastItem) {
 
 // Cleanup function to clear all toasts and reset state
 function cleanupToasts() {
-	state.items.forEach(item => {
+	state.items.forEach((item) => {
 		if (!item.closing) {
 			closeToast(item)
 		}

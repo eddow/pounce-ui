@@ -1,7 +1,7 @@
 import { compose } from 'pounce-ts'
+import { css } from '../lib/css'
 import type { Variant } from './variants'
 import { variantClass } from './variants'
-import { css } from '../lib/css'
 
 css`
 .pp-select {
@@ -232,7 +232,6 @@ export const Combobox = (props: ComboboxProps) => {
 	)
 }
 
-
 type ControlBaseProps = Omit<JSX.IntrinsicElements['input'], 'checked'> & {
 	label?: JSX.Element | string
 	description?: JSX.Element | string
@@ -253,7 +252,7 @@ export const Checkbox = (props: CheckboxProps) => {
 			class={['pp-control', 'pp-checkbox', `pp-control-${tone(state.variant)}`, state.el?.class]}
 		>
 			<input
-				{...state as any}
+				{...(state as any)}
 				checked={state.checked}
 				class={['pp-control-input', state.class]}
 			/>
@@ -280,7 +279,7 @@ export const Radio = (props: RadioProps) => {
 			class={['pp-control', 'pp-radio', `pp-control-${tone(state.variant)}`, state.el?.class]}
 		>
 			<input
-				{...state as any}
+				{...(state as any)}
 				checked={state.checked}
 				class={['pp-control-input', state.class]}
 			/>

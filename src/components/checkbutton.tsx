@@ -1,7 +1,7 @@
-import { Icon } from './icon'
-import { Variant, variantClass } from './variants'
 import { compose } from 'pounce-ts'
 import { css } from '../lib/css'
+import { Icon } from './icon'
+import { Variant, variantClass } from './variants'
 
 css`
 .pp-checkbutton {

@@ -1,9 +1,8 @@
-
-import { compose, h } from 'pounce-ts'
-import { css } from '../lib/css'
 import { effect, reactive } from 'mutts'
+import { compose } from 'pounce-ts'
 import { resize } from '../directives/resize'
 import { scroll } from '../directives/scroll'
+import { css } from '../lib/css'
 
 css`
 .pp-infinite-scroll {
@@ -91,7 +90,7 @@ export const InfiniteScroll = <T,>(props: InfiniteScrollProps<T>, scope: any) =>
 		get offset() {
 			// Offset the inner container to the start of the visible range
 			return Math.max(0, this.startNode - 2) * state.itemHeight
-		}
+		},
 	})
 
 	// Sticky Last Logic
@@ -163,18 +162,20 @@ export const InfiniteScroll = <T,>(props: InfiniteScrollProps<T>, scope: any) =>
                         left: 0;
                     `}
 				>
-					{() => visibleState.items.map((wrapper) => {
-						const { item, index } = wrapper
-						const renderer = getRenderer()
-						return (
-							<div
-								class="pp-infinite-scroll-item"
-								style={`height: ${state.itemHeight}px; position: relative;`}
-							>
-								{renderer(item, index)}
-							</div>
-						)
-					})}
+					{() =>
+						visibleState.items.map((wrapper) => {
+							const { item, index } = wrapper
+							const renderer = getRenderer()
+							return (
+								<div
+									class="pp-infinite-scroll-item"
+									style={`height: ${state.itemHeight}px; position: relative;`}
+								>
+									{renderer(item, index)}
+								</div>
+							)
+						})
+					}
 				</div>
 			</div>
 		</div>

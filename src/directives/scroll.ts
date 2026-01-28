@@ -1,7 +1,7 @@
 import { biDi } from 'mutts'
 
 type ScrollAxis = number | { value: number; max: number }
-type ScrollOptions = { 
+type ScrollOptions = {
 	x?: ScrollAxis
 	y?: ScrollAxis
 }
@@ -10,7 +10,11 @@ function isObject(value: any): value is Record<PropertyKey, any> {
 	return value && typeof value === 'object'
 }
 
-export function scroll(target: Node | Node[], value: ScrollOptions, _scope: Record<PropertyKey, any>) {
+export function scroll(
+	target: Node | Node[],
+	value: ScrollOptions,
+	_scope: Record<PropertyKey, any>
+) {
 	const element = Array.isArray(target) ? target[0] : target
 	if (!(element instanceof HTMLElement)) return
 
@@ -25,9 +29,13 @@ export function scroll(target: Node | Node[], value: ScrollOptions, _scope: Reco
 			// Two-way binding
 			if ('value' in value.x) {
 				provideX = biDi(
-					(v) => { element.scrollLeft = v },
+					(v) => {
+						element.scrollLeft = v
+					},
 					() => (value.x as { value: number }).value,
-					(v) => { (value.x as { value: number }).value = v }
+					(v) => {
+						;(value.x as { value: number }).value = v
+					}
 				)
 			}
 		}
@@ -41,9 +49,13 @@ export function scroll(target: Node | Node[], value: ScrollOptions, _scope: Reco
 			// Two-way binding
 			if ('value' in value.y) {
 				provideY = biDi(
-					(v) => { element.scrollTop = v },
+					(v) => {
+						element.scrollTop = v
+					},
 					() => (value.y as { value: number }).value,
-					(v) => { (value.y as { value: number }).value = v }
+					(v) => {
+						;(value.y as { value: number }).value = v
+					}
 				)
 			}
 		}
@@ -85,9 +97,8 @@ export function scroll(target: Node | Node[], value: ScrollOptions, _scope: Reco
 
 	// If we are tracking 'max', we must observe content size changes to keep it accurate.
 	// We assume the content is the first child.
-	const shouldObserveContent = 
-		(isObject(value.x) && 'max' in value.x) || 
-		(isObject(value.y) && 'max' in value.y)
+	const shouldObserveContent =
+		(isObject(value.x) && 'max' in value.x) || (isObject(value.y) && 'max' in value.y)
 
 	if (shouldObserveContent) {
 		const content = element.firstElementChild

@@ -1,6 +1,3 @@
-import { untracked } from 'mutts'
-
-
 export type PointerState = {
 	x: number
 	y: number
@@ -23,7 +20,7 @@ export function pointer(target: Node | Node[], value: any, _scope: Record<Proper
 		const state: PointerState = {
 			x: e.offsetX,
 			y: e.offsetY,
-			buttons: e.buttons
+			buttons: e.buttons,
 		}
 		if (isObject(value) && 'value' in value) value.value = state
 	}
