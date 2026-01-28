@@ -131,7 +131,7 @@ export const Router = <
 	effect(() => {
 		try {
 			const match = matcher(state.url)
-			if (match) {
+			if (match && (match.unusedPath === '' || match.unusedPath === '/')) {
 				if (oldMatch?.definition !== match.definition) {
 					try {
 						setResult(match.definition.view(match, scope))

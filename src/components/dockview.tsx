@@ -148,19 +148,20 @@ function tabRenderer(
 		},
 	}
 }
-
+// TODO: Better Group management (-> float, max, min, popout, ...)
 function headerActionRenderer(
 	Widget: DockviewHeaderAction,
-	props: DockviewHeaderActionProps
+	{ group }: DockviewHeaderActionProps
 ) {
 	const element = document.createElement('div')
 	element.classList.add('pp-dv-item')
 	let cleanup: ScopedCallback | undefined
 
+	(group as any)._model._panels = reactive(group.panels)
 	return {
 		element,
 		init() {
-			cleanup = bindApp(<Widget {...reactive(props)} />, element)
+			cleanup = bindApp(<Widget group={group} />, element)
 		},
 		dispose() {
 			cleanup?.()
@@ -221,7 +222,6 @@ export const Dockview = (
 	},
 	scope: Record<string, any>
 ) => {
-	console.log('[Dockview] Render Component Function called')
 	const contexts = new Map<string, Record<PropertyKey, any>>()
 	let initialized = false
 	const initDockview = (element: HTMLElement) => {
@@ -269,22 +269,23 @@ export const Dockview = (
 				emptyOptions[k] = undefined
 		})
 		effect(function maintainHeaderActions() {
+			const { headerLeft, headerRight, headerPrefix } = props
 			api.updateOptions({
-				createLeftHeaderActionComponent: props.headerLeft && ((group) => {
+				createLeftHeaderActionComponent: headerLeft && ((group) => {
 					return headerActionRenderer(
-						props.headerLeft!,
+						headerLeft,
 						{ group }
 					)
 				}),
-				createRightHeaderActionComponent: props.headerRight && ((group) => {
+				createRightHeaderActionComponent: headerRight && ((group) => {
 					return headerActionRenderer(
-						props.headerRight!,
+						headerRight,
 						{ group }
 					)
 				}),
-				createPrefixHeaderActionComponent: props.headerPrefix && ((group) => {
+				createPrefixHeaderActionComponent: headerPrefix && ((group) => {
 					return headerActionRenderer(
-						props.headerPrefix!,
+						headerPrefix,
 						{ group }
 					)
 				})

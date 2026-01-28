@@ -5,7 +5,6 @@ import { Inline, Stack } from '../components/layout'
 import { Heading } from '../components/typography'
 
 const InfiniteScrollDemo = () => {
-	console.log('[Demo Debug] InfiniteScroll component:', InfiniteScroll)
 	const state = compose({
 		items: Array.from({ length: 50 }, (_, i) => `Item ${i}`),
 		stickyLast: true,

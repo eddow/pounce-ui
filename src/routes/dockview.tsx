@@ -194,19 +194,22 @@ const tabs = {
 
 // Demo header action component - shows panel count in group (reactive)
 const groupHeaderAction = ({
-	group: { panels },
+	group,
 }: {
 	group: DockviewGroupPanel
 }) => {
+	group.onDidChange((x) => {
+		console.log('group changed', x)
+	})
 	return (
 		<div style="display: flex; align-items: center; gap: .25rem; padding: 0 .25rem;">
 			<span style="font-size: 0.75rem; color: var(--pico-muted-color);">
-				{panels.length} panel{panels.length !== 1 ? 's' : ''}
+				{group.panels.length} panel{group.panels.length !== 1 ? 's' : ''}
 			</span>
 		</div>
 	)
 }
-export default ({ }, scope: { theme?: 'dark' | 'light' }) => {
+export default () => {
 
 	let panelIdCounter = 0
 	const state = reactive({

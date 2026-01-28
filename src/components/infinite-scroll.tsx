@@ -52,10 +52,8 @@ export type InfiniteScrollProps<T> = {
 }
 
 export const InfiniteScroll = <T,>(props: InfiniteScrollProps<T>, scope: any) => {
-	// console.log('[InfiniteScroll Debug] Initializing', props)
 	// Inject directives into scope
-	scope.resize = resize
-	scope.scroll = scroll
+	Object.assign(scope, { resize, scroll })
 
 	const state = compose(
 		{
