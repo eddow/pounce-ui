@@ -105,8 +105,8 @@ const titleParamsWidget = (
 					data-testid="update-params-prop"
 					onClick={() => {
 						// Update params via props (tests forward sync)
-						const nextParams = { test: Date.now(), updated: true }
-						props.params = nextParams
+						const nextParams = { test: Date.now(), from: 'prop' }
+						Object.assign(props.params, nextParams)
 					}}
 				>
 					Update Params via Props
@@ -115,7 +115,7 @@ const titleParamsWidget = (
 					data-testid="update-params-api"
 					onClick={() => {
 						// Update params via API (tests reverse sync)
-						const nextParams = { test: Date.now(), fromAPI: true }
+						const nextParams = { test: Date.now(), from: 'api', initial: undefined }
 						panelApi!.updateParameters(nextParams)
 					}}
 				>

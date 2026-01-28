@@ -12,11 +12,11 @@ import {
 	type SerializedDockview
 } from 'dockview-core'
 import 'dockview-core/dist/styles/dockview.css'
-import { biDi, effect, reactive, type ScopedCallback, unreactive, untracked, watch } from 'mutts'
+import { biDi, effect, reactive, type ScopedCallback, unreactive } from 'mutts'
 import { bindApp, extend } from 'pounce-ts'
 import { tablerOutlineX } from 'pure-glyf/icons'
 import { Button } from './button'
-import { sass } from 'src/lib'
+import { sass } from '../lib'
 
 sass`
 .pp-dv-item
@@ -48,7 +48,7 @@ export type DockviewWidgetProps<Params extends Record<string, any> = Record<stri
 	params: Params
 	context: Context
 }
-export interface DockviewWidgetScope {
+export interface DockviewWidgetScope extends Record<string, any> {
 	dockviewApi?: DockviewApi
 	panelApi?: DockviewPanelApi
 }
@@ -83,42 +83,24 @@ function contentRenderer(
 	return {
 		element,
 		init: ({ api, params, title }: GroupPanelPartInitParameters) => {
+			params = reactive(params)
 			Object.assign(props, {
-				title,
+				title: {
+					get: () => title,
+					set: (v: string) => { api.setTitle(v); title = v },
+				},
 				params,
 				size,
 				context: {},
 			})
-
-			const provideTitle = biDi(
-				(v) => {
-					api.setTitle(v || '')
-				},
-				{
-					get: () => props.title,
-					set: (v) => (props.title = v),
-				}
-			)
 			cleanups.push(
-				api.onDidTitleChange((e: any) => provideTitle(typeof e === 'string' ? e : e.title)).dispose
-			)
-
-			const provideParams = biDi(
-				(v) => {
-					api.updateParameters(v)
-				},
-				{
-					get: () => props.params!,
-					set: (v) => (props.params = v),
-				}
-			)
-			cleanups.push(
+				api.onDidTitleChange((e: any) => title = typeof e === 'string' ? e : e.title).dispose,
+				effect(() => api.updateParameters(params)),
 				api.onDidParametersChange((payload: any) => {
-					provideParams({ ...props.params!, ...payload })
-				}).dispose
+					Object.assign(params, payload)
+				}).dispose,
+				bindApp(<Widget {...props as DockviewWidgetProps} />, element, extend(scope, { panelApi: unreactive(api) }))
 			)
-
-			cleanups.push(bindApp(<Widget {...props as DockviewWidgetProps} />, element, extend(scope, { panelApi: unreactive(api) })))
 		},
 		layout: (width: number, height: number) => {
 			size.width = width
@@ -148,7 +130,6 @@ function tabRenderer(
 		},
 	}
 }
-// TODO: Better Group management (-> float, max, min, popout, ...)
 function headerActionRenderer(
 	Widget: DockviewHeaderAction,
 	{ group }: DockviewHeaderActionProps
@@ -156,8 +137,8 @@ function headerActionRenderer(
 	const element = document.createElement('div')
 	element.classList.add('pp-dv-item')
 	let cleanup: ScopedCallback | undefined
-
-	(group as any)._model._panels = reactive(group.panels)
+	// TODO: Better Group management (-> float, max, min, popout, ...) + reactive panels/active panel/... - should be centralized even if several headerAction
+	//(group as any)._model._panels = reactive((group as any)._model._panels)
 	return {
 		element,
 		init() {

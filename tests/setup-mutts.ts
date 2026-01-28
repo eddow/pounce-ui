@@ -27,3 +27,4 @@ Cause:  ${cause}`);
     console.error(error);
     throw error;
 };
+reactiveOptions.maxEffectReaction = 'throw';

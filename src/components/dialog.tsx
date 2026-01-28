@@ -109,10 +109,6 @@ const state = reactive({
 	},
 })
 
-if (typeof window !== 'undefined') {
-	;(window as any).__pounceDialogState = state
-}
-
 let lastActiveElement: HTMLElement | null = null
 let trapKeydownListener: ((e: KeyboardEvent) => void) | null = null
 let trapKeyupListener: ((e: KeyboardEvent) => void) | null = null
@@ -329,8 +325,6 @@ const Host = () => {
 							}, 0)
 						}
 					}
-					// Show immediately on mount
-					show()
 					// And also respond to reactive changes if target is reused
 					return effect(() => {
 						show()
@@ -372,10 +366,6 @@ function isUIContent(value: unknown): value is UIContent {
 export function dialog<
 	Buttons extends Record<string, UIContent | DialogButton> = { ok: DialogButton },
 >(options: DialogOptions<Buttons> | UIContent): Promise<keyof Buttons | null> {
-	console.log(
-		'[DEBUG] dialog() called with:',
-		typeof options === 'string' ? options : '[options object]'
-	)
 	return new Promise<PropertyKey | null>((resolve) => {
 		const normalized: DialogOptions<Buttons> = isUIContent(options)
 			? { message: options }

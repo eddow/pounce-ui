@@ -17,7 +17,7 @@ export type {
 	UIContent,
 } from './dialog'
 export { confirm, dialog } from './dialog'
-export type { DockviewHeaderActionProps, DockviewWidgetProps } from './dockview'
+export type { DockviewHeaderActionProps, DockviewWidget, DockviewWidgetProps, DockviewWidgetScope } from './dockview'
 export { Dockview } from './dockview'
 export type {
 	CheckboxProps,
