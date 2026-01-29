@@ -1,4 +1,4 @@
-import { mapped } from 'mutts'
+import { project } from 'mutts'
 import { compose } from 'pounce-ts'
 import { tablerFilledStar, tablerOutlineStar } from 'pure-glyf/icons'
 import { css } from '../lib/css'
@@ -189,7 +189,7 @@ export const Stars = (props: StarsProps) => {
 			onMouseleave={handleMouseUp}
 		>
 			{state.zeroElement && renderStarItem(-1)}
-			{mapped(Array.from({ length: state.maximum }), (_, index) => renderStarItem(index))}
+			{project(Array.from({ length: state.maximum }).map((_, i) => i), ({ value }) => renderStarItem(value))}
 		</div>
 	)
 }

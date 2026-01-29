@@ -216,7 +216,7 @@ export default () => {
 			<Dockview
 				el:style="height: 600px; border: 1px solid var(--pico-muted-border-color);"
 				widgets={widgets}
-				theme={themeState.darkMode ? themeDracula : themeReplit}
+				options:theme={themeState.darkMode ? themeDracula : themeReplit}
 				api={state.api}
 			/>
 		</section>

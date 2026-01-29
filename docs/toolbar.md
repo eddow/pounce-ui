@@ -108,7 +108,6 @@ import { CheckButton } from 'pounce-ui'
 <CheckButton
 	icon="mdi:format-bold"
 	checked={isBold}
-	onCheckedChange={(checked) => { isBold = checked }}
 	aria-label="Bold"
 />
 ```
@@ -119,7 +118,6 @@ import { CheckButton } from 'pounce-ui'
 <CheckButton
 	icon="mdi:cloud-sync"
 	checked={syncEnabled}
-	onCheckedChange={(checked) => { syncEnabled = checked }}
 >
 	Sync enabled
 </CheckButton>
@@ -132,11 +130,6 @@ The `checked` prop is reactive. Setting it directly updates the button state.
 ```tsx
 const state = stored({ enabled: false })
 
-<CheckButton
-	checked={state.enabled}
-	onCheckedChange={(checked) => { state.enabled = checked }}
-/>
-// Or simply:
 <CheckButton checked={state.enabled} />
 // Clicking will toggle state.enabled automatically
 ```

@@ -1,14 +1,11 @@
 import {
 	createDockview,
 	DockviewApi,
-	DockviewComponentOptions,
 	DockviewGroupPanel,
+	DockviewOptions,
 	DockviewPanelApi,
-	DockviewTheme,
 	GroupPanelPartInitParameters,
 	IContentRenderer,
-	themeDark,
-	themeLight,
 	type SerializedDockview
 } from 'dockview-core'
 import 'dockview-core/dist/styles/dockview.css'
@@ -39,8 +36,6 @@ sass`
 		> .close
 			margin-left: auto
 `
-
-export type RelativeTheme = DockviewTheme | { light: DockviewTheme, dark: DockviewTheme }
 
 export type DockviewWidgetProps<Params extends Record<string, any> = Record<string, any>, Context extends Record<PropertyKey, any> = Record<PropertyKey, any>> = {
 	title: string
@@ -152,20 +147,6 @@ function headerActionRenderer(
 
 // #endregion
 
-type FreeDockviewOptions = Omit<
-	DockviewComponentOptions,
-	| 'createComponent'
-	| 'createTabComponent'
-	| 'createLeftHeaderActionComponent'
-	| 'createRightHeaderActionComponent'
-	| 'createPrefixHeaderActionComponent'
-	| 'createWatermarkComponent'
->
-
-function resolveTheme(theme: RelativeTheme, scope: Record<string, any>): any {
-	return 'name' in theme ? theme : theme[scope.theme === 'dark' ? 'dark' : 'light']
-}
-
 export interface RegularDockviewWidgetProps extends DockviewWidgetProps {
 	closeable?: boolean
 }
@@ -186,7 +167,6 @@ const DefaultTab = (
 		</div>
 	)
 }
-const defaultThemse = { light: themeLight, dark: themeDark }
 
 export const Dockview = (
 	props: {
@@ -197,9 +177,8 @@ export const Dockview = (
 		headerRight?: DockviewHeaderAction
 		headerPrefix?: DockviewHeaderAction
 		el?: JSX.GlobalHTMLAttributes
-		options?: FreeDockviewOptions
+		options?: DockviewOptions
 		layout?: SerializedDockview
-		theme?: RelativeTheme
 	},
 	scope: Record<string, any>
 ) => {
@@ -242,7 +221,6 @@ export const Dockview = (
 			}
 		)
 		api.onDidLayoutChange(() => { provideLayout(api.toJSON()) })
-		effect(() => { api.updateOptions({ theme: resolveTheme(props.theme || defaultThemse, scope) }) })
 		const emptyOptions: Record<string, any> = {}
 		effect(() => {
 			api.updateOptions(props.options ? { ...emptyOptions, ...props.options } : emptyOptions)

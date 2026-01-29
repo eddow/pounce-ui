@@ -115,7 +115,7 @@ export const CheckButton = (props: CheckButtonProps) => {
 		if (e.defaultPrevented) return
 		state.checked = !state.checked
 		if (state.onCheckedChange) {
-			state.onCheckedChange(!state.checked)
+			state.onCheckedChange(state.checked)
 		}
 	}
 

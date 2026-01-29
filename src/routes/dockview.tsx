@@ -209,7 +209,7 @@ const groupHeaderAction = ({
 		</div>
 	)
 }
-export default () => {
+export default (_: unknown, scope: Record<string, unknown>) => {
 
 	let panelIdCounter = 0
 	const state = reactive({
@@ -350,7 +350,7 @@ export default () => {
 				headerRight={groupHeaderAction}
 				api={state.api}
 				layout={state.layout}
-				theme={{ dark: themeAbyss, light: themeLight }}
+				options:theme={scope.theme === 'dark' ? themeAbyss : themeLight}
 			/>
 		</section>
 	)

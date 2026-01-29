@@ -60,25 +60,16 @@ export default () => {
 							icon={tablerOutlineBold}
 							aria-label="Bold"
 							checked={toolbarState.bold}
-							onCheckedChange={(checked) => {
-								toolbarState.bold = checked
-							}}
 						/>
 						<CheckButton
 							icon={tablerOutlineItalic}
 							aria-label="Italic"
 							checked={toolbarState.italic}
-							onCheckedChange={(checked) => {
-								toolbarState.italic = checked
-							}}
 						/>
 						<CheckButton
 							icon={tablerOutlineUnderline}
 							aria-label="Underline"
 							checked={toolbarState.underline}
-							onCheckedChange={(checked) => {
-								toolbarState.underline = checked
-							}}
 						/>
 						<Toolbar.Spacer visible />
 						<RadioButton
